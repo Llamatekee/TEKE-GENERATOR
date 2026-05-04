@@ -1,0 +1,743 @@
+{
+  "version": "2.0",
+  "exportedAt": "2026-05-04T16:25:54.614Z",
+  "agentName": "MentoorReclamoPagos",
+  "agentConfig": {
+    "name": "MentoorReclamoPagos",
+    "language": "es-ES",
+    "timeZone": "Europe/Madrid",
+    "serviceLlm": "openai/gpt-oss-20b",
+    "nodeLlm": "openai/gpt-oss-120b",
+    "postCallExtractionsLlm": "gpt-4o-mini",
+    "llmTemperature": null,
+    "conversationalMode": "colloquial",
+    "llmStreamMode": true,
+    "answerPhrase": "{goodmorningafternoon}, soy Olivia, del equipo de Mentór. Te llamo porque tenemos pendiente el pago de las clases particulares del mes de {mes} con {el_profesor}. ¿Hablo con {user_first_name}?",
+    "hangupPhrase": "Gracias por tu atención, que tengas un excelente día",
+    "genericFillPhrases": [
+      "Ok.",
+      "Entendido.",
+      "De acuerdo.",
+      "Perfecto.",
+      "Muy bien.",
+      "Claro."
+    ],
+    "globalIdentity": "Eres Olivia, una agente de Mentoor. Realizas llamadas a usuarios que tienen pendientes pagos de clases particulares.",
+    "globalStyle": "                ",
+    "globalGuardrails": "No puedes hablar sobre precios\nNo puedes hablar de ningún tema no directamente relacionado con el objetivo de la llamada.",
+    "globalInstructions": "Tu misión es entender la causa del impago, que puede deberse a múltiples factores, incluidos despistes, y proponer próximos pasos para el abono de la deuda. No debes hacer que el usuario se sienta presionado, siempre actitud firme pero comprensiva.\n\nSi te hacen preguntas generales tipo FAQ sobre el servicio, debes contestar usando los documentos Knowledge Base / RAG\n\nCuando digas listas no uses guiones ni bullet points, siempre separado por comas, para sintetizador de voz.\n\nDi las frases entrecomilladas a medida que las encuentras en el guion, pero no las uses más de una vez.\n\n====== MANEJO SITUACIÓN CON EL USUARIO ====\nUsuario que no colabora -> indicar que si no colabora, se procederá al escalado de la situación. ",
+    "personalityLanguage": "es-ES",
+    "personalityPrompt": {},
+    "callProblemThreshold": 30,
+    "callProblemProtocol": "transfer",
+    "postCallExtractions": [
+      {
+        "type": "boolean",
+        "name": "malentendido",
+        "description": "La causa del impago ha sido despiste o malentendido"
+      },
+      {
+        "type": "boolean",
+        "name": "insatisfaccion",
+        "description": "La causa del impago ha sido por insatisfacción con el servicio o con los profesores"
+      }
+    ],
+    "transferPhone": null,
+    "transferObservations": null,
+    "voice": null,
+    "voiceSynthesizer": null,
+    "voiceSynthesizerModel": null,
+    "stability": 0.5,
+    "similarityBoost": 0.75,
+    "speed": 1,
+    "capabilities": {
+      "inboundCalls": true,
+      "outboundCalls": true,
+      "email": false,
+      "messaging": false
+    },
+    "knowledgeBaseId": null,
+    "knowledgeBaseIds": [
+      "c0a09167-6cd7-4087-90c2-e7d3544e951f",
+      "cd1d5834-4234-4f81-bed4-69b528f1b760"
+    ],
+    "responseReplacements": [],
+    "inputReplacements": [],
+    "memoryConfig": {
+      "sessionsCount": 2,
+      "lifeTimeSummaryEnabled": true,
+      "messagesPerSessionCount": 7
+    },
+    "ragConfig": {
+      "ragType": "keywords",
+      "maxDocuments": 6,
+      "reranking": false,
+      "backflow": false
+    }
+  },
+  "workflow": {
+    "nodes": [
+      {
+        "id": "node-S38pVH8W9ATRabeWzWN81",
+        "type": "moduleCard",
+        "position": {
+          "x": -960,
+          "y": -180
+        },
+        "data": {
+          "id": "oojUW2ISuXZW0x4j87Md4",
+          "name": "Inicio",
+          "type": "start",
+          "rules": [],
+          "params": {},
+          "autoNext": false,
+          "branches": [],
+          "companyId": "An9Po1nCEjv8V21IPqIpl",
+          "connector": "node-1776351209946",
+          "isEndNode": false,
+          "nodeClass": "start",
+          "extractions": [],
+          "isGlobalNode": false,
+          "maxIterations": 3,
+          "asyncExecution": false,
+          "blockUserInput": false,
+          "cannedStarters": [],
+          "knowledgeBaseIds": [],
+          "inputReplacements": [],
+          "overrideLlmTimeout": 30,
+          "responseReplacements": []
+        }
+      },
+      {
+        "id": "node-1776351209946",
+        "type": "moduleCard",
+        "position": {
+          "x": 80,
+          "y": -300
+        },
+        "data": {
+          "id": "KkoA3ggRzp92HKdMaVTmL",
+          "name": "Comprobación identidad",
+          "type": "conversational",
+          "rules": [],
+          "params": {},
+          "autoNext": false,
+          "branches": [
+            {
+              "id": "branch-1776351282316",
+              "name": "id_confirmed",
+              "next": "node-1776354209288",
+              "description": "Si el usuario confirma ser {user_first_name}",
+              "fillPhrases": [
+                "Ajá.",
+                "Entiendo."
+              ]
+            }
+          ],
+          "companyId": "An9Po1nCEjv8V21IPqIpl",
+          "isEndNode": false,
+          "nodeClass": "ask_and_branch",
+          "extractions": [],
+          "isGlobalNode": false,
+          "maxIterations": 300,
+          "systemMessage": "━━━ FASE 1: COMPROBACIÓN IDENTIDAD ━━━\n\nObjetivo: presentarte, validar que hablas con la persona correcta, dar contexto mínimo.\n\nPaso 1.1 — Saludo y apertura:\n\"Buenos días, soy Olivia, del equipo de Mentoor. Te llamo porque tenemos pendiente el pago de las clases particulares del mes de {mes} con {el_profesor}¿Hablo con {user_first_name}?\"\n\n    Manejo del caso:\n\n         1.1.a: usuario confirma la identidad -> toma la rama id_confirmed\n         1.1.b: usuario indica que no -> averiguar cuándo puedes hablar con {user_first_name} ; si no está disponible en el momento, preguntar en qué momento puedes volver a llamar.\n         1.1.c: usuario indica que se trata de una equivocación -> discúlpate, despídete y cuelga.\n          1.1.d: si el usuario pide explicaciones, llamar porque tenéis pendiente el pago de las clases de {mes} con {el_profesor}",
+          "asyncExecution": false,
+          "blockUserInput": false,
+          "cannedStarters": [],
+          "knowledgeBaseIds": [],
+          "inputReplacements": [],
+          "overrideLlmTimeout": 30,
+          "responseReplacements": []
+        }
+      },
+      {
+        "id": "node-1776351327186",
+        "type": "moduleCard",
+        "position": {
+          "x": 1020,
+          "y": -520
+        },
+        "data": {
+          "id": "Sqja9xGHIDLZ5zDKBdYeH",
+          "name": "Explicación situación",
+          "type": "conversational",
+          "rules": [],
+          "params": {},
+          "autoNext": false,
+          "branches": [
+            {
+              "id": "branch-1776351506770",
+              "name": "not_aware",
+              "next": "node-1776351718155",
+              "description": "Si el usuario dice que se le ha olvidado o que no ha recibido notificación del pago",
+              "fillPhrases": null
+            },
+            {
+              "id": "branch-1776351534269",
+              "name": "cant_pay_now",
+              "next": "node-1776352460310",
+              "description": "Si dice que en estos momentos no puede pagar",
+              "fillPhrases": null
+            },
+            {
+              "id": "branch-1776351579254",
+              "name": "doesnt_want_to_pay",
+              "next": "node-1776352947066",
+              "description": "Dice que no quiere pagar debido a algún problema con el servicio",
+              "fillPhrases": null
+            },
+            {
+              "id": "branch-1776351616777",
+              "name": "already_paid",
+              "next": "node-1776352948382",
+              "description": "Si el usuario asegura haber pagado ya",
+              "fillPhrases": null
+            },
+            {
+              "id": "branch-1776351662122",
+              "name": "evasive",
+              "next": "node-1776351716904",
+              "description": "Si el usuario es evasivo y no da ninguna justificación concreta",
+              "fillPhrases": null
+            },
+            {
+              "id": "branch-1776352925120",
+              "name": "other",
+              "next": "node-1776351716904",
+              "description": "Da una explicación que no entra en ninguna de las categorías anteriores",
+              "fillPhrases": null
+            }
+          ],
+          "companyId": "An9Po1nCEjv8V21IPqIpl",
+          "isEndNode": false,
+          "nodeClass": "ask_and_branch",
+          "extractions": [],
+          "isGlobalNode": false,
+          "maxIterations": 300,
+          "systemMessage": "PRIORIZA CONTESTAR PREGUNTAS GENERALES SOBRE EL SERVICIO, PERO REGRESA AL TEMA DEL IMPAGO\n\n━━━ FASE 2: EXPLICACIÓN DE LA SITUACIÓN ━━━\n\nSUPUESTO: el usuario ha confirmado ser la persona buscada ({user_first_name})\n\nEl usuario ha proporcionado ya una explicación acerca del impago: {explicacion_impago}\n\nSi ya ha proporcionado una explicación, clasifícala y toma la rama correspondiente.\nEn caso contrario, procede a paso 2.1\n\nPaso 2.1 — Explicación de la situación:\n\"Disculpa que te moleste. El pago hay que realizarlo los primeros días del mes y todavía no nos consta como realizarlo ¿Has podido verlo o ha habido algún problema con el pago o con las clases?\"\n\nEspera explicación del usuario, clasifica el caso y toma la rama correspondiente.",
+          "asyncExecution": false,
+          "blockUserInput": false,
+          "cannedStarters": [],
+          "knowledgeBaseIds": [],
+          "inputReplacements": [],
+          "overrideLlmTimeout": 30,
+          "responseReplacements": []
+        }
+      },
+      {
+        "id": "node-1776351716904",
+        "type": "moduleCard",
+        "position": {
+          "x": 1760,
+          "y": 540
+        },
+        "data": {
+          "id": "CblVBGFphewlDZWlEh1L6",
+          "name": "Evasivo",
+          "type": "conversational",
+          "rules": [],
+          "params": {},
+          "autoNext": false,
+          "branches": [],
+          "companyId": "An9Po1nCEjv8V21IPqIpl",
+          "isEndNode": false,
+          "nodeClass": "ask_and_branch",
+          "extractions": [],
+          "isGlobalNode": false,
+          "maxIterations": 3,
+          "systemMessage": "PRIORIZA CONTESTAR PREGUNTAS GENERALES SOBRE EL SERVICIO, PERO REGRESA AL TEMA DEL IMPAGO\n\n━━━ FASE 3: GESTIÓN DE LA SITUACIÓN ━━━\n\nSUPUESTO:  - el usuario ha confirmado ser la persona buscada ({user_first_name})\n                        - el usuario ha sido evasivo al justificar el impago\n\nPaso 3.1 — Gestión:\n\"Entiendo, pero necesitamos dejar esto cerrado. ¿Puedes darme una fecha concreta de pago para evitar tener que escalarlo?\"\n\nSi da fecha -> \"Vale, ya tengo toda la información. Gracias por tu tiempo, te escribo por WhatsApp con lo que hemos comentado. Hasta luego.\" y cuelga.\n\nSi no colabora -> \"En ese caso, si no se resuelve tendríamos que escalar el conflicto a\ntravés de un requerimiento de pago y un monitorio judicial. Ya tengo toda la información. Gracias por tu tiempo, te escribo por WhatsApp con lo que hemos comentado. Hasta luego.\" y cuelga",
+          "asyncExecution": false,
+          "blockUserInput": false,
+          "cannedStarters": [],
+          "knowledgeBaseIds": [],
+          "inputReplacements": [],
+          "overrideLlmTimeout": 30,
+          "responseReplacements": []
+        }
+      },
+      {
+        "id": "node-1776351718155",
+        "type": "moduleCard",
+        "position": {
+          "x": 1720,
+          "y": -980
+        },
+        "data": {
+          "id": "Ctn72crN74kBaiuA9rZWL",
+          "name": "No consciente",
+          "type": "conversational",
+          "rules": [],
+          "params": {},
+          "autoNext": false,
+          "branches": [],
+          "companyId": "An9Po1nCEjv8V21IPqIpl",
+          "isEndNode": false,
+          "nodeClass": "ask_and_branch",
+          "extractions": [],
+          "isGlobalNode": false,
+          "maxIterations": 300,
+          "systemMessage": "PRIORIZA CONTESTAR PREGUNTAS GENERALES SOBRE EL SERVICIO, PERO REGRESA AL TEMA DEL IMPAGO\n\n━━━ FASE 3: GESTIÓN DE LA SITUACIÓN ━━━\n\nSUPUESTO:  - el usuario ha confirmado ser la persona buscada ({user_first_name})\n                        - el usuario ha indicado que no ha recibido notificaciones de pago\n\nPaso 3.1 — Gestión:\n\"¡Vaya! Te hemos contactado varias veces tanto por correo como por whatsapp, consúltalo cuando puedas. Es importante hacer el pago los primeros días del mes y ya hemos superado la fecha límite de modo que tendrías que abonarlo lo antes posible par así no tener que escalar el conflicto.\"\n\nSi el usuario asegura que no ha recibido nada:\n→ Cierre: “Lo revisaremos y te volveremos a llamar”, despídete y cuelga.\n\nSi el usuario no pone pegas:\n→ Cierre: “Quedo pendiente entonces. Gracias por tu tiempo, te escribo por WhatsApp con lo que hemos comentado. Hasta luego.”, y cuelga.\n\nSi pone pegas: trátalas.",
+          "asyncExecution": false,
+          "blockUserInput": false,
+          "cannedStarters": [],
+          "knowledgeBaseIds": [],
+          "inputReplacements": [],
+          "overrideLlmTimeout": 30,
+          "responseReplacements": []
+        }
+      },
+      {
+        "id": "node-1776352460310",
+        "type": "moduleCard",
+        "position": {
+          "x": 1820,
+          "y": -620
+        },
+        "data": {
+          "id": "2xQlxdXIWDg9schxloRWK",
+          "name": "No puede pagar",
+          "type": "conversational",
+          "rules": [],
+          "params": {},
+          "autoNext": false,
+          "branches": [],
+          "companyId": "An9Po1nCEjv8V21IPqIpl",
+          "isEndNode": false,
+          "nodeClass": "ask_and_branch",
+          "extractions": [],
+          "isGlobalNode": false,
+          "maxIterations": 3,
+          "systemMessage": "PRIORIZA CONTESTAR PREGUNTAS GENERALES SOBRE EL SERVICIO, PERO REGRESA AL TEMA DEL IMPAGO\n\n━━━ FASE 3: GESTIÓN DE LA SITUACIÓN ━━━\n\nSUPUESTO:  - el usuario ha confirmado ser la persona buscada ({user_first_name})\n                        - el usuario ha indicado que no puede pagar en estos momentos\n\nPaso 3.1 — Gestión:\n\"Ya… entiendo la situación. Nosotros tampoco queremos estar persiguiendo a nadie, pero sí necesitamos dejarlo cerrado. De forma excepcional podemos esperar hasta final de mes, pero es importante que en ese momento se abone, porque si no tendríamos que iniciar un requerimiento de pago. ¿Te parece bien dejarlo fijado para esa fecha?\"\n\nSi acceder -> \"¿Me puedes decir un día concreto?\"\n\nSi no -> explícale que la fecha nunca puede superar los primeros día\n1 a 5 del mes siguiente.\n\nUna vez que esté aclarada la situación, despídete: \"Vale, ya tengo toda la información.\nGracias por tu tiempo, te escribo por WhatsApp con lo que hemos\ncomentado. Hasta luego.\" y cuelga.",
+          "asyncExecution": false,
+          "blockUserInput": false,
+          "cannedStarters": [],
+          "knowledgeBaseIds": [],
+          "inputReplacements": [],
+          "overrideLlmTimeout": 30,
+          "responseReplacements": []
+        }
+      },
+      {
+        "id": "node-1776352947066",
+        "type": "moduleCard",
+        "position": {
+          "x": 1840,
+          "y": -220
+        },
+        "data": {
+          "id": "BpbA56m6TauaUNbuCPhE9",
+          "name": "No quiere pagar",
+          "type": "conversational",
+          "rules": [],
+          "params": {},
+          "autoNext": false,
+          "branches": [],
+          "companyId": "An9Po1nCEjv8V21IPqIpl",
+          "isEndNode": false,
+          "nodeClass": "ask_and_branch",
+          "extractions": [],
+          "isGlobalNode": false,
+          "maxIterations": 3,
+          "systemMessage": "PRIORIZA CONTESTAR PREGUNTAS GENERALES SOBRE EL SERVICIO, PERO REGRESA AL TEMA DEL IMPAGO\n\n━━━ FASE 3: GESTIÓN DE LA SITUACIÓN ━━━\n\nSUPUESTO:  - el usuario ha confirmado ser la persona buscada ({user_first_name})\n                        - el usuario indica que considera que no tiene que pagar por falta en el servicio\n\nPaso 3.1 — Valoración:\n\"Vale, cuéntame exactamente qué pasó.\"\n\nLuego, contesta al usuario según esta tabla de casos:\n- Alega que Primera clase es gratis:\n\"Te explico: todas las clases son de pago, incluida la primera. Aun así, si crees que la clase no fue adecuada, lo revisamos sin problema.\"\n\n- Dice que no le gustó\n\"Perfecto, lo revisamos. ¿Fue una clase puntual o varias?\"\n\n- Desajuste en el número de clases impartidas\n\"Vale, ¿cuántas dirías que has dado tú? Lo revisamos con el sistema y corregimos si aplica.\"\n\n- Problemas de coordinación\n\"Entiendo, ¿qué ocurrió exactamente?\"\n\n- Otros problemas\n\"Entiendo, ¿qué ocurrió exactamente?\"\n\nPaso 3.2 — Cierre disputa:\n\"Voy a revisar lo que me comentas y te escribo por WhatsApp con la\nresolución lo antes posible. Muchas gracias por tu tiempo, hasta luego.\" y cuelga.",
+          "asyncExecution": false,
+          "blockUserInput": false,
+          "cannedStarters": [],
+          "knowledgeBaseIds": [],
+          "inputReplacements": [],
+          "overrideLlmTimeout": 30,
+          "responseReplacements": []
+        }
+      },
+      {
+        "id": "node-1776352948382",
+        "type": "moduleCard",
+        "position": {
+          "x": 1800,
+          "y": 140
+        },
+        "data": {
+          "id": "au27OBZfApya6tPymPBVn",
+          "name": "Ya pagado",
+          "type": "conversational",
+          "rules": [],
+          "params": {},
+          "autoNext": false,
+          "branches": [],
+          "companyId": "An9Po1nCEjv8V21IPqIpl",
+          "isEndNode": false,
+          "nodeClass": "ask_and_branch",
+          "extractions": [],
+          "isGlobalNode": false,
+          "maxIterations": 3,
+          "systemMessage": "PRIORIZA CONTESTAR PREGUNTAS GENERALES SOBRE EL SERVICIO, PERO REGRESA AL TEMA DEL IMPAGO\n\n━━━ FASE 3: GESTIÓN DE LA SITUACIÓN ━━━\n\nSUPUESTO:  - el usuario ha confirmado ser la persona buscada ({user_first_name})\n                        - el usuario asegura que ya ha pagado\n\nPaso 3.1 — Gestión:\n\"Perfecto, gracias por avisar. Puede ser un desfase del sistema. Lo reviso ahora mismo y te confirmo por WhatsApp.\"\n\nDespídete y cuelga.",
+          "asyncExecution": false,
+          "blockUserInput": false,
+          "cannedStarters": [],
+          "knowledgeBaseIds": [],
+          "inputReplacements": [],
+          "overrideLlmTimeout": 30,
+          "responseReplacements": []
+        }
+      },
+      {
+        "id": "node-1776354209288",
+        "type": "moduleCard",
+        "position": {
+          "x": 540,
+          "y": -280
+        },
+        "data": {
+          "id": "2oNhq6KV7mZVo5MOMvWVU",
+          "name": "Extracción explicación",
+          "type": "conversational",
+          "rules": [],
+          "params": {},
+          "autoNext": false,
+          "branches": [],
+          "companyId": "An9Po1nCEjv8V21IPqIpl",
+          "connector": "node-1776351327186",
+          "isEndNode": false,
+          "nodeClass": "extractor",
+          "extractions": [
+            {
+              "name": "explicacion_impago",
+              "type": "boolean",
+              "choices": [],
+              "examples": [],
+              "required": false,
+              "description": "El usuario ha proporcionado una explicación acerca del impago. No dejar a null."
+            }
+          ],
+          "isGlobalNode": false,
+          "maxIterations": 3,
+          "asyncExecution": false,
+          "blockUserInput": false,
+          "cannedStarters": [],
+          "knowledgeBaseIds": [],
+          "inputReplacements": [],
+          "overrideLlmTimeout": 30,
+          "responseReplacements": []
+        }
+      },
+      {
+        "id": "node-1776796271810",
+        "type": "moduleCard",
+        "position": {
+          "x": 80,
+          "y": -1020
+        },
+        "data": {
+          "id": "gXC8eSgdc1OI9kpFurpub",
+          "name": "FF Más tiempo",
+          "type": "conversational_conditional",
+          "rules": [
+            {
+              "conditions": {
+                "groups": [
+                  {
+                    "operator": "AND",
+                    "conditions": [
+                      {
+                        "value": "más tiempo",
+                        "operator": "contains",
+                        "variable": "{{_chat_history_3}}",
+                        "valueType": "string"
+                      }
+                    ]
+                  }
+                ],
+                "operator": "AND"
+              },
+              "description": ""
+            },
+            {
+              "conditions": {
+                "groups": [
+                  {
+                    "operator": "AND",
+                    "conditions": [
+                      {
+                        "value": "más de tiempo",
+                        "operator": "contains",
+                        "variable": "{{_chat_history_3}}",
+                        "valueType": "string"
+                      }
+                    ]
+                  }
+                ],
+                "operator": "AND"
+              },
+              "description": ""
+            },
+            {
+              "conditions": {
+                "groups": [
+                  {
+                    "operator": "AND",
+                    "conditions": [
+                      {
+                        "value": "poco de tiempo",
+                        "operator": "contains",
+                        "variable": "{{_chat_history_3}}",
+                        "valueType": "string"
+                      }
+                    ]
+                  }
+                ],
+                "operator": "AND"
+              },
+              "description": ""
+            }
+          ],
+          "params": {},
+          "autoNext": false,
+          "branches": [],
+          "companyId": "nf1Po1nCEjv8V21IPqIvd",
+          "isEndNode": false,
+          "nodeClass": "action",
+          "extractions": [],
+          "isGlobalNode": false,
+          "maxIterations": 3,
+          "systemMessage": "Si el cliente pide más tiempo podemos pedirle que nos de una fecha estimada de pago, esta fecha nunca puede superar los primeros días 1-5 del mes siguiente.",
+          "asyncExecution": false,
+          "blockUserInput": false,
+          "cannedStarters": [],
+          "knowledgeBaseIds": [],
+          "inputReplacements": [],
+          "overrideLlmTimeout": 30,
+          "responseReplacements": []
+        }
+      },
+      {
+        "id": "node-1776796512599",
+        "type": "moduleCard",
+        "position": {
+          "x": 520,
+          "y": -1020
+        },
+        "data": {
+          "id": "bOipztnMg14cxDQhIWXBH",
+          "name": "FF primera clase gratis",
+          "type": "conversational_conditional",
+          "rules": [],
+          "params": {},
+          "autoNext": false,
+          "branches": [],
+          "companyId": "nf1Po1nCEjv8V21IPqIvd",
+          "isEndNode": false,
+          "nodeClass": "action",
+          "extractions": [],
+          "isGlobalNode": false,
+          "maxIterations": 3,
+          "asyncExecution": false,
+          "blockUserInput": false,
+          "cannedStarters": [],
+          "knowledgeBaseIds": [],
+          "inputReplacements": [],
+          "overrideLlmTimeout": 30,
+          "responseReplacements": []
+        }
+      },
+      {
+        "id": "node-1776866515480",
+        "type": "moduleCard",
+        "position": {
+          "x": -1020,
+          "y": -640
+        },
+        "data": {
+          "id": "jLPuG9mGnkYvXR5hcm4cJ",
+          "name": "Condicional",
+          "type": "conversational_conditional",
+          "rules": [
+            {
+              "conditions": {
+                "groups": [
+                  {
+                    "operator": "AND",
+                    "conditions": [
+                      {
+                        "value": "",
+                        "operator": "exists",
+                        "variable": "{{_prev_session_0}}",
+                        "valueType": "string"
+                      }
+                    ]
+                  }
+                ],
+                "operator": "AND"
+              },
+              "description": ""
+            }
+          ],
+          "params": {},
+          "autoNext": false,
+          "branches": [],
+          "companyId": "nf1Po1nCEjv8V21IPqIvd",
+          "connector": "node-1776866579994",
+          "isEndNode": false,
+          "nodeClass": "action",
+          "extractions": [],
+          "isGlobalNode": false,
+          "elseConnector": "node-1776351209946",
+          "maxIterations": 3,
+          "asyncExecution": false,
+          "blockUserInput": false,
+          "cannedStarters": [],
+          "knowledgeBaseIds": [],
+          "inputReplacements": [],
+          "overrideLlmTimeout": 30,
+          "responseReplacements": []
+        }
+      },
+      {
+        "id": "node-1776866579994",
+        "type": "moduleCard",
+        "position": {
+          "x": -580,
+          "y": -800
+        },
+        "data": {
+          "id": "3JFdtm3vJkhS0jcfEtOFX",
+          "name": "Conversación",
+          "type": "conversational",
+          "rules": [],
+          "params": {},
+          "autoNext": false,
+          "branches": [],
+          "companyId": "An9Po1nCEjv8V21IPqIpl",
+          "isEndNode": false,
+          "nodeClass": "ask_and_branch",
+          "extractions": [],
+          "isGlobalNode": false,
+          "maxIterations": 3,
+          "systemMessage": "Dale saludos al usuario y recuérdale el contexto de la última sesión: {_prev_session_0}",
+          "asyncExecution": false,
+          "blockUserInput": false,
+          "cannedStarters": [],
+          "knowledgeBaseIds": [],
+          "inputReplacements": [],
+          "overrideLlmTimeout": 30,
+          "responseReplacements": []
+        }
+      },
+      {
+        "id": "node-1776877387999",
+        "type": "moduleCard",
+        "position": {
+          "x": -540,
+          "y": 40
+        },
+        "data": {
+          "id": "RmcZpIv6z1YERhG9EGp2b",
+          "name": "Conversación",
+          "type": "conversational",
+          "rules": [],
+          "params": {},
+          "autoNext": false,
+          "branches": [],
+          "companyId": "An9Po1nCEjv8V21IPqIpl",
+          "isEndNode": false,
+          "nodeClass": "ask_and_branch",
+          "extractions": [],
+          "isGlobalNode": false,
+          "maxIterations": 3,
+          "systemMessage": "Recuerda al usuario lo que se discutió en la sesión anterior: {_prev_session_0} y pregunta cuándo tiene pensado realizar el pago.",
+          "asyncExecution": false,
+          "blockUserInput": false,
+          "cannedStarters": [],
+          "knowledgeBaseIds": [],
+          "inputReplacements": [],
+          "overrideLlmTimeout": 30,
+          "responseReplacements": []
+        }
+      }
+    ],
+    "edges": [
+      {
+        "id": "xy-edge__node-1776351327186branch-1776351506770-node-1776351718155",
+        "source": "node-1776351327186",
+        "target": "node-1776351718155",
+        "sourceHandle": "branch-1776351506770"
+      },
+      {
+        "id": "xy-edge__node-1776351327186branch-1776351662122-node-1776351716904",
+        "source": "node-1776351327186",
+        "target": "node-1776351716904",
+        "sourceHandle": "branch-1776351662122"
+      },
+      {
+        "id": "xy-edge__node-1776351327186branch-1776351534269-node-1776352460310",
+        "source": "node-1776351327186",
+        "target": "node-1776352460310",
+        "sourceHandle": "branch-1776351534269"
+      },
+      {
+        "id": "xy-edge__node-1776351327186branch-1776352925120-node-1776351716904",
+        "source": "node-1776351327186",
+        "target": "node-1776351716904",
+        "sourceHandle": "branch-1776352925120"
+      },
+      {
+        "id": "xy-edge__node-1776351327186branch-1776351616777-node-1776352948382",
+        "source": "node-1776351327186",
+        "target": "node-1776352948382",
+        "sourceHandle": "branch-1776351616777"
+      },
+      {
+        "id": "xy-edge__node-1776351327186branch-1776351579254-node-1776352947066",
+        "source": "node-1776351327186",
+        "target": "node-1776352947066",
+        "sourceHandle": "branch-1776351579254"
+      },
+      {
+        "id": "xy-edge__node-1776351209946branch-1776351282316-node-1776354209288",
+        "source": "node-1776351209946",
+        "target": "node-1776354209288",
+        "sourceHandle": "branch-1776351282316"
+      },
+      {
+        "id": "xy-edge__node-17763542092882oNhq6KV7mZVo5MOMvWVU-conversational-connector-node-1776351327186",
+        "source": "node-1776354209288",
+        "target": "node-1776351327186",
+        "sourceHandle": "2oNhq6KV7mZVo5MOMvWVU-conversational-connector"
+      },
+      {
+        "id": "xy-edge__node-1776866515480jLPuG9mGnkYvXR5hcm4cJ-conversational-else-connector-node-1776351209946",
+        "source": "node-1776866515480",
+        "target": "node-1776351209946",
+        "sourceHandle": "jLPuG9mGnkYvXR5hcm4cJ-conversational-else-connector"
+      },
+      {
+        "id": "xy-edge__node-1776866515480jLPuG9mGnkYvXR5hcm4cJ-conversational-connector-node-1776866579994",
+        "source": "node-1776866515480",
+        "target": "node-1776866579994",
+        "sourceHandle": "jLPuG9mGnkYvXR5hcm4cJ-conversational-connector"
+      },
+      {
+        "id": "xy-edge__node-S38pVH8W9ATRabeWzWN81oojUW2ISuXZW0x4j87Md4-conversational-connector-node-1776351209946",
+        "source": "node-S38pVH8W9ATRabeWzWN81",
+        "target": "node-1776351209946",
+        "sourceHandle": "oojUW2ISuXZW0x4j87Md4-conversational-connector"
+      }
+    ],
+    "variables": {
+      "mes": {
+        "type": "string",
+        "value": "marzo"
+      },
+      "el_profesor": {
+        "type": "string",
+        "value": "la profesora Valen"
+      },
+      "_disable_observer_friction": {
+        "type": "boolean",
+        "value": true
+      },
+      "_disable_observer_veracity": {
+        "type": "boolean",
+        "value": true
+      }
+    }
+  }
+}

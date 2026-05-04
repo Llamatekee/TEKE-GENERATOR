@@ -67,7 +67,7 @@
           "name": "Inicio de la llamada",
           "type": "start",
           "nodeClass": "start",
-          "systemMessage": "Iniciar con un saludo cálido y profesional.",
+          "systemMessage": "Hola, [Nombre]… soy Sofía, de LinkedUpSales. Te llamo muy breve porque hace poco hubo una conexión por LinkedIn con nuestro equipo.",
           "rules": [],
           "params": {},
           "autoNext": false,
@@ -96,7 +96,7 @@
           "name": "Introducción a LinkedUpSales",
           "type": "conversational",
           "nodeClass": "ask_and_branch",
-          "systemMessage": "Esperar la respuesta del prospecto antes de continuar.",
+          "systemMessage": "Nosotros trabajamos con empresas B2B que quieren conseguir mejores reuniones comerciales y cerrar más de esas oportunidades. No busco venderte nada ahora; quería entender si mejorar esa parte hoy les interesa revisarla o si no es prioridad.",
           "rules": [],
           "params": {},
           "autoNext": false,
@@ -110,7 +110,7 @@
           "overrideLlmTimeout": 30,
           "branches": [
             {
-              "id": "el-prospecto-muestra-interes",
+              "id": "prospecto-interesado-en-mejorar-reuniones-comerciales",
               "name": "El prospecto muestra interés",
               "next": "node-pregunta_modelo_venta",
               "description": "",
@@ -119,7 +119,7 @@
               ]
             },
             {
-              "id": "el-prospecto-no-muestra-interes",
+              "id": "prospecto-no-interesado-en-el-tema",
               "name": "El prospecto no muestra interés",
               "next": "node-cierre_no_interes",
               "description": "",
@@ -143,7 +143,7 @@
           "name": "Pregunta sobre el modelo de venta",
           "type": "conversational",
           "nodeClass": "ask_and_branch",
-          "systemMessage": "Escuchar atentamente la respuesta para adaptar el siguiente paso.",
+          "systemMessage": "Para entender rápido si esto aplica: ¿ustedes venden principalmente a empresas o a consumidor final?",
           "rules": [],
           "params": {},
           "autoNext": false,
@@ -157,7 +157,7 @@
           "overrideLlmTimeout": 30,
           "branches": [
             {
-              "id": "el-prospecto-vende-b2b",
+              "id": "prospecto-vende-a-empresas",
               "name": "El prospecto vende B2B",
               "next": "node-pregunta_canal_actual",
               "description": "",
@@ -166,7 +166,7 @@
               ]
             },
             {
-              "id": "el-prospecto-vende-b2c",
+              "id": "prospecto-no-es-b2b",
               "name": "El prospecto vende B2C",
               "next": "node-cierre_no_interes",
               "description": "",
@@ -202,7 +202,7 @@
           "name": "Pregunta sobre el canal actual",
           "type": "extractor",
           "nodeClass": "extractor",
-          "systemMessage": "Identificar el canal principal para adaptar la conversación.",
+          "systemMessage": "Hoy, ¿las oportunidades comerciales les llegan más por referidos, inbound, pauta, equipo interno o prospección activa?",
           "rules": [],
           "params": {},
           "autoNext": false,
@@ -246,7 +246,7 @@
           "name": "Pregunta sobre el dolor principal",
           "type": "extractor",
           "nodeClass": "extractor",
-          "systemMessage": "Determinar el área de mayor fricción para el prospecto.",
+          "systemMessage": "Cuando piensan en crecer, ¿el reto está más en conseguir más reuniones, mejorar la calidad de esas reuniones o lograr que avancen a cierre?",
           "rules": [],
           "params": {},
           "autoNext": false,
@@ -288,7 +288,7 @@
           "name": "Pregunta sobre la capacidad comercial",
           "type": "extractor",
           "nodeClass": "extractor",
-          "systemMessage": "Evaluar la capacidad del prospecto para manejar oportunidades.",
+          "systemMessage": "¿Hoy tienen equipo comercial que atienda esas oportunidades o lo maneja más el fundador/equipo directivo?",
           "rules": [],
           "params": {},
           "autoNext": false,
@@ -329,7 +329,7 @@
           "name": "Pregunta sobre la prioridad",
           "type": "conversational",
           "nodeClass": "ask_and_branch",
-          "systemMessage": "Evaluar la urgencia del prospecto para mejorar su proceso comercial.",
+          "systemMessage": "¿Esto es algo que están buscando mejorar ahora o sería más para revisar adelante?",
           "rules": [],
           "params": {},
           "autoNext": false,
@@ -343,7 +343,7 @@
           "overrideLlmTimeout": 30,
           "branches": [
             {
-              "id": "el-prospecto-muestra-interes-y-prioridad",
+              "id": "prospecto-interesado-y-con-prioridad-en-mejorar",
               "name": "El prospecto muestra interés y prioridad",
               "next": "node-agendar_reunion",
               "description": "",
@@ -352,7 +352,7 @@
               ]
             },
             {
-              "id": "el-prospecto-no-muestra-prioridad",
+              "id": "prospecto-no-tiene-prioridad-en-mejorar",
               "name": "El prospecto no muestra prioridad",
               "next": "node-cierre_no_interes",
               "description": "",
@@ -388,7 +388,7 @@
           "name": "Agendar reunión",
           "type": "conversational",
           "nodeClass": "ask_and_branch",
-          "systemMessage": "Negociar día y hora para la reunión.",
+          "systemMessage": "Por lo que me dices, sí vale la pena que lo revises con alguien del equipo. ¿Qué día y hora te vendría bien para una conversación corta de 20 minutos?",
           "rules": [],
           "params": {},
           "autoNext": false,
@@ -426,11 +426,11 @@
           "name": "Cierre con reunión agendada",
           "type": "conversational",
           "nodeClass": "ask_and_branch",
-          "systemMessage": "Asegurarse de confirmar los detalles de la reunión antes de colgar.",
+          "systemMessage": "Perfecto, entonces quedamos para [día y hora]. Te enviaré un recordatorio por correo. Gracias por tu tiempo, [Nombre]. ¡Hasta pronto!\n\nDIRECTIVA CRÍTICA: Despídete del usuario y CUELGA LA LLAMADA inmediatamente.",
           "rules": [],
           "params": {},
           "autoNext": false,
-          "isEndNode": true,
+          "isEndNode": false,
           "isGlobalNode": false,
           "maxIterations": 300,
           "cannedStarters": [],
@@ -454,11 +454,11 @@
           "name": "Cierre sin interés",
           "type": "conversational",
           "nodeClass": "ask_and_branch",
-          "systemMessage": "Cerrar la conversación de manera respetuosa y profesional.",
+          "systemMessage": "Perfecto, lo entiendo. No te insisto. Si más adelante mejorar generación de reuniones o conversión comercial se vuelve prioridad, con gusto lo revisamos.\n\nDIRECTIVA CRÍTICA: Despídete del usuario y CUELGA LA LLAMADA inmediatamente.",
           "rules": [],
           "params": {},
           "autoNext": false,
-          "isEndNode": true,
+          "isEndNode": false,
           "isGlobalNode": false,
           "maxIterations": 300,
           "cannedStarters": [],
@@ -479,28 +479,28 @@
         "sourceHandle": "data-start-conversational-connector"
       },
       {
-        "id": "xy-edge__node-introduccion_linkedupsalesel-prospecto-muestra-interes-node-pregunta_modelo_venta",
+        "id": "xy-edge__node-introduccion_linkedupsalesprospecto-interesado-en-mejorar-reuniones-comerciales-node-pregunta_modelo_venta",
         "source": "node-introduccion_linkedupsales",
         "target": "node-pregunta_modelo_venta",
-        "sourceHandle": "el-prospecto-muestra-interes"
+        "sourceHandle": "prospecto-interesado-en-mejorar-reuniones-comerciales"
       },
       {
-        "id": "xy-edge__node-introduccion_linkedupsalesel-prospecto-no-muestra-interes-node-cierre_no_interes",
+        "id": "xy-edge__node-introduccion_linkedupsalesprospecto-no-interesado-en-el-tema-node-cierre_no_interes",
         "source": "node-introduccion_linkedupsales",
         "target": "node-cierre_no_interes",
-        "sourceHandle": "el-prospecto-no-muestra-interes"
+        "sourceHandle": "prospecto-no-interesado-en-el-tema"
       },
       {
-        "id": "xy-edge__node-pregunta_modelo_ventael-prospecto-vende-b2b-node-pregunta_canal_actual",
+        "id": "xy-edge__node-pregunta_modelo_ventaprospecto-vende-a-empresas-node-pregunta_canal_actual",
         "source": "node-pregunta_modelo_venta",
         "target": "node-pregunta_canal_actual",
-        "sourceHandle": "el-prospecto-vende-b2b"
+        "sourceHandle": "prospecto-vende-a-empresas"
       },
       {
-        "id": "xy-edge__node-pregunta_modelo_ventael-prospecto-vende-b2c-node-cierre_no_interes",
+        "id": "xy-edge__node-pregunta_modelo_ventaprospecto-no-es-b2b-node-cierre_no_interes",
         "source": "node-pregunta_modelo_venta",
         "target": "node-cierre_no_interes",
-        "sourceHandle": "el-prospecto-vende-b2c"
+        "sourceHandle": "prospecto-no-es-b2b"
       },
       {
         "id": "xy-edge__node-pregunta_canal_actualdata-pregunta_canal_actual-conversational-connector-node-pregunta_dolor_principal",
@@ -521,16 +521,16 @@
         "sourceHandle": "data-pregunta_capacidad_comercial-conversational-connector"
       },
       {
-        "id": "xy-edge__node-pregunta_prioridadel-prospecto-muestra-interes-y-prioridad-node-agendar_reunion",
+        "id": "xy-edge__node-pregunta_prioridadprospecto-interesado-y-con-prioridad-en-mejorar-node-agendar_reunion",
         "source": "node-pregunta_prioridad",
         "target": "node-agendar_reunion",
-        "sourceHandle": "el-prospecto-muestra-interes-y-prioridad"
+        "sourceHandle": "prospecto-interesado-y-con-prioridad-en-mejorar"
       },
       {
-        "id": "xy-edge__node-pregunta_prioridadel-prospecto-no-muestra-prioridad-node-cierre_no_interes",
+        "id": "xy-edge__node-pregunta_prioridadprospecto-no-tiene-prioridad-en-mejorar-node-cierre_no_interes",
         "source": "node-pregunta_prioridad",
         "target": "node-cierre_no_interes",
-        "sourceHandle": "el-prospecto-no-muestra-prioridad"
+        "sourceHandle": "prospecto-no-tiene-prioridad-en-mejorar"
       },
       {
         "id": "xy-edge__node-agendar_reunionbranch_continuar-node-cierre_agendado",

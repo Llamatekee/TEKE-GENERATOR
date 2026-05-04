@@ -73,15 +73,17 @@ def build_workflow(md_path, base_json_path, output_json_path):
         data_id = f"data-{raw_node['id']}"
         
         # --- LÓGICA DE TRADUCCIÓN A LA PLATAFORMA ---
-        # 1. Identificar el tipo de nodo correcto para que no crashee la UI
         if raw_node.get("is_start"):
             n_type, n_class = "start", "start"
         elif raw_node.get("extractions") and not raw_node.get("branches"):
-            # Si solo extrae datos y pasa al siguiente, usamos extractor
             n_type, n_class = "extractor", "extractor"
         else:
-            # Todo lo demás (preguntas, ramas y finales) es ask_and_branch
             n_type, n_class = "conversational", "ask_and_branch"
+
+        # TRUCO PARA COLGAR: Forzamos la orden explícita en el prompt si es el último nodo
+        system_msg = raw_node.get("systemMessage", "")
+        if raw_node.get("is_end"):
+            system_msg += "\n\nDIRECTIVA CRÍTICA: Despídete del usuario y CUELGA LA LLAMADA inmediatamente."
 
         module_card = {
             "id": node_id,
@@ -92,11 +94,11 @@ def build_workflow(md_path, base_json_path, output_json_path):
                 "name": raw_node["name"],
                 "type": n_type,
                 "nodeClass": n_class,
-                "systemMessage": raw_node.get("systemMessage", ""),
+                "systemMessage": system_msg, 
                 "rules": [],
                 "params": {},
                 "autoNext": False,
-                "isEndNode": bool(raw_node.get("is_end")),
+                "isEndNode": False, 
                 "isGlobalNode": False,
                 "maxIterations": 3 if n_class == "start" else 300,
                 "cannedStarters": [],

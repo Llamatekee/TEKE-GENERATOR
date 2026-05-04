@@ -31,7 +31,7 @@ def build_workflow(md_path, base_json_path, output_json_path):
           "name": "<Nombre del nodo>",
           "is_start": true/false,
           "is_end": true/false,
-          "systemMessage": "<Script y directivas>",
+          "systemMessage": "DEBES incluir el 'Script (frases literales)' exacto que viene en el MD.",
           "direct_next": "<ID destino si no hay opciones. Null si usa branches>",
           "branches": [
             {

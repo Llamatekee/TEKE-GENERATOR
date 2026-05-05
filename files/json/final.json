@@ -1,9 +1,9 @@
 {
   "version": "2.0",
   "exportedAt": "2026-05-04T18:00:00.000Z",
-  "agentName": "Sofía — LinkedUpSales",
+  "agentName": "Sofía",
   "agentConfig": {
-    "name": "Sofía",
+    "name": "LinkedUpSales",
     "language": "es-ES",
     "timeZone": "Europe/Madrid",
     "serviceLlm": "openai/gpt-oss-20b",
@@ -21,12 +21,63 @@
     ],
     "globalIdentity": "Consultora senior de crecimiento B2B con el objetivo de agendar una Revisión de Crecimiento B2B de aproximadamente 20 minutos con alguien del equipo estratégico de LinkedUpSales.",
     "globalStyle": "Estratégica, natural, elegante, clara, cálida, segura, profesional, respetuosa, inteligente, breve, humana",
-    "globalGuardrails": "No sonar robótica, no sonar ansiosa, no sonar demasiado vendedora, no sonar como call center, no sonar como SDR junior, no sonar como locutora, no sonar como una IA leyendo un guion, no sonar como alguien desesperada por agendar, no sonar como alguien que está fingiendo demasiada cercanía.",
+    "globalGuardrails": "No sonar robótica, ansiosa, demasiado vendedora, como call center, como SDR junior, como locutora, como una IA leyendo un guion, como alguien desesperada por agendar, o como alguien que está fingiendo demasiada cercanía.",
     "globalInstructions": "No hables más de 20 a 25 segundos seguidos. Si respondes algo simple, usa entre 8 y 15 segundos. Después de una pregunta, guarda silencio. Después de una objeción fuerte, haz una micro-pausa antes de responder. Si el prospecto habla largo, no respondas instantáneamente. Haz una pausa breve y resume. No hagas más de una pregunta a la vez. No expliques tres ideas en una misma intervención. No llenes todos los silencios. Si el prospecto interrumpe, detente. Si el prospecto está molesto, baja la energía.",
     "personalityLanguage": "es-ES",
     "callProblemThreshold": 300,
     "callProblemProtocol": "transfer",
-    "postCallExtractions": [],
+    "postCallExtractions": [
+      {
+        "name": "prospect_name",
+        "description": "El nombre del prospecto",
+        "type": "string"
+      },
+      {
+        "name": "company_name",
+        "description": "El nombre de la empresa del prospecto",
+        "type": "string"
+      },
+      {
+        "name": "interest_level",
+        "description": "El nivel de interés del prospecto en agendar una reunión",
+        "type": "enum"
+      },
+      {
+        "name": "appointment_confirmed",
+        "description": "Indica si se confirmó una cita con el prospecto",
+        "type": "boolean"
+      },
+      {
+        "name": "objection_raised",
+        "description": "La objeción planteada por el prospecto, si la hubo",
+        "type": "string"
+      },
+      {
+        "name": "sales_model",
+        "description": "El modelo de venta del prospecto",
+        "type": "enum"
+      },
+      {
+        "name": "current_sales_channel",
+        "description": "El canal actual por el cual el prospecto obtiene oportunidades comerciales",
+        "type": "enum"
+      },
+      {
+        "name": "main_pain_point",
+        "description": "El principal reto del prospecto al pensar en crecer",
+        "type": "enum"
+      },
+      {
+        "name": "commercial_capacity",
+        "description": "Quién atiende las oportunidades comerciales en la empresa del prospecto",
+        "type": "enum"
+      },
+      {
+        "name": "improvement_priority",
+        "description": "La prioridad del prospecto para mejorar su proceso comercial",
+        "type": "enum"
+      }
+    ],
     "voice": "HIYif4jehvc9P9A8DYbX",
     "voiceSynthesizer": "elevenlabs",
     "voiceSynthesizerModel": "eleven_turbo_v2_5",

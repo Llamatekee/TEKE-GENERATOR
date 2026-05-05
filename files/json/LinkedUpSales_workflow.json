@@ -1,0 +1,1283 @@
+{
+  "version": "2.0",
+  "exportedAt": "2026-05-04T18:00:00.000Z",
+  "agentName": "Sofía",
+  "agentConfig": {
+    "name": "Sofía",
+    "language": "es-ES",
+    "timeZone": "Europe/Madrid",
+    "serviceLlm": "openai/gpt-oss-20b",
+    "nodeLlm": "llama-3.3-70b-versatile",
+    "postCallExtractionsLlm": "openai/gpt-oss-120b",
+    "llmTemperature": 0.57,
+    "conversationalMode": null,
+    "llmStreamMode": true,
+    "answerPhrase": "Hola, [Nombre]… soy Sofía, de LinkedUpSales. Te llamo muy breve porque hace poco hubo una conexión por LinkedIn con nuestro equipo.",
+    "hangupPhrase": "Gracias por tu tiempo y hasta pronto.",
+    "genericFillPhrases": [
+      "Claro.",
+      "Entiendo.",
+      "Perfecto."
+    ],
+    "globalIdentity": "Consultora senior de crecimiento B2B con el objetivo de agendar una Revisión de Crecimiento B2B de aproximadamente 20 minutos con alguien del equipo estratégico de LinkedUpSales.",
+    "globalStyle": "Estratégica, natural, elegante, clara, cálida, segura, profesional, respetuosa, inteligente, breve, humana.",
+    "globalGuardrails": "No sonar robótica, ansiosa, demasiado vendedora, como call center, como SDR junior, como locutora, como una IA leyendo un guion, ni como alguien desesperada por agendar o fingiendo demasiada cercanía.",
+    "globalInstructions": "No hables más de 20 a 25 segundos seguidos. Si respondes algo simple, usa entre 8 y 15 segundos. Después de una pregunta, guarda silencio. Después de una objeción fuerte, haz una micro-pausa antes de responder. Si el prospecto habla largo, no respondas instantáneamente. Haz una pausa breve y resume. No hagas más de una pregunta a la vez. No expliques tres ideas en una misma intervención. No llenes todos los silencios. Si el prospecto interrumpe, detente. Si el prospecto está molesto, baja la energía.",
+    "personalityLanguage": "es-ES",
+    "callProblemThreshold": 300,
+    "callProblemProtocol": "transfer",
+    "postCallExtractions": [
+      {
+        "name": "prospect_name",
+        "description": "Nombre del prospecto",
+        "type": "string"
+      },
+      {
+        "name": "company_name",
+        "description": "Nombre de la empresa del prospecto",
+        "type": "string"
+      },
+      {
+        "name": "interest_level",
+        "description": "Nivel de interés del prospecto en agendar una reunión",
+        "type": "enum"
+      },
+      {
+        "name": "appointment_confirmed",
+        "description": "Indica si se confirmó una cita con el prospecto",
+        "type": "boolean"
+      },
+      {
+        "name": "objection_raised",
+        "description": "Objeción planteada por el prospecto durante la llamada",
+        "type": "string"
+      },
+      {
+        "name": "sales_model",
+        "description": "Modelo de venta del prospecto",
+        "type": "enum"
+      },
+      {
+        "name": "current_channel",
+        "description": "Canal actual de obtención de oportunidades comerciales",
+        "type": "enum"
+      },
+      {
+        "name": "main_challenge",
+        "description": "Principal reto al pensar en crecer",
+        "type": "enum"
+      },
+      {
+        "name": "commercial_capacity",
+        "description": "Capacidad comercial actual",
+        "type": "enum"
+      },
+      {
+        "name": "priority_level",
+        "description": "Nivel de prioridad para mejorar el proceso comercial",
+        "type": "enum"
+      }
+    ],
+    "voice": "HIYif4jehvc9P9A8DYbX",
+    "voiceSynthesizer": "elevenlabs",
+    "voiceSynthesizerModel": "eleven_turbo_v2_5",
+    "stability": 0.5,
+    "similarityBoost": 0.75,
+    "speed": 1,
+    "capabilities": {
+      "inboundCalls": true,
+      "outboundCalls": true,
+      "email": false,
+      "messaging": false
+    },
+    "responseReplacements": [],
+    "inputReplacements": [],
+    "memoryConfig": {
+      "sessionsCount": 0,
+      "lifeTimeSummaryEnabled": false,
+      "messagesPerSessionCount": 10
+    },
+    "ragConfig": {
+      "ragType": "keywords",
+      "maxDocuments": 3,
+      "reranking": false,
+      "backflow": false
+    }
+  },
+  "workflow": {
+    "nodes": [
+      {
+        "id": "node-start",
+        "type": "moduleCard",
+        "position": {
+          "x": 0,
+          "y": 0
+        },
+        "data": {
+          "id": "data-start",
+          "name": "Inicio de la llamada",
+          "type": "start",
+          "nodeClass": "start",
+          "systemMessage": "Hola, [Nombre]… soy Sofía, de LinkedUpSales. Te llamo muy breve porque hace poco hubo una conexión por LinkedIn con nuestro equipo.",
+          "rules": [],
+          "params": {},
+          "autoNext": false,
+          "isEndNode": false,
+          "isGlobalNode": false,
+          "maxIterations": 3,
+          "cannedStarters": [],
+          "knowledgeBaseIds": [],
+          "inputReplacements": [],
+          "responseReplacements": [],
+          "overrideLlmTimeout": 30,
+          "branches": [],
+          "extractions": []
+        }
+      },
+      {
+        "id": "node-introduccion_servicios",
+        "type": "moduleCard",
+        "position": {
+          "x": 450,
+          "y": 0
+        },
+        "data": {
+          "id": "data-introduccion_servicios",
+          "name": "Introducción a los servicios",
+          "type": "conversational",
+          "nodeClass": "ask_and_branch",
+          "systemMessage": "Nosotros trabajamos con empresas B2B que quieren conseguir mejores reuniones comerciales y cerrar más de esas oportunidades. No busco venderte nada ahora; quería entender si mejorar esa parte hoy les interesa revisarla o si no es prioridad.",
+          "rules": [],
+          "params": {},
+          "autoNext": false,
+          "isEndNode": false,
+          "isGlobalNode": false,
+          "maxIterations": 300,
+          "cannedStarters": [],
+          "knowledgeBaseIds": [],
+          "inputReplacements": [],
+          "responseReplacements": [],
+          "overrideLlmTimeout": 30,
+          "branches": [
+            {
+              "id": "prospecto-muestra-interes-en-mejorar",
+              "name": "Prospecto muestra interés en mejorar",
+              "next": "node-preguntas_precalificacion",
+              "description": "",
+              "fillPhrases": [
+                "Claro."
+              ]
+            },
+            {
+              "id": "prospecto-no-muestra-interes",
+              "name": "Prospecto no muestra interés",
+              "next": "node-cierre_no_interes",
+              "description": "",
+              "fillPhrases": [
+                "Claro."
+              ]
+            }
+          ],
+          "extractions": [
+            {
+              "name": "prospect_name",
+              "type": "string",
+              "choices": [],
+              "examples": [],
+              "required": false,
+              "description": "Nombre del prospecto"
+            },
+            {
+              "name": "company_name",
+              "type": "string",
+              "choices": [],
+              "examples": [],
+              "required": false,
+              "description": "Nombre de la empresa del prospecto"
+            }
+          ]
+        }
+      },
+      {
+        "id": "node-preguntas_precalificacion",
+        "type": "moduleCard",
+        "position": {
+          "x": 900,
+          "y": 0
+        },
+        "data": {
+          "id": "data-preguntas_precalificacion",
+          "name": "Preguntas de precalificación",
+          "type": "conversational",
+          "nodeClass": "ask_and_branch",
+          "systemMessage": "Para entender rápido si esto aplica: ¿ustedes venden principalmente a empresas o a consumidor final? Hoy, ¿las oportunidades comerciales les llegan más por referidos, inbound, pauta, equipo interno o prospección activa? Cuando piensan en crecer, ¿el reto está más en conseguir más reuniones, mejorar la calidad de esas reuniones o lograr que avancen a cierre?",
+          "rules": [],
+          "params": {},
+          "autoNext": false,
+          "isEndNode": false,
+          "isGlobalNode": false,
+          "maxIterations": 300,
+          "cannedStarters": [],
+          "knowledgeBaseIds": [],
+          "inputReplacements": [],
+          "responseReplacements": [],
+          "overrideLlmTimeout": 30,
+          "branches": [
+            {
+              "id": "prospecto-responde-positivamente-a-dos-o-mas-preguntas",
+              "name": "Prospecto responde positivamente a dos o más preguntas",
+              "next": "node-intento_agendar",
+              "description": "",
+              "fillPhrases": [
+                "Claro."
+              ]
+            },
+            {
+              "id": "prospecto-no-cumple-con-los-criterios",
+              "name": "Prospecto no cumple con los criterios",
+              "next": "node-cierre_no_interes",
+              "description": "",
+              "fillPhrases": [
+                "Claro."
+              ]
+            }
+          ],
+          "extractions": [
+            {
+              "name": "sales_model",
+              "type": "enum",
+              "choices": [
+                "B2B",
+                "B2C"
+              ],
+              "examples": [],
+              "required": false,
+              "description": "Modelo de venta del prospecto"
+            },
+            {
+              "name": "current_channel",
+              "type": "enum",
+              "choices": [
+                "referidos",
+                "inbound",
+                "pauta",
+                "equipo interno",
+                "prospección activa"
+              ],
+              "examples": [],
+              "required": false,
+              "description": "Canal actual de obtención de oportunidades comerciales"
+            },
+            {
+              "name": "main_challenge",
+              "type": "enum",
+              "choices": [
+                "conseguir más reuniones",
+                "mejorar calidad de reuniones",
+                "lograr que avancen a cierre"
+              ],
+              "examples": [],
+              "required": false,
+              "description": "Principal reto al pensar en crecer"
+            },
+            {
+              "name": "commercial_capacity",
+              "type": "enum",
+              "choices": [
+                "equipo comercial",
+                "fundador/equipo directivo"
+              ],
+              "examples": [],
+              "required": false,
+              "description": "Capacidad comercial actual"
+            },
+            {
+              "name": "priority_level",
+              "type": "enum",
+              "choices": [
+                "alta",
+                "media",
+                "baja"
+              ],
+              "examples": [],
+              "required": false,
+              "description": "Nivel de prioridad para mejorar el proceso comercial"
+            }
+          ]
+        }
+      },
+      {
+        "id": "node-intento_agendar",
+        "type": "moduleCard",
+        "position": {
+          "x": 1350,
+          "y": 0
+        },
+        "data": {
+          "id": "data-intento_agendar",
+          "name": "Intento de agendar reunión",
+          "type": "conversational",
+          "nodeClass": "ask_and_branch",
+          "systemMessage": "Por lo que me dices, sí vale la pena que lo revises con alguien del equipo. ¿Te parece si agendamos una breve reunión de 20 minutos para profundizar en esto?",
+          "rules": [],
+          "params": {},
+          "autoNext": false,
+          "isEndNode": false,
+          "isGlobalNode": false,
+          "maxIterations": 300,
+          "cannedStarters": [],
+          "knowledgeBaseIds": [],
+          "inputReplacements": [],
+          "responseReplacements": [],
+          "overrideLlmTimeout": 30,
+          "branches": [
+            {
+              "id": "prospecto-acepta-agendar",
+              "name": "Prospecto acepta agendar",
+              "next": "node-confirmacion_agenda",
+              "description": "",
+              "fillPhrases": [
+                "Claro."
+              ]
+            },
+            {
+              "id": "prospecto-no-acepta-agendar",
+              "name": "Prospecto no acepta agendar",
+              "next": "node-manejo_objeciones",
+              "description": "",
+              "fillPhrases": [
+                "Claro."
+              ]
+            }
+          ],
+          "extractions": []
+        }
+      },
+      {
+        "id": "node-confirmacion_agenda",
+        "type": "moduleCard",
+        "position": {
+          "x": 1800,
+          "y": 0
+        },
+        "data": {
+          "id": "data-confirmacion_agenda",
+          "name": "Confirmación de agenda",
+          "type": "conversational",
+          "nodeClass": "ask_and_branch",
+          "systemMessage": "Perfecto, entonces quedamos para [fecha y hora]. Te enviaré una invitación por correo para que lo tengas en tu calendario. Gracias por tu tiempo, [Nombre].",
+          "rules": [],
+          "params": {},
+          "autoNext": false,
+          "isEndNode": false,
+          "isGlobalNode": false,
+          "maxIterations": 300,
+          "cannedStarters": [],
+          "knowledgeBaseIds": [],
+          "inputReplacements": [],
+          "responseReplacements": [],
+          "overrideLlmTimeout": 30,
+          "branches": [
+            {
+              "id": "branch_continuar",
+              "name": "Continuar",
+              "next": "node-end_call",
+              "description": "Transicion automatica",
+              "fillPhrases": [
+                "Claro."
+              ]
+            }
+          ],
+          "extractions": []
+        }
+      },
+      {
+        "id": "node-manejo_objeciones",
+        "type": "moduleCard",
+        "position": {
+          "x": 0,
+          "y": 400
+        },
+        "data": {
+          "id": "data-manejo_objeciones",
+          "name": "Manejo de objeciones",
+          "type": "conversational",
+          "nodeClass": "ask_and_branch",
+          "systemMessage": "Claro, entiendo. Pero para no mandarte un correo lleno de información que de pronto ni necesitas, mejor te hago dos preguntas rápidas y vemos si esto tiene sentido para ustedes.",
+          "rules": [],
+          "params": {},
+          "autoNext": false,
+          "isEndNode": false,
+          "isGlobalNode": false,
+          "maxIterations": 300,
+          "cannedStarters": [],
+          "knowledgeBaseIds": [],
+          "inputReplacements": [],
+          "responseReplacements": [],
+          "overrideLlmTimeout": 30,
+          "branches": [
+            {
+              "id": "prospecto-reconsidera-y-muestra-interes",
+              "name": "Prospecto reconsidera y muestra interés",
+              "next": "node-preguntas_precalificacion",
+              "description": "",
+              "fillPhrases": [
+                "Claro."
+              ]
+            },
+            {
+              "id": "prospecto-mantiene-su-objecion",
+              "name": "Prospecto mantiene su objeción",
+              "next": "node-cierre_no_interes",
+              "description": "",
+              "fillPhrases": [
+                "Claro."
+              ]
+            }
+          ],
+          "extractions": [
+            {
+              "name": "objection_raised",
+              "type": "string",
+              "choices": [],
+              "examples": [],
+              "required": false,
+              "description": "Objeción planteada por el prospecto"
+            }
+          ]
+        }
+      },
+      {
+        "id": "node-cierre_no_interes",
+        "type": "moduleCard",
+        "position": {
+          "x": 450,
+          "y": 400
+        },
+        "data": {
+          "id": "data-cierre_no_interes",
+          "name": "Cierre sin interés",
+          "type": "conversational",
+          "nodeClass": "ask_and_branch",
+          "systemMessage": "Perfecto, lo entiendo. No te insisto. Si más adelante mejorar generación de reuniones o conversión comercial se vuelve prioridad, con gusto lo revisamos.\n\nDIRECTIVA CRITICA: Despidete del usuario y CUELGA LA LLAMADA inmediatamente.",
+          "rules": [],
+          "params": {},
+          "autoNext": false,
+          "isEndNode": false,
+          "isGlobalNode": false,
+          "maxIterations": 300,
+          "cannedStarters": [],
+          "knowledgeBaseIds": [],
+          "inputReplacements": [],
+          "responseReplacements": [],
+          "overrideLlmTimeout": 30,
+          "branches": [],
+          "extractions": []
+        }
+      },
+      {
+        "id": "node-end_call",
+        "type": "moduleCard",
+        "position": {
+          "x": 900,
+          "y": 400
+        },
+        "data": {
+          "id": "data-end_call",
+          "name": "Fin de la llamada",
+          "type": "conversational",
+          "nodeClass": "ask_and_branch",
+          "systemMessage": "Gracias nuevamente, [Nombre]. Que tengas un excelente día.\n\nDIRECTIVA CRITICA: Despidete del usuario y CUELGA LA LLAMADA inmediatamente.",
+          "rules": [],
+          "params": {},
+          "autoNext": false,
+          "isEndNode": false,
+          "isGlobalNode": false,
+          "maxIterations": 300,
+          "cannedStarters": [],
+          "knowledgeBaseIds": [],
+          "inputReplacements": [],
+          "responseReplacements": [],
+          "overrideLlmTimeout": 30,
+          "branches": [],
+          "extractions": []
+        }
+      },
+      {
+        "id": "node-obj_no_interes",
+        "type": "moduleCard",
+        "position": {
+          "x": 0,
+          "y": 1200
+        },
+        "data": {
+          "id": "data-obj_no_interes",
+          "name": "No está interesado",
+          "type": "conversational_conditional",
+          "nodeClass": "action",
+          "systemMessage": "GESTION DE OBJECION: Perfecto, lo entiendo. No te insisto. Si más adelante mejorar generación de reuniones o conversión comercial se vuelve prioridad, con gusto lo revisamos. y continua por donde ibas.",
+          "rules": [
+            {
+              "conditions": {
+                "groups": [
+                  {
+                    "operator": "AND",
+                    "conditions": [
+                      {
+                        "value": "prior",
+                        "operator": "contains",
+                        "variable": "{{_chat_history_3}}",
+                        "valueType": "string"
+                      }
+                    ]
+                  }
+                ],
+                "operator": "AND"
+              },
+              "description": ""
+            },
+            {
+              "conditions": {
+                "groups": [
+                  {
+                    "operator": "AND",
+                    "conditions": [
+                      {
+                        "value": "inter",
+                        "operator": "contains",
+                        "variable": "{{_chat_history_3}}",
+                        "valueType": "string"
+                      }
+                    ]
+                  }
+                ],
+                "operator": "AND"
+              },
+              "description": ""
+            }
+          ],
+          "params": {},
+          "autoNext": false,
+          "isEndNode": false,
+          "isGlobalNode": false,
+          "maxIterations": 3,
+          "cannedStarters": [],
+          "knowledgeBaseIds": [],
+          "inputReplacements": [],
+          "responseReplacements": [],
+          "overrideLlmTimeout": 30,
+          "branches": [],
+          "extractions": []
+        }
+      },
+      {
+        "id": "node-obj_manda_info",
+        "type": "moduleCard",
+        "position": {
+          "x": 450,
+          "y": 1200
+        },
+        "data": {
+          "id": "data-obj_manda_info",
+          "name": "Mándame información",
+          "type": "conversational_conditional",
+          "nodeClass": "action",
+          "systemMessage": "GESTION DE OBJECION: Claro, entiendo. Pero para no mandarte un correo lleno de información que de pronto ni necesitas, mejor te hago dos preguntas rápidas y vemos si esto tiene sentido para ustedes. y continua por donde ibas.",
+          "rules": [
+            {
+              "conditions": {
+                "groups": [
+                  {
+                    "operator": "AND",
+                    "conditions": [
+                      {
+                        "value": "manda",
+                        "operator": "contains",
+                        "variable": "{{_chat_history_3}}",
+                        "valueType": "string"
+                      }
+                    ]
+                  }
+                ],
+                "operator": "AND"
+              },
+              "description": ""
+            },
+            {
+              "conditions": {
+                "groups": [
+                  {
+                    "operator": "AND",
+                    "conditions": [
+                      {
+                        "value": "info",
+                        "operator": "contains",
+                        "variable": "{{_chat_history_3}}",
+                        "valueType": "string"
+                      }
+                    ]
+                  }
+                ],
+                "operator": "AND"
+              },
+              "description": ""
+            }
+          ],
+          "params": {},
+          "autoNext": false,
+          "isEndNode": false,
+          "isGlobalNode": false,
+          "maxIterations": 3,
+          "cannedStarters": [],
+          "knowledgeBaseIds": [],
+          "inputReplacements": [],
+          "responseReplacements": [],
+          "overrideLlmTimeout": 30,
+          "branches": [],
+          "extractions": []
+        }
+      },
+      {
+        "id": "node-obj_no_tiempo",
+        "type": "moduleCard",
+        "position": {
+          "x": 900,
+          "y": 1200
+        },
+        "data": {
+          "id": "data-obj_no_tiempo",
+          "name": "No tengo tiempo",
+          "type": "conversational_conditional",
+          "nodeClass": "action",
+          "systemMessage": "GESTION DE OBJECION: Te lo hago muy corto. Ayudamos a empresas B2B a generar mejores reuniones comerciales y convertir más de esas reuniones en oportunidades reales. ¿Eso vale la pena revisarlo en otro momento o no es prioridad? y continua por donde ibas.",
+          "rules": [
+            {
+              "conditions": {
+                "groups": [
+                  {
+                    "operator": "AND",
+                    "conditions": [
+                      {
+                        "value": "tiemp",
+                        "operator": "contains",
+                        "variable": "{{_chat_history_3}}",
+                        "valueType": "string"
+                      }
+                    ]
+                  }
+                ],
+                "operator": "AND"
+              },
+              "description": ""
+            }
+          ],
+          "params": {},
+          "autoNext": false,
+          "isEndNode": false,
+          "isGlobalNode": false,
+          "maxIterations": 3,
+          "cannedStarters": [],
+          "knowledgeBaseIds": [],
+          "inputReplacements": [],
+          "responseReplacements": [],
+          "overrideLlmTimeout": 30,
+          "branches": [],
+          "extractions": []
+        }
+      },
+      {
+        "id": "node-obj_no_b2b",
+        "type": "moduleCard",
+        "position": {
+          "x": 1350,
+          "y": 1200
+        },
+        "data": {
+          "id": "data-obj_no_b2b",
+          "name": "No es B2B",
+          "type": "conversational_conditional",
+          "nodeClass": "action",
+          "systemMessage": "GESTION DE OBJECION: Entiendo, nuestro enfoque es más hacia empresas B2B. Si en algún momento cambian su modelo, con gusto lo revisamos. y continua por donde ibas.",
+          "rules": [
+            {
+              "conditions": {
+                "groups": [
+                  {
+                    "operator": "AND",
+                    "conditions": [
+                      {
+                        "value": "b2b",
+                        "operator": "contains",
+                        "variable": "{{_chat_history_3}}",
+                        "valueType": "string"
+                      }
+                    ]
+                  }
+                ],
+                "operator": "AND"
+              },
+              "description": ""
+            },
+            {
+              "conditions": {
+                "groups": [
+                  {
+                    "operator": "AND",
+                    "conditions": [
+                      {
+                        "value": "consu",
+                        "operator": "contains",
+                        "variable": "{{_chat_history_3}}",
+                        "valueType": "string"
+                      }
+                    ]
+                  }
+                ],
+                "operator": "AND"
+              },
+              "description": ""
+            }
+          ],
+          "params": {},
+          "autoNext": false,
+          "isEndNode": false,
+          "isGlobalNode": false,
+          "maxIterations": 3,
+          "cannedStarters": [],
+          "knowledgeBaseIds": [],
+          "inputReplacements": [],
+          "responseReplacements": [],
+          "overrideLlmTimeout": 30,
+          "branches": [],
+          "extractions": []
+        }
+      },
+      {
+        "id": "node-obj_ya_tienen_proveedor",
+        "type": "moduleCard",
+        "position": {
+          "x": 1800,
+          "y": 1200
+        },
+        "data": {
+          "id": "data-obj_ya_tienen_proveedor",
+          "name": "Ya tienen proveedor",
+          "type": "conversational_conditional",
+          "nodeClass": "action",
+          "systemMessage": "GESTION DE OBJECION: Entiendo, muchas empresas con las que trabajamos también tienen proveedores, pero a veces encuentran valor en revisar nuevas perspectivas. ¿Les interesaría explorar si hay algo que podamos mejorar juntos? y continua por donde ibas.",
+          "rules": [
+            {
+              "conditions": {
+                "groups": [
+                  {
+                    "operator": "AND",
+                    "conditions": [
+                      {
+                        "value": "prove",
+                        "operator": "contains",
+                        "variable": "{{_chat_history_3}}",
+                        "valueType": "string"
+                      }
+                    ]
+                  }
+                ],
+                "operator": "AND"
+              },
+              "description": ""
+            },
+            {
+              "conditions": {
+                "groups": [
+                  {
+                    "operator": "AND",
+                    "conditions": [
+                      {
+                        "value": "traba",
+                        "operator": "contains",
+                        "variable": "{{_chat_history_3}}",
+                        "valueType": "string"
+                      }
+                    ]
+                  }
+                ],
+                "operator": "AND"
+              },
+              "description": ""
+            }
+          ],
+          "params": {},
+          "autoNext": false,
+          "isEndNode": false,
+          "isGlobalNode": false,
+          "maxIterations": 3,
+          "cannedStarters": [],
+          "knowledgeBaseIds": [],
+          "inputReplacements": [],
+          "responseReplacements": [],
+          "overrideLlmTimeout": 30,
+          "branches": [],
+          "extractions": []
+        }
+      },
+      {
+        "id": "node-obj_no_decisor",
+        "type": "moduleCard",
+        "position": {
+          "x": 0,
+          "y": 1600
+        },
+        "data": {
+          "id": "data-obj_no_decisor",
+          "name": "No soy el decisor",
+          "type": "conversational_conditional",
+          "nodeClass": "action",
+          "systemMessage": "GESTION DE OBJECION: Entiendo, ¿podrías indicarme quién sería la persona adecuada para revisar este tema? y continua por donde ibas.",
+          "rules": [
+            {
+              "conditions": {
+                "groups": [
+                  {
+                    "operator": "AND",
+                    "conditions": [
+                      {
+                        "value": "decis",
+                        "operator": "contains",
+                        "variable": "{{_chat_history_3}}",
+                        "valueType": "string"
+                      }
+                    ]
+                  }
+                ],
+                "operator": "AND"
+              },
+              "description": ""
+            },
+            {
+              "conditions": {
+                "groups": [
+                  {
+                    "operator": "AND",
+                    "conditions": [
+                      {
+                        "value": "adecu",
+                        "operator": "contains",
+                        "variable": "{{_chat_history_3}}",
+                        "valueType": "string"
+                      }
+                    ]
+                  }
+                ],
+                "operator": "AND"
+              },
+              "description": ""
+            }
+          ],
+          "params": {},
+          "autoNext": false,
+          "isEndNode": false,
+          "isGlobalNode": false,
+          "maxIterations": 3,
+          "cannedStarters": [],
+          "knowledgeBaseIds": [],
+          "inputReplacements": [],
+          "responseReplacements": [],
+          "overrideLlmTimeout": 30,
+          "branches": [],
+          "extractions": []
+        }
+      },
+      {
+        "id": "node-obj_no_contacto",
+        "type": "moduleCard",
+        "position": {
+          "x": 450,
+          "y": 1600
+        },
+        "data": {
+          "id": "data-obj_no_contacto",
+          "name": "No me contacten",
+          "type": "conversational_conditional",
+          "nodeClass": "action",
+          "systemMessage": "GESTION DE OBJECION: Entendido. Lo dejamos registrado para no volver a contactarte por este medio. Gracias por decírmelo. y continua por donde ibas.",
+          "rules": [
+            {
+              "conditions": {
+                "groups": [
+                  {
+                    "operator": "AND",
+                    "conditions": [
+                      {
+                        "value": "conta",
+                        "operator": "contains",
+                        "variable": "{{_chat_history_3}}",
+                        "valueType": "string"
+                      }
+                    ]
+                  }
+                ],
+                "operator": "AND"
+              },
+              "description": ""
+            },
+            {
+              "conditions": {
+                "groups": [
+                  {
+                    "operator": "AND",
+                    "conditions": [
+                      {
+                        "value": "quier",
+                        "operator": "contains",
+                        "variable": "{{_chat_history_3}}",
+                        "valueType": "string"
+                      }
+                    ]
+                  }
+                ],
+                "operator": "AND"
+              },
+              "description": ""
+            }
+          ],
+          "params": {},
+          "autoNext": false,
+          "isEndNode": false,
+          "isGlobalNode": false,
+          "maxIterations": 3,
+          "cannedStarters": [],
+          "knowledgeBaseIds": [],
+          "inputReplacements": [],
+          "responseReplacements": [],
+          "overrideLlmTimeout": 30,
+          "branches": [],
+          "extractions": []
+        }
+      },
+      {
+        "id": "node-faq_que_es_linkedupsales",
+        "type": "moduleCard",
+        "position": {
+          "x": 900,
+          "y": 1600
+        },
+        "data": {
+          "id": "data-faq_que_es_linkedupsales",
+          "name": "¿Qué es LinkedUpSales?",
+          "type": "conversational_conditional",
+          "nodeClass": "action",
+          "systemMessage": "FAQ INLINE: LinkedUpSales ayuda a empresas B2B a generar mejores reuniones comerciales y a mejorar la conversión de esas reuniones en oportunidades reales. y continua por donde ibas.",
+          "rules": [
+            {
+              "conditions": {
+                "groups": [
+                  {
+                    "operator": "AND",
+                    "conditions": [
+                      {
+                        "value": "linkedupsales",
+                        "operator": "contains",
+                        "variable": "{{_chat_history_3}}",
+                        "valueType": "string"
+                      }
+                    ]
+                  }
+                ],
+                "operator": "AND"
+              },
+              "description": ""
+            },
+            {
+              "conditions": {
+                "groups": [
+                  {
+                    "operator": "AND",
+                    "conditions": [
+                      {
+                        "value": "empresa",
+                        "operator": "contains",
+                        "variable": "{{_chat_history_3}}",
+                        "valueType": "string"
+                      }
+                    ]
+                  }
+                ],
+                "operator": "AND"
+              },
+              "description": ""
+            }
+          ],
+          "params": {},
+          "autoNext": false,
+          "isEndNode": false,
+          "isGlobalNode": false,
+          "maxIterations": 3,
+          "cannedStarters": [],
+          "knowledgeBaseIds": [],
+          "inputReplacements": [],
+          "responseReplacements": [],
+          "overrideLlmTimeout": 30,
+          "branches": [],
+          "extractions": []
+        }
+      },
+      {
+        "id": "node-faq_que_es_metodologia_c5",
+        "type": "moduleCard",
+        "position": {
+          "x": 1350,
+          "y": 1600
+        },
+        "data": {
+          "id": "data-faq_que_es_metodologia_c5",
+          "name": "¿Qué es la metodología C5?",
+          "type": "conversational_conditional",
+          "nodeClass": "action",
+          "systemMessage": "FAQ INLINE: La metodología C5 es nuestro marco interno para analizar el proceso comercial, abarcando cliente correcto, conversación, cita, cierre y continuidad. Pero no te lo explico todo ahora; lo importante es entender dónde se les está rompiendo más el proceso. y continua por donde ibas.",
+          "rules": [
+            {
+              "conditions": {
+                "groups": [
+                  {
+                    "operator": "AND",
+                    "conditions": [
+                      {
+                        "value": "metodologia",
+                        "operator": "contains",
+                        "variable": "{{_chat_history_3}}",
+                        "valueType": "string"
+                      }
+                    ]
+                  }
+                ],
+                "operator": "AND"
+              },
+              "description": ""
+            },
+            {
+              "conditions": {
+                "groups": [
+                  {
+                    "operator": "AND",
+                    "conditions": [
+                      {
+                        "value": "c5",
+                        "operator": "contains",
+                        "variable": "{{_chat_history_3}}",
+                        "valueType": "string"
+                      }
+                    ]
+                  }
+                ],
+                "operator": "AND"
+              },
+              "description": ""
+            }
+          ],
+          "params": {},
+          "autoNext": false,
+          "isEndNode": false,
+          "isGlobalNode": false,
+          "maxIterations": 3,
+          "cannedStarters": [],
+          "knowledgeBaseIds": [],
+          "inputReplacements": [],
+          "responseReplacements": [],
+          "overrideLlmTimeout": 30,
+          "branches": [],
+          "extractions": []
+        }
+      },
+      {
+        "id": "node-faq_cuanto_dura_la_revision",
+        "type": "moduleCard",
+        "position": {
+          "x": 1800,
+          "y": 1600
+        },
+        "data": {
+          "id": "data-faq_cuanto_dura_la_revision",
+          "name": "¿Cuánto dura la revisión de crecimiento?",
+          "type": "conversational_conditional",
+          "nodeClass": "action",
+          "systemMessage": "FAQ INLINE: La Revisión de Crecimiento B2B dura aproximadamente 20 minutos. y continua por donde ibas.",
+          "rules": [
+            {
+              "conditions": {
+                "groups": [
+                  {
+                    "operator": "AND",
+                    "conditions": [
+                      {
+                        "value": "duracion",
+                        "operator": "contains",
+                        "variable": "{{_chat_history_3}}",
+                        "valueType": "string"
+                      }
+                    ]
+                  }
+                ],
+                "operator": "AND"
+              },
+              "description": ""
+            },
+            {
+              "conditions": {
+                "groups": [
+                  {
+                    "operator": "AND",
+                    "conditions": [
+                      {
+                        "value": "revision",
+                        "operator": "contains",
+                        "variable": "{{_chat_history_3}}",
+                        "valueType": "string"
+                      }
+                    ]
+                  }
+                ],
+                "operator": "AND"
+              },
+              "description": ""
+            }
+          ],
+          "params": {},
+          "autoNext": false,
+          "isEndNode": false,
+          "isGlobalNode": false,
+          "maxIterations": 3,
+          "cannedStarters": [],
+          "knowledgeBaseIds": [],
+          "inputReplacements": [],
+          "responseReplacements": [],
+          "overrideLlmTimeout": 30,
+          "branches": [],
+          "extractions": []
+        }
+      },
+      {
+        "id": "node-faq_cuanto_cuesta_el_servicio",
+        "type": "moduleCard",
+        "position": {
+          "x": 0,
+          "y": 2000
+        },
+        "data": {
+          "id": "data-faq_cuanto_cuesta_el_servicio",
+          "name": "¿Cuánto cuesta el servicio?",
+          "type": "conversational_conditional",
+          "nodeClass": "action",
+          "systemMessage": "FAQ INLINE: No estoy aquí para venderte nada ahora. La idea es entender si mejorar la generación de reuniones y conversión es relevante para ustedes y, si es así, agendar una conversación con un asesor humano. y continua por donde ibas.",
+          "rules": [
+            {
+              "conditions": {
+                "groups": [
+                  {
+                    "operator": "AND",
+                    "conditions": [
+                      {
+                        "value": "precio",
+                        "operator": "contains",
+                        "variable": "{{_chat_history_3}}",
+                        "valueType": "string"
+                      }
+                    ]
+                  }
+                ],
+                "operator": "AND"
+              },
+              "description": ""
+            },
+            {
+              "conditions": {
+                "groups": [
+                  {
+                    "operator": "AND",
+                    "conditions": [
+                      {
+                        "value": "costo",
+                        "operator": "contains",
+                        "variable": "{{_chat_history_3}}",
+                        "valueType": "string"
+                      }
+                    ]
+                  }
+                ],
+                "operator": "AND"
+              },
+              "description": ""
+            }
+          ],
+          "params": {},
+          "autoNext": false,
+          "isEndNode": false,
+          "isGlobalNode": false,
+          "maxIterations": 3,
+          "cannedStarters": [],
+          "knowledgeBaseIds": [],
+          "inputReplacements": [],
+          "responseReplacements": [],
+          "overrideLlmTimeout": 30,
+          "branches": [],
+          "extractions": []
+        }
+      }
+    ],
+    "edges": [
+      {
+        "id": "xy-edge__node-introduccion_serviciosprospecto-muestra-interes-en-mejorar-node-preguntas_precalificacion",
+        "source": "node-introduccion_servicios",
+        "target": "node-preguntas_precalificacion",
+        "sourceHandle": "prospecto-muestra-interes-en-mejorar"
+      },
+      {
+        "id": "xy-edge__node-introduccion_serviciosprospecto-no-muestra-interes-node-cierre_no_interes",
+        "source": "node-introduccion_servicios",
+        "target": "node-cierre_no_interes",
+        "sourceHandle": "prospecto-no-muestra-interes"
+      },
+      {
+        "id": "xy-edge__node-preguntas_precalificacionprospecto-responde-positivamente-a-dos-o-mas-preguntas-node-intento_agendar",
+        "source": "node-preguntas_precalificacion",
+        "target": "node-intento_agendar",
+        "sourceHandle": "prospecto-responde-positivamente-a-dos-o-mas-preguntas"
+      },
+      {
+        "id": "xy-edge__node-preguntas_precalificacionprospecto-no-cumple-con-los-criterios-node-cierre_no_interes",
+        "source": "node-preguntas_precalificacion",
+        "target": "node-cierre_no_interes",
+        "sourceHandle": "prospecto-no-cumple-con-los-criterios"
+      },
+      {
+        "id": "xy-edge__node-intento_agendarprospecto-acepta-agendar-node-confirmacion_agenda",
+        "source": "node-intento_agendar",
+        "target": "node-confirmacion_agenda",
+        "sourceHandle": "prospecto-acepta-agendar"
+      },
+      {
+        "id": "xy-edge__node-intento_agendarprospecto-no-acepta-agendar-node-manejo_objeciones",
+        "source": "node-intento_agendar",
+        "target": "node-manejo_objeciones",
+        "sourceHandle": "prospecto-no-acepta-agendar"
+      },
+      {
+        "id": "xy-edge__node-confirmacion_agendabranch_continuar-node-end_call",
+        "source": "node-confirmacion_agenda",
+        "target": "node-end_call",
+        "sourceHandle": "branch_continuar"
+      },
+      {
+        "id": "xy-edge__node-manejo_objecionesprospecto-reconsidera-y-muestra-interes-node-preguntas_precalificacion",
+        "source": "node-manejo_objeciones",
+        "target": "node-preguntas_precalificacion",
+        "sourceHandle": "prospecto-reconsidera-y-muestra-interes"
+      },
+      {
+        "id": "xy-edge__node-manejo_objecionesprospecto-mantiene-su-objecion-node-cierre_no_interes",
+        "source": "node-manejo_objeciones",
+        "target": "node-cierre_no_interes",
+        "sourceHandle": "prospecto-mantiene-su-objecion"
+      }
+    ],
+    "variables": {}
+  }
+}

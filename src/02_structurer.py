@@ -109,6 +109,28 @@ DOCUMENTO:
 Produce: {{"flow": [<lista de nodos>]}}
 """
 
+_REVIEWER_USR = """\
+Eres un Auditor de Grafos Conversacionales. Tu único trabajo es arreglar y completar el flujo generado por otra IA.
+
+DOCUMENTO ORIGINAL:
+---
+{raw_md}
+---
+
+FLUJO GENERADO (CON POSIBLES ERRORES):
+---
+{generated_flow}
+---
+
+INSTRUCCIONES DE AUDITORÍA:
+1. NODOS FANTASMA: Revisa minuciosamente cada "branch" y cada "next". Si apuntan a un "id" que NO existe en la lista de nodos principal, CREA ese nodo faltante basándote en el documento original.
+2. DESARROLLO INCOMPLETO: Si un camino se quedó a medias (por "pereza" de la IA anterior) y no llega hasta una resolución o una despedida, añade los nodos necesarios para terminar ese proceso según el manual.
+3. CONEXIÓN: Asegúrate de que el nodo "start" conecta correctamente con el menú principal.
+
+Devuelve ÚNICAMENTE el JSON corregido con la estructura estricta:
+{{"flow": [<lista de nodos correcta y completa>]}}
+"""
+
 _P2C_SYS = "Eres un experto en objeciones de venta conversacional B2B outbound. Output: JSON puro."
 _P2C_USR = """\
 Extrae TODAS las objeciones del siguiente guion (explicitas E IMPLICITAS).
@@ -250,7 +272,7 @@ def phase1_analyze(client, model, raw_md):
 
 def phase2a_identity(client, model, raw_md, analysis):
     user = _P2A_USR.format(raw_md=raw_md, analysis=json.dumps(analysis, ensure_ascii=False))
-    return _call_llm(client, model, _P2A_SYS, user, "phase2a")
+    return _call_llm(client, model, _P2A_SYS, user, "phase2c")
 
 def phase2b_flow(client, model, raw_md, analysis):
     user = _P2B_USR.format(raw_md=raw_md, analysis=json.dumps(analysis, ensure_ascii=False))
@@ -446,6 +468,29 @@ def run_structurer(raw_md_path, output_path, client, model=DEFAULT_MODEL, verbos
     if verbose:
         print("  Fase 2B: Extrayendo flujo principal...")
     flow = phase2b_flow(client, model, raw_md, analysis)
+
+    if verbose:
+        print("  Fase 2B: Auditoría de Calidad (buscando nodos perdidos)...")
+        
+    try:
+        reviewer_messages = [
+            {"role": "system", "content": "Eres un auditor estricto. Devuelve solo JSON válido."},
+            {"role": "user", "content": _REVIEWER_USR.format(
+                raw_md=raw_md, 
+                generated_flow=json.dumps(flow, ensure_ascii=False, indent=2)
+            )}
+        ]
+        
+        response_review = client.chat.completions.create(
+            model="gpt-4o",
+            response_format={"type": "json_object"},
+            temperature=0.1,
+            messages=reviewer_messages
+        )
+        
+        flow = json.loads(response_review.choices[0].message.content.strip())
+    except Exception as e:
+        print(f"    Error en Fase 2B (Auditoría omitida, usando flujo original): {e}")
 
     if verbose:
         print("  Fases 2A/2C/2D/2E: Extraccion en paralelo...")

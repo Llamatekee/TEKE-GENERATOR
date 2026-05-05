@@ -53,173 +53,187 @@
 ### [NODO-01] start - Inicio de la llamada
 
 **ID**: `start`
-**Objetivo**: Iniciar la conversación con el prospecto
+**Objetivo**: Presentarse y establecer el contexto de la llamada.
 
 **Script** (frases literales del agente):
   - "Hola, [Nombre]… soy Sofía, de LinkedUpSales. Te llamo muy breve porque hace poco hubo una conexión por LinkedIn con nuestro equipo."
-
-**Directivas**:
-  - Pausa después de la introducción inicial.
-
-**Branches (decision)**:
-  - Si: Prospecto responde positivamente o con interés -> `introduccion_servicios`
-    *(nota: El prospecto muestra interés o apertura a escuchar más.)*
-  - Si: Prospecto responde negativamente o con objeción -> `manejo_objeciones`
-    *(nota: El prospecto muestra resistencia o plantea una objeción.)*
-
-
-### [NODO-02] conversational - Introducción a los servicios
-
-**ID**: `introduccion_servicios`
-**Objetivo**: Presentar brevemente los servicios de LinkedUpSales
-
-**Script** (frases literales del agente):
   - "Nosotros trabajamos con empresas B2B que quieren conseguir mejores reuniones comerciales y cerrar más de esas oportunidades. No busco venderte nada ahora; quería entender si mejorar esa parte hoy les interesa revisarla o si no es prioridad."
 
 **Directivas**:
   - Esperar respuesta del prospecto.
 
-**Extracciones en este nodo**:
-  - `prospect_name` (string): Nombre del prospecto
-  - `company_name` (string): Nombre de la empresa del prospecto
-
-**Branches (decision)**:
-  - Si: Prospecto muestra interés en mejorar -> `preguntas_precalificacion`
-    *(nota: El prospecto está interesado en explorar mejoras.)*
-  - Si: Prospecto no muestra interés -> `cierre_no_interes`
-    *(nota: El prospecto no está interesado en mejorar actualmente.)*
+**Rama siguiente**: -> `modelo_de_venta`
 
 
-### [NODO-03] extractor - Preguntas de precalificación
+### [NODO-02] extractor - Pregunta sobre el modelo de venta
 
-**ID**: `preguntas_precalificacion`
-**Objetivo**: Recoger información clave sobre el prospecto
+**ID**: `modelo_de_venta`
+**Objetivo**: Determinar si el prospecto vende a empresas o a consumidores finales.
 
 **Script** (frases literales del agente):
   - "Para entender rápido si esto aplica: ¿ustedes venden principalmente a empresas o a consumidor final?"
+
+**Directivas**:
+  - Esperar respuesta y clasificar el modelo de venta.
+
+**Extracciones en este nodo**:
+  - `sales_model` (enum) (opciones: B2B, B2C): El modelo de venta del prospecto
+
+**Rama siguiente**: -> `canal_actual`
+
+
+### [NODO-03] extractor - Pregunta sobre el canal actual
+
+**ID**: `canal_actual`
+**Objetivo**: Identificar cómo el prospecto obtiene sus oportunidades comerciales.
+
+**Script** (frases literales del agente):
   - "Hoy, ¿las oportunidades comerciales les llegan más por referidos, inbound, pauta, equipo interno o prospección activa?"
+
+**Directivas**:
+  - Esperar respuesta y clasificar el canal actual.
+
+**Extracciones en este nodo**:
+  - `current_channel` (enum) (opciones: referidos, inbound, pauta, equipo interno, prospección activa): El canal actual por el cual el prospecto obtiene oportunidades comerciales
+
+**Rama siguiente**: -> `dolor_principal`
+
+
+### [NODO-04] extractor - Pregunta sobre el dolor principal
+
+**ID**: `dolor_principal`
+**Objetivo**: Identificar el principal reto del prospecto en su proceso de crecimiento.
+
+**Script** (frases literales del agente):
   - "Cuando piensan en crecer, ¿el reto está más en conseguir más reuniones, mejorar la calidad de esas reuniones o lograr que avancen a cierre?"
 
 **Directivas**:
-  - Hacer una pregunta a la vez y esperar respuesta antes de continuar.
+  - Esperar respuesta y clasificar el dolor principal.
 
 **Extracciones en este nodo**:
-  - `sales_model` (enum) (opciones: B2B, B2C): Modelo de venta del prospecto
-  - `current_channel` (enum) (opciones: referidos, inbound, pauta, equipo interno, prospección activa): Canal actual de obtención de oportunidades comerciales
-  - `main_challenge` (enum) (opciones: conseguir más reuniones, mejorar calidad de reuniones, lograr que avancen a cierre): Principal reto al pensar en crecer
-  - `commercial_capacity` (enum) (opciones: equipo comercial, fundador/equipo directivo): Capacidad comercial actual
-  - `priority_level` (enum) (opciones: alta, media, baja): Nivel de prioridad para mejorar el proceso comercial
+  - `main_pain_point` (enum) (opciones: conseguir más reuniones, mejorar la calidad de las reuniones, lograr que avancen a cierre): El principal reto del prospecto al pensar en crecer
 
-**Branches (decision)**:
-  - Si: Prospecto responde positivamente a dos o más preguntas -> `intento_agendar`
-    *(nota: El prospecto cumple con los criterios para agendar una reunión.)*
-  - Si: Prospecto no cumple con los criterios -> `cierre_no_interes`
-    *(nota: El prospecto no cumple con los criterios para agendar.)*
+**Rama siguiente**: -> `capacidad_comercial`
 
 
-### [NODO-04] conversational - Intento de agendar reunión
+### [NODO-05] extractor - Pregunta sobre la capacidad comercial
 
-**ID**: `intento_agendar`
-**Objetivo**: Proponer una reunión de revisión de crecimiento
+**ID**: `capacidad_comercial`
+**Objetivo**: Determinar si el prospecto tiene un equipo comercial para atender oportunidades.
 
 **Script** (frases literales del agente):
-  - "Por lo que me dices, sí vale la pena que lo revises con alguien del equipo. ¿Te parece si agendamos una breve reunión de 20 minutos para profundizar en esto?"
+  - "¿Hoy tienen equipo comercial que atienda esas oportunidades o lo maneja más el fundador/equipo directivo?"
 
 **Directivas**:
-  - Esperar confirmación del prospecto para agendar.
-
-**Branches (decision)**:
-  - Si: Prospecto acepta agendar -> `confirmacion_agenda`
-    *(nota: El prospecto acepta la propuesta de reunión.)*
-  - Si: Prospecto no acepta agendar -> `manejo_objeciones`
-    *(nota: El prospecto plantea objeciones o no está seguro.)*
-
-
-### [NODO-05] conversational_linear - Confirmación de agenda
-
-**ID**: `confirmacion_agenda`
-**Objetivo**: Confirmar los detalles de la reunión agendada
-
-**Script** (frases literales del agente):
-  - "Perfecto, entonces quedamos para [fecha y hora]. Te enviaré una invitación por correo para que lo tengas en tu calendario. Gracias por tu tiempo, [Nombre]."
-
-**Directivas**:
-  - Confirmar detalles y agradecer al prospecto.
-
-**Rama siguiente**: -> `end_call`
-
-
-### [NODO-06] conversational - Manejo de objeciones
-
-**ID**: `manejo_objeciones`
-**Objetivo**: Responder a objeciones comunes del prospecto
-
-**Script** (frases literales del agente):
-  - "Claro, entiendo. Pero para no mandarte un correo lleno de información que de pronto ni necesitas, mejor te hago dos preguntas rápidas y vemos si esto tiene sentido para ustedes."
-
-**Directivas**:
-  - Responder a la objeción y redirigir la conversación.
+  - Esperar respuesta y clasificar la capacidad comercial.
 
 **Extracciones en este nodo**:
-  - `objection_raised` (string): Objeción planteada por el prospecto
+  - `commercial_capacity` (enum) (opciones: equipo comercial, fundador/equipo directivo): Quién atiende las oportunidades comerciales en la empresa del prospecto
+
+**Rama siguiente**: -> `prioridad`
+
+
+### [NODO-06] extractor - Pregunta sobre la prioridad
+
+**ID**: `prioridad`
+**Objetivo**: Evaluar si mejorar el proceso comercial es una prioridad para el prospecto.
+
+**Script** (frases literales del agente):
+  - "¿Esto es algo que están buscando mejorar ahora o sería más para revisar adelante?"
+
+**Directivas**:
+  - Esperar respuesta y clasificar la prioridad.
+
+**Extracciones en este nodo**:
+  - `priority_level` (enum) (opciones: alta, media, baja): Nivel de prioridad que el prospecto da a mejorar su proceso comercial
+
+**Rama siguiente**: -> `decision_agendar`
+
+
+### [NODO-07] conversational - Decisión sobre agendar reunión
+
+**ID**: `decision_agendar`
+**Objetivo**: Decidir si se debe agendar una reunión basada en las respuestas del prospecto.
+
+**Script** (frases literales del agente):
+  - "Por lo que me dices, sí vale la pena que lo revises con alguien del equipo."
+
+**Directivas**:
+  - Evaluar si se cumplen al menos dos señales para agendar.
 
 **Branches (decision)**:
-  - Si: Prospecto reconsidera y muestra interés -> `preguntas_precalificacion`
-    *(nota: El prospecto reconsidera su posición inicial.)*
-  - Si: Prospecto mantiene su objeción -> `cierre_no_interes`
-    *(nota: El prospecto sigue sin mostrar interés.)*
+  - Si: Se cumplen al menos dos señales para agendar -> `agendar_reunion`
+    *(nota: Prospecto calificado para agendar reunión.)*
+  - Si: No se cumplen las señales para agendar -> `no_agendar`
+    *(nota: Prospecto no calificado para agendar reunión.)*
 
 
-### [NODO-07] end - Cierre sin interés
+### [NODO-08] conversational_linear - Agendar reunión
 
-**ID**: `cierre_no_interes`
-**Objetivo**: Cerrar la llamada de manera elegante si no hay interés
+**ID**: `agendar_reunion`
+**Objetivo**: Confirmar y agendar una reunión con el prospecto.
+
+**Script** (frases literales del agente):
+  - "Perfecto, entonces coordinemos una breve reunión de 20 minutos con nuestro equipo estratégico. ¿Qué día y hora te viene mejor?"
+
+**Directivas**:
+  - Confirmar detalles de la reunión y agendar.
+
+**Rama siguiente**: -> `end`
+
+
+### [NODO-09] conversational_linear - No agendar reunión
+
+**ID**: `no_agendar`
+**Objetivo**: Cerrar la conversación sin agendar una reunión.
 
 **Script** (frases literales del agente):
   - "Perfecto, lo entiendo. No te insisto. Si más adelante mejorar generación de reuniones o conversión comercial se vuelve prioridad, con gusto lo revisamos."
 
 **Directivas**:
-  - Cerrar la conversación de manera respetuosa.
+  - Cerrar la conversación de manera elegante.
+
+**Rama siguiente**: -> `end`
 
 
-### [NODO-08] end - Fin de la llamada
+### [NODO-10] end - Despedida
 
-**ID**: `end_call`
-**Objetivo**: Finalizar la llamada después de agendar
+**ID**: `end`
+**Objetivo**: Cerrar la llamada de manera profesional.
 
 **Script** (frases literales del agente):
-  - "Gracias nuevamente, [Nombre]. Que tengas un excelente día."
+  - "Gracias por tu tiempo, [Nombre]. Que tengas un excelente día."
 
 **Directivas**:
-  - Despedirse cordialmente.
+  - Finalizar la llamada.
 
 ---
 
 ## 5. OBJECIONES
 
 
-### [OBJ] No está interesado
+### [OBJ] No estoy interesado
 
 **ID**: `no_interes`
-**Alcance**: `fase_apertura` | **Es Global?**: No
-**Trigger**: No es prioridad
-**Keywords de deteccion**: `prior`, `inter`
-**Respuesta del agente**: Perfecto, lo entiendo. No te insisto. Si más adelante mejorar generación de reuniones o conversión comercial se vuelve prioridad, con gusto lo revisamos.
+**Alcance**: `global` | **Es Global?**: Si
+**Trigger**: No me interesa
+**Keywords de deteccion**: `inter`
+**Respuesta del agente**: Entiendo, no te preocupes. Si en algún momento mejorar la generación de reuniones o la conversión comercial se vuelve prioridad, con gusto lo revisamos.
 **Directivas**:
-  - No presionar si no es prioridad
-**Continuar en**: -> `cierre_no_interes`
+  - No insistir si no hay interés.
+**Continuar en**: -> `end`
 
 
 ### [OBJ] Mándame información
 
 **ID**: `manda_info`
-**Alcance**: `fase_cierre` | **Es Global?**: No
+**Alcance**: `global` | **Es Global?**: Si
 **Trigger**: Mándame información
 **Keywords de deteccion**: `manda`, `info`
 **Respuesta del agente**: Claro, entiendo. Pero para no mandarte un correo lleno de información que de pronto ni necesitas, mejor te hago dos preguntas rápidas y vemos si esto tiene sentido para ustedes.
 **Directivas**:
-  - Evitar enviar información sin calificar
-**Continuar en**: -> `preguntas_precalificacion`
+  - No aceptar inmediatamente enviar correo.
+**Continuar en**: -> `fase_preguntas`
 
 
 ### [OBJ] No tengo tiempo
@@ -228,34 +242,34 @@
 **Alcance**: `fase_apertura` | **Es Global?**: No
 **Trigger**: No tengo tiempo ahora
 **Keywords de deteccion**: `tiemp`
-**Respuesta del agente**: Te lo hago muy corto. Ayudamos a empresas B2B a generar mejores reuniones comerciales y convertir más de esas reuniones en oportunidades reales. ¿Eso vale la pena revisarlo en otro momento o no es prioridad?
+**Respuesta del agente**: Entiendo que estás ocupado. ¿Te parece si coordinamos un momento más conveniente para ti?
 **Directivas**:
-  - Ser breve y directo
-**Continuar en**: -> `cierre_no_interes`
+  - Ofrecer reprogramar la llamada.
+**Continuar en**: -> `agendar_reunion`
 
 
-### [OBJ] No es B2B
+### [OBJ] No es prioridad
 
-**ID**: `no_b2b`
+**ID**: `no_prioridad`
 **Alcance**: `fase_preguntas` | **Es Global?**: No
-**Trigger**: Vendemos a consumidor final
-**Keywords de deteccion**: `b2b`, `consu`
-**Respuesta del agente**: Entiendo, nuestro enfoque es más hacia empresas B2B. Si en algún momento cambian su modelo, con gusto lo revisamos.
+**Trigger**: No es prioridad para nosotros
+**Keywords de deteccion**: `prior`
+**Respuesta del agente**: Perfecto, lo entiendo. Si más adelante mejorar generación de reuniones o conversión comercial se vuelve prioridad, con gusto lo revisamos.
 **Directivas**:
-  - No agendar si no es B2B
-**Continuar en**: -> `cierre_no_interes`
+  - No insistir si no es prioridad.
+**Continuar en**: -> `end`
 
 
-### [OBJ] Ya tienen proveedor
+### [OBJ] Ya tengo proveedor
 
-**ID**: `ya_tienen_proveedor`
+**ID**: `ya_tengo_proveedor`
 **Alcance**: `fase_preguntas` | **Es Global?**: No
 **Trigger**: Ya trabajamos con alguien
-**Keywords de deteccion**: `prove`, `traba`
-**Respuesta del agente**: Entiendo, muchas empresas con las que trabajamos también tienen proveedores, pero a veces encuentran valor en revisar nuevas perspectivas. ¿Les interesaría explorar si hay algo que podamos mejorar juntos?
+**Keywords de deteccion**: `prove`
+**Respuesta del agente**: Entiendo, muchas empresas ya tienen proveedores. ¿Están completamente satisfechos con los resultados actuales?
 **Directivas**:
-  - Explorar interés en nuevas perspectivas
-**Continuar en**: -> `intento_agendar`
+  - Explorar si hay insatisfacción con el proveedor actual.
+**Continuar en**: -> `fase_preguntas`
 
 
 ### [OBJ] No soy el decisor
@@ -263,23 +277,23 @@
 **ID**: `no_decisor`
 **Alcance**: `fase_preguntas` | **Es Global?**: No
 **Trigger**: No soy la persona adecuada
-**Keywords de deteccion**: `decis`, `adecu`
-**Respuesta del agente**: Entiendo, ¿podrías indicarme quién sería la persona adecuada para revisar este tema?
+**Keywords de deteccion**: `decis`
+**Respuesta del agente**: Gracias por decírmelo. ¿Podrías indicarme quién sería la persona adecuada para hablar sobre esto?
 **Directivas**:
-  - Identificar al decisor correcto
-**Continuar en**: -> `end_call`
+  - Identificar al decisor correcto.
+**Continuar en**: -> `fase_preguntas`
 
 
-### [OBJ] No me contacten
+### [OBJ] Solo quiero información
 
-**ID**: `no_contacto`
-**Alcance**: `global` | **Es Global?**: Si
-**Trigger**: No quiero ser contactado
-**Keywords de deteccion**: `conta`, `quier`
-**Respuesta del agente**: Entendido. Lo dejamos registrado para no volver a contactarte por este medio. Gracias por decírmelo.
+**ID**: `solo_info`
+**Alcance**: `fase_cierre` | **Es Global?**: No
+**Trigger**: Solo quiero información
+**Keywords de deteccion**: `solo`, `info`
+**Respuesta del agente**: Entiendo que quieras más información. Lo mejor sería una conversación breve para asegurarnos de que sea relevante para ti.
 **Directivas**:
-  - Respetar solicitud de no contacto
-**Continuar en**: -> `end_call`
+  - Evitar enviar información sin contexto.
+**Continuar en**: -> `fase_preguntas`
 
 ---
 
@@ -293,14 +307,14 @@
 **Respuesta inline**: LinkedUpSales ayuda a empresas B2B a generar mejores reuniones comerciales y a mejorar la conversión de esas reuniones en oportunidades reales.
 
 
-### [FAQ] ¿Qué es la metodología C5?
+### [FAQ] ¿Cómo funciona la metodología C5?
 
-**ID**: `que_es_metodologia_c5`
-**Keywords**: `metodologia`, `c5`
-**Respuesta inline**: La metodología C5 es nuestro marco interno para analizar el proceso comercial, abarcando cliente correcto, conversación, cita, cierre y continuidad. Pero no te lo explico todo ahora; lo importante es entender dónde se les está rompiendo más el proceso.
+**ID**: `como_funciona_c5`
+**Keywords**: `c5`, `metodologia`
+**Respuesta inline**: Nosotros miramos el proceso completo: cliente correcto, conversación, cita, cierre y continuidad. Pero no te lo explico todo ahora; lo importante es entender dónde se les está rompiendo más el proceso.
 
 
-### [FAQ] ¿Cuánto dura la revisión de crecimiento?
+### [FAQ] ¿Cuánto dura la Revisión de Crecimiento B2B?
 
 **ID**: `cuanto_dura_la_revision`
 **Keywords**: `duracion`, `revision`
@@ -312,15 +326,23 @@
 
 **ID**: `cuanto_cuesta_el_servicio`
 **Keywords**: `precio`, `costo`
-**Respuesta inline**: No estoy aquí para venderte nada ahora. La idea es entender si mejorar la generación de reuniones y conversión es relevante para ustedes y, si es así, agendar una conversación con un asesor humano.
+**Respuesta inline**: No estoy aquí para venderte nada ahora. La idea es entender si mejorar esa parte hoy les interesa revisarla o si no es prioridad.
+**Redirige a reunion**: Si
+
+
+### [FAQ] ¿Quién atenderá la reunión?
+
+**ID**: `quien_atendera_la_reunion`
+**Keywords**: `reunion`, `equipo`
+**Respuesta inline**: La reunión será con alguien del equipo estratégico de LinkedUpSales.
 **Redirige a reunion**: Si
 
 ---
 
 ## 7. EXTRACCIONES POST-LLAMADA
 
-- `prospect_name` (string): Nombre del prospecto
-- `company_name` (string): Nombre de la empresa del prospecto
-- `interest_level` (enum) (opciones: bajo, medio, alto): Nivel de interés del prospecto en agendar una reunión
-- `appointment_confirmed` (boolean): Indica si se confirmó una cita con el prospecto
-- `objection_raised` (string): Objeción planteada por el prospecto durante la llamada
+- `prospect_name` (string): El nombre del prospecto
+- `company_name` (string): El nombre de la empresa del prospecto
+- `interest_level` (enum) (opciones: bajo, medio, alto): Nivel de interés del prospecto en agendar una revisión de crecimiento
+- `appointment_confirmed` (boolean): Indica si se confirmó una cita para la revisión de crecimiento
+- `objection_raised` (string): Cualquier objeción planteada por el prospecto durante la llamada

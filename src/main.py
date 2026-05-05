@@ -58,7 +58,7 @@ def main():
     structured_md_path = os.path.join(md_dir, f"{base_name}_structured.md")
     
     final_json_path = os.path.join(json_dir, f"{base_name}_workflow.json")
-    qa_json_path = os.path.join(json_dir, f"{base_name}_tests_scenarios.json")
+    qa_json_path = os.path.join(json_dir, f"{base_name}_tests.json")
     
     temp_1 = os.path.join(json_dir, "temp_1.json")
     temp_2 = os.path.join(json_dir, "temp_2.json")

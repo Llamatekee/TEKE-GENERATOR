@@ -78,19 +78,19 @@ Modela el FLUJO PRINCIPAL de la conversacion como nodos discretos.
 
 ANALISIS PREVIO: {analysis}
 
-REGLAS:
+REGLAS CRITICAS:
 1. Un nodo = un turno del agente donde habla y espera respuesta.
-2. Orden secuencial logico. Empieza siempre con un nodo "start".
-3. Cada punto de decision importante = nodo separado.
-4. Si el flujo es implicito, infiere los nodos naturales de la narrativa.
+2. EL NODO "start" ES ESTRICTAMENTE LINEAL. NUNCA le anadas "branches". Siempre debe avanzar usando "next" hacia el siguiente nodo.
+3. DESGLOSE DE EXTRACCIONES: NUNCA agrupes multiples preguntas de precalificacion o extraccion de datos en un solo nodo. Cada pregunta (ej. modelo de venta, canal, dolor, etc.) DEBE ser un nodo de tipo "extractor" independiente, conectados uno tras otro secuencialmente con "next".
+4. Cada punto de decision importante = nodo separado.
 5. Objeciones y FAQs NO van aqui, tienen su propia seccion.
 
 TIPOS:
-- start: unico nodo inicial
-- conversational: agente habla y espera respuesta con posibles branches
-- conversational_linear: agente habla y avanza automaticamente
-- extractor: recoge un dato especifico del prospecto
-- end: SOLO para despedidas finales donde la llamada termina (colgar). NO usar para nodos de agendado o cierre que aun tienen conversacion.
+- start: unico nodo inicial (Lineal, usar "next").
+- conversational: agente habla y espera respuesta con posibles branches.
+- conversational_linear: agente habla y avanza automaticamente sin evaluar.
+- extractor: recoge UN SOLO dato del prospecto (Lineal, usar "next").
+- end: SOLO para despedidas finales donde se cuelga.
 
 Por cada nodo:
 {{

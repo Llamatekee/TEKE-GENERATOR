@@ -80,17 +80,13 @@ ANALISIS PREVIO: {analysis}
 
 REGLAS CRITICAS:
 1. Un nodo = un turno del agente donde habla y espera respuesta.
-2. EL NODO "start" ES ESTRICTAMENTE LINEAL. NUNCA le anadas "branches". Siempre debe avanzar usando "next" hacia el siguiente nodo.
-3. DESGLOSE DE EXTRACCIONES: NUNCA agrupes multiples preguntas de precalificacion o extraccion de datos en un solo nodo. Cada pregunta (ej. modelo de venta, canal, dolor, etc.) DEBE ser un nodo de tipo "extractor" independiente, conectados uno tras otro secuencialmente con "next".
-4. Cada punto de decision importante = nodo separado.
-5. Objeciones y FAQs NO van aqui, tienen su propia seccion.
-
-TIPOS:
-- start: unico nodo inicial (Lineal, usar "next").
-- conversational: agente habla y espera respuesta con posibles branches.
-- conversational_linear: agente habla y avanza automaticamente sin evaluar.
-- extractor: recoge UN SOLO dato del prospecto (Lineal, usar "next").
-- end: SOLO para despedidas finales donde se cuelga.
+2. EL NODO "start" ES ESTRICTAMENTE LINEAL. NUNCA le anadas "branches". Siempre debe avanzar usando "next" apuntando al ID del siguiente nodo (normalmente el nodo distribuidor).
+3. NODO DISTRIBUIDOR OBLIGATORIO: Despues de "start", DEBES crear el nodo conversacional (ej. "detectar_intencion") que haga la primera gran pregunta y contenga los "branches" hacia todos los caminos posibles.
+4. NINGUN NODO HUERFANO: Todos los nodos deben estar conectados. El flujo debe ser un grafo continuo y rastreable desde "start" hasta los distintos finales. Ningun camino puede flotar sin conexion.
+5. EXHAUSTIVIDAD OBLIGATORIA (CERO PEREZA): Si en el nodo distribuidor creas 6 "branches", ES OBLIGATORIO crear y desarrollar los 6 nodos de destino. Mapea el arbol completo sin omitir nada.
+6. REFERENCIAS CRUZADAS EXACTAS: El valor que pongas en "next" DEBE ser exactamente el "id" del nodo destino. 
+7. FALLBACK DE RAMAS: Si el documento menciona una opcion pero no detalla el paso a paso, crea el "branch" y mapealo a un nodo donde el agente diga "Tomo nota para derivarlo al equipo", seguido de un nodo "end".
+8. Objeciones y FAQs NO van aqui, tienen su propia seccion.
 
 Por cada nodo:
 {{

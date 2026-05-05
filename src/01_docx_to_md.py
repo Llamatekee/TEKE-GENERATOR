@@ -1,20 +1,8 @@
-"""
-00_docx_to_md.py
-Convierte un .docx a Markdown en bruto.
-
-Uso:
-    python 00_docx_to_md.py <input.docx> [output.md]
-
-Dependencias:
-    pip install python-docx
-"""
-
 import sys
 import os
 import argparse
 from docx import Document
 from docx.oxml.ns import qn
-
 
 def runs_to_md(paragraph) -> str:
     parts = []
@@ -31,8 +19,11 @@ def runs_to_md(paragraph) -> str:
         parts.append(text)
     return "".join(parts)
 
-
 def heading_level(paragraph) -> int:
+    # ESCUDO: Si no hay estilo definido, no es un título
+    if not paragraph.style or not paragraph.style.name:
+        return 0
+        
     style_name = paragraph.style.name
     for word in style_name.split():
         if word.isdigit():
@@ -42,16 +33,17 @@ def heading_level(paragraph) -> int:
         return 1
     return 0
 
-
 def is_list_paragraph(paragraph) -> bool:
-    style_lower = paragraph.style.name.lower()
-    if "list" in style_lower or "lista" in style_lower or "bullet" in style_lower:
-        return True
+    # ESCUDO: Protegemos la lectura del estilo
+    if paragraph.style and paragraph.style.name:
+        style_lower = paragraph.style.name.lower()
+        if "list" in style_lower or "lista" in style_lower or "bullet" in style_lower:
+            return True
+            
     pPr = paragraph._element.find(qn("w:pPr"))
     if pPr is not None and pPr.find(qn("w:numPr")) is not None:
         return True
     return False
-
 
 def table_to_md(table) -> str:
     lines = []
@@ -61,7 +53,6 @@ def table_to_md(table) -> str:
         if i == 0:
             lines.append("| " + " | ".join(["---"] * len(cells)) + " |")
     return "\n".join(lines)
-
 
 def docx_to_md(docx_path: str) -> str:
     doc = Document(docx_path)
@@ -95,8 +86,8 @@ def docx_to_md(docx_path: str) -> str:
                 continue
 
             if is_list_paragraph(paragraph):
-                style_lower = paragraph.style.name.lower()
-                if "number" in style_lower or "número" in style_lower or "numerada" in style_lower:
+                style_name = paragraph.style.name.lower() if paragraph.style and paragraph.style.name else ""
+                if "number" in style_name or "número" in style_name or "numerada" in style_name:
                     output_lines.append(f"1. {text}")
                 else:
                     output_lines.append(f"- {text}")
@@ -105,32 +96,3 @@ def docx_to_md(docx_path: str) -> str:
             output_lines.append(text)
 
     return "\n".join(output_lines)
-
-
-def main():
-    parser = argparse.ArgumentParser(description="Convierte un .docx a Markdown en bruto.")
-    parser.add_argument("docx_path", help="Ruta al archivo .docx")
-    parser.add_argument("output_md", nargs="?", default=None, help="Ruta de salida .md")
-    parser.add_argument("--verbose", action="store_true", help="Activa el log detallado de procesos")
-    args = parser.parse_args()
-
-    if not os.path.exists(args.docx_path):
-        print(f"Error: no se encuentra el archivo '{args.docx_path}'")
-        sys.exit(1)
-
-    output_path = args.output_md or os.path.splitext(args.docx_path)[0] + "_raw.md"
-
-    if args.verbose:
-        print(f"Convirtiendo: {args.docx_path}")
-
-    md_content = docx_to_md(args.docx_path)
-
-    with open(output_path, "w", encoding="utf-8") as f:
-        f.write(md_content)
-
-    if args.verbose:
-        print(f"Guardado en: {output_path}")
-
-
-if __name__ == "__main__":
-    main()

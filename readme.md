@@ -48,7 +48,7 @@ python src/main.py files/docs/Guion_Comercial.docx
 | `--verbose`      | Booleano   | Activa el modo de registro detallado. Útil para depurar y ver la traza paso a paso de las llamadas al LLM y procesos internos. |
 
 
-## Ejemplos de Ejecución Avanzada
+## Ejemplos de ejecución avanzada
 
 **Generar el agente y 5 escenarios de prueba:**
 
@@ -68,3 +68,7 @@ python src/main.py docs/raw_script.md --json_dir ./produccion/agentes --output_n
 python src/main.py files/docs/Guion.docx --verbose
 ```
 
+**Ejecución con varios docs**
+```bash
+python src/main.py files/docs/guion1.docx files/docs/faqs.docx files/docs/objections.docx
+```

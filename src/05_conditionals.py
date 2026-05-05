@@ -1,7 +1,8 @@
 import json
 
-def add_conditionals(md_content, input_json_path, output_json_path, client):
-    print("Ejecutando Paso 3: Procesamiento y anclaje de objeciones y FAQs...")
+def add_conditionals(md_content, input_json_path, output_json_path, client, verbose=False):
+    if verbose:
+        print("[Paso 5] Procesamiento y anclaje de objeciones y FAQs...")
     
     system_prompt = """
     Eres un analizador de datos. Lee el Markdown y extrae SOLO las secciones "5. OBJECIONES" y "6. FAQs".

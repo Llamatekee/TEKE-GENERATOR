@@ -111,6 +111,7 @@ def main():
     parser = argparse.ArgumentParser(description="Convierte un .docx a Markdown en bruto.")
     parser.add_argument("docx_path", help="Ruta al archivo .docx")
     parser.add_argument("output_md", nargs="?", default=None, help="Ruta de salida .md")
+    parser.add_argument("--verbose", action="store_true", help="Activa el log detallado de procesos")
     args = parser.parse_args()
 
     if not os.path.exists(args.docx_path):
@@ -119,13 +120,16 @@ def main():
 
     output_path = args.output_md or os.path.splitext(args.docx_path)[0] + "_raw.md"
 
-    print(f"Convirtiendo: {args.docx_path}")
+    if args.verbose:
+        print(f"Convirtiendo: {args.docx_path}")
+
     md_content = docx_to_md(args.docx_path)
 
     with open(output_path, "w", encoding="utf-8") as f:
         f.write(md_content)
 
-    print(f"Guardado en: {output_path}")
+    if args.verbose:
+        print(f"Guardado en: {output_path}")
 
 
 if __name__ == "__main__":

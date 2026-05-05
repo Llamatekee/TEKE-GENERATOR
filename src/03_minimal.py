@@ -1,8 +1,10 @@
 import json
 from openai import OpenAI
 
-def generate_minimal_json(md_content, output_json_path, client):
-    print("[Paso 1] Generando JSON base, config global y postCallExtractions inferidas...")
+def generate_minimal_json(md_content, output_json_path, client, verbose=False):
+    
+    if verbose:
+        print("[Paso 3] Generando JSON base, config global y postCallExtractions inferidas...")
     
     system_prompt = """
     Eres un procesador de datos estricto. Lee el Markdown y rellena los huecos en la plantilla JSON.

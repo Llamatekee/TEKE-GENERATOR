@@ -430,7 +430,7 @@ def phase3_assemble(source_file, analysis, identity, flow, objections, faqs, ext
 
     return "\n".join(parts) + "\n"
 
-def run_structurer(raw_md_path, output_path, client, model=DEFAULT_MODEL):
+def run_structurer(raw_md_path, output_path, client, model=DEFAULT_MODEL, verbose=False):
     if not os.path.exists(raw_md_path):
         print(f"Error: No se encuentra {raw_md_path}")
         return False
@@ -439,15 +439,20 @@ def run_structurer(raw_md_path, output_path, client, model=DEFAULT_MODEL):
         raw_md = f.read()
 
     source_name = os.path.basename(raw_md_path)
-    print(f"Procesando estructuracion de: {source_name}")
+    
+    if verbose:
+        print(f"Procesando estructuracion de: {source_name}")
 
-    print("  Fase 1: Analisis del documento...")
+    if verbose:
+        print("  Fase 1: Analisis del documento...")
     analysis = phase1_analyze(client, model, raw_md)
 
-    print("  Fase 2B: Extrayendo flujo principal...")
+    if verbose:
+        print("  Fase 2B: Extrayendo flujo principal...")
     flow = phase2b_flow(client, model, raw_md, analysis)
 
-    print("  Fases 2A/2C/2D/2E: Extraccion en paralelo...")
+    if verbose:
+        print("  Fases 2A/2C/2D/2E: Extraccion en paralelo...")
     results = {}
     tasks = {
         "identity":    lambda: phase2a_identity(client, model, raw_md, analysis),
@@ -462,12 +467,14 @@ def run_structurer(raw_md_path, output_path, client, model=DEFAULT_MODEL):
             name = futures[future]
             try:
                 results[name] = future.result()
-                print(f"    Completado: {name}")
+                if verbose:
+                    print(f"    Completado: {name}")
             except Exception as exc:
                 print(f"    Error en {name}: {exc}")
                 results[name] = {}
 
-    print("  Fase 3: Ensamblando MD estructurado...")
+    if verbose:
+        print("  Fase 3: Ensamblando MD estructurado...")
     structured_md = phase3_assemble(
         source_file=source_name,
         analysis=analysis,
@@ -482,13 +489,15 @@ def run_structurer(raw_md_path, output_path, client, model=DEFAULT_MODEL):
     with open(output_path, 'w', encoding='utf-8') as f:
         f.write(structured_md)
         
-    print(f"Exito. MD Estructurado guardado en: {output_path}")
+    if verbose:
+        print(f"Exito. MD Estructurado guardado en: {output_path}")
     return True
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser(description="Estructurador de MD bruto a semantico")
     parser.add_argument("raw_md_path", help="Ruta al MD en bruto")
     parser.add_argument("output_path", help="Ruta de salida del MD estructurado")
+    parser.add_argument("--verbose", action="store_true", help="Activa el log detallado de procesos")
     args = parser.parse_args()
 
     load_dotenv()
@@ -498,4 +507,4 @@ if __name__ == "__main__":
         sys.exit(1)
 
     client = OpenAI(api_key=api_key)
-    run_structurer(args.raw_md_path, args.output_path, client)
+    run_structurer(args.raw_md_path, args.output_path, client, verbose=args.verbose)

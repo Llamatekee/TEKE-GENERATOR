@@ -1,5 +1,6 @@
 {
     "metadata": {
+        "generated_by": "pipeline",
         "source": "LinkedUpSales_raw.md",
         "type": "implicit_prompt"
     },
@@ -18,10 +19,6 @@
         },
         {
             "description": "Después de una objeción fuerte, haz una micro-pausa antes de responder",
-            "penalty": false
-        },
-        {
-            "description": "Si el prospecto habla largo, no respondas instantáneamente. Haz una pausa breve y resume",
             "penalty": false
         },
         {
@@ -45,53 +42,59 @@
             "penalty": false
         },
         {
-            "description": "No sonar robótica",
+            "description": "No estoy interesado",
             "penalty": true
         },
         {
-            "description": "No sonar ansiosa",
+            "description": "Mándame información",
             "penalty": true
         },
         {
-            "description": "No sonar demasiado vendedora",
-            "penalty": true
-        },
-        {
-            "description": "No sonar como call center",
-            "penalty": true
-        },
-        {
-            "description": "No sonar como SDR junior",
-            "penalty": true
-        },
-        {
-            "description": "No sonar como locutora",
-            "penalty": true
-        },
-        {
-            "description": "No sonar como una IA leyendo un guion",
-            "penalty": true
-        },
-        {
-            "description": "No sonar como alguien desesperada por agendar",
-            "penalty": true
-        },
-        {
-            "description": "No sonar como alguien que está fingiendo demasiada cercanía",
+            "description": "No me contacten más",
             "penalty": true
         }
     ],
     "scoring_template": {
-        "prospect_name": "string",
-        "company_name": "string",
-        "sales_model": "enum",
-        "current_channel": "enum",
-        "main_challenge": "enum",
-        "commercial_capacity": "enum",
-        "priority_level": "enum",
-        "interest_level": "enum",
-        "appointment_confirmed": "boolean",
-        "objection_raised": "string"
+        "start": {
+            "id": "start",
+            "objective": "Iniciar la conversación con el prospecto de manera estratégica y natural."
+        },
+        "precalificacion_modelo_venta": {
+            "id": "precalificacion_modelo_venta",
+            "objective": "Determinar si el prospecto vende principalmente a empresas o a consumidor final."
+        },
+        "precalificacion_canal_actual": {
+            "id": "precalificacion_canal_actual",
+            "objective": "Identificar cómo el prospecto obtiene sus oportunidades comerciales."
+        },
+        "precalificacion_dolor_principal": {
+            "id": "precalificacion_dolor_principal",
+            "objective": "Identificar el principal reto del prospecto en su proceso de crecimiento."
+        },
+        "precalificacion_capacidad_comercial": {
+            "id": "precalificacion_capacidad_comercial",
+            "objective": "Determinar si el prospecto tiene un equipo comercial para atender oportunidades."
+        },
+        "precalificacion_prioridad": {
+            "id": "precalificacion_prioridad",
+            "objective": "Evaluar si el prospecto está interesado en mejorar su proceso comercial ahora."
+        },
+        "decision_agendar": {
+            "id": "decision_agendar",
+            "objective": "Decidir si se debe agendar una reunión con base en las respuestas del prospecto."
+        },
+        "agendar_reunion": {
+            "id": "agendar_reunion",
+            "objective": "Proponer una reunión con el equipo estratégico de LinkedUpSales."
+        },
+        "no_agendar": {
+            "id": "no_agendar",
+            "objective": "Cerrar la conversación de manera elegante si no se agenda reunión."
+        },
+        "end": {
+            "id": "end",
+            "objective": "Finalizar la llamada de manera profesional."
+        }
     },
     "scenarios": [
         {
@@ -100,428 +103,473 @@
                 {
                     "name": "Inicio de la llamada",
                     "nodeClass": "start",
-                    "description": "El agente inicia la llamada con una breve presentación.",
-                    "script": [
-                        "Hola, soy [Nombre del Agente] de LinkedUpSales. ¿Cómo está hoy?"
-                    ],
-                    "branches": []
-                },
-                {
-                    "name": "Introducción a los servicios",
-                    "nodeClass": "ask_and_branch",
-                    "description": "El agente introduce los servicios de LinkedUpSales.",
-                    "script": [
-                        "Me gustaría hablarle sobre cómo podemos ayudar a mejorar sus procesos de ventas."
-                    ],
-                    "branches": [
-                        "Prospecto muestra interés en mejorar",
-                        "Prospecto no muestra interés"
-                    ]
-                },
-                {
-                    "name": "Preguntas de precalificación",
-                    "nodeClass": "ask_and_branch",
-                    "description": "El agente realiza preguntas para determinar si el prospecto califica.",
-                    "script": [
-                        "¿Actualmente utiliza alguna herramienta de gestión de ventas?",
-                        "¿Está buscando mejorar sus resultados de ventas?"
-                    ],
-                    "branches": [
-                        "Prospecto responde positivamente a dos o más preguntas",
-                        "Prospecto no cumple con los criterios"
-                    ]
-                },
-                {
-                    "name": "Intento de agendar reunión",
-                    "nodeClass": "ask_and_branch",
-                    "description": "El agente intenta agendar una reunión para una revisión más detallada.",
-                    "script": [
-                        "¿Le gustaría agendar una reunión para discutir esto más a fondo?"
-                    ],
-                    "branches": [
-                        "Prospecto acepta agendar",
-                        "Prospecto no acepta agendar"
-                    ]
-                },
-                {
-                    "name": "Confirmación de agenda",
-                    "nodeClass": "ask_and_branch",
-                    "description": "El agente confirma los detalles de la reunión agendada.",
-                    "script": [
-                        "Perfecto, le enviaré una invitación de calendario para nuestra reunión."
-                    ],
-                    "branches": [
-                        "Continuar"
-                    ]
-                },
-                {
-                    "name": "Manejo de objeciones",
-                    "nodeClass": "ask_and_branch",
-                    "description": "El agente maneja cualquier objeción que el prospecto pueda tener.",
-                    "script": [
-                        "Entiendo su preocupación, permítame explicarle cómo podemos abordar eso."
-                    ],
-                    "branches": [
-                        "Prospecto reconsidera y muestra interés",
-                        "Prospecto mantiene su objeción"
-                    ]
-                },
-                {
-                    "name": "Cierre sin interés",
-                    "nodeClass": "ask_and_branch",
-                    "description": "El agente cierra la llamada si el prospecto no está interesado.",
-                    "script": [
-                        "Gracias por su tiempo, si cambia de opinión, no dude en contactarnos."
-                    ],
-                    "branches": []
-                },
-                {
-                    "name": "Fin de la llamada",
-                    "nodeClass": "ask_and_branch",
-                    "description": "El agente finaliza la llamada.",
-                    "script": [
-                        "Gracias por su tiempo, que tenga un buen día."
-                    ],
-                    "branches": []
-                }
-            ],
-            "agent_name": "Juan Pérez",
-            "agent_objective": "Agendar reuniones para discutir los servicios de LinkedUpSales",
-            "id": "SC-01"
-        },
-        {
-            "scenario_id": "SC-02",
-            "scenario_name": "Prospecto interesado pero indeciso",
-            "nodes": [
-                {
-                    "name": "Inicio de la llamada",
-                    "nodeClass": "start",
-                    "description": "El agente inicia la llamada con una introducción amigable.",
-                    "script": [],
-                    "branches": []
-                },
-                {
-                    "name": "Introducción a los servicios",
-                    "nodeClass": "ask_and_branch",
-                    "description": "El agente presenta brevemente los servicios ofrecidos.",
-                    "script": [],
-                    "branches": [
-                        "Prospecto muestra interés en mejorar"
-                    ]
-                },
-                {
-                    "name": "Preguntas de precalificación",
-                    "nodeClass": "ask_and_branch",
-                    "description": "El agente realiza preguntas para evaluar el interés y la necesidad del prospecto.",
-                    "script": [],
-                    "branches": [
-                        "Prospecto responde positivamente a dos o más preguntas"
-                    ]
-                },
-                {
-                    "name": "Intento de agendar reunión",
-                    "nodeClass": "ask_and_branch",
-                    "description": "El agente intenta agendar una reunión para discutir más detalles.",
-                    "script": [],
-                    "branches": [
-                        "Prospecto no acepta agendar"
-                    ]
-                },
-                {
-                    "name": "Manejo de objeciones",
-                    "nodeClass": "ask_and_branch",
-                    "description": "El agente aborda las objeciones del prospecto para intentar cambiar su decisión.",
-                    "script": [],
-                    "branches": [
-                        "Prospecto reconsidera y muestra interés"
-                    ]
-                },
-                {
-                    "name": "Confirmación de agenda",
-                    "nodeClass": "ask_and_branch",
-                    "description": "El agente confirma la reunión agendada.",
-                    "script": [],
-                    "branches": [
-                        "Continuar"
-                    ]
-                },
-                {
-                    "name": "Fin de la llamada",
-                    "nodeClass": "ask_and_branch",
-                    "description": "El agente cierra la llamada de manera cordial.",
-                    "script": [],
-                    "branches": []
-                }
-            ],
-            "agent_name": "Agente de Ventas",
-            "agent_objective": "Convencer al prospecto de agendar una reunión para discutir los servicios en detalle.",
-            "id": "SC-02"
-        },
-        {
-            "scenario_id": "SC-03",
-            "scenario_name": "Prospecto interesado pero indeciso",
-            "nodes": [
-                {
-                    "name": "Inicio de la llamada",
-                    "nodeClass": "start",
-                    "description": "El agente inicia la llamada con una introducción amigable.",
+                    "description": "El agente inicia la llamada con una breve introducción.",
                     "script": [
                         "Hola, soy [nombre del agente] de LinkedUpSales. ¿Cómo estás hoy?"
                     ],
                     "branches": []
                 },
                 {
-                    "name": "Introducción a los servicios",
-                    "nodeClass": "ask_and_branch",
-                    "description": "El agente presenta brevemente los servicios de LinkedUpSales.",
+                    "name": "Pregunta sobre modelo de venta",
+                    "nodeClass": "extractor",
+                    "description": "El agente pregunta sobre el modelo de venta actual del cliente.",
                     "script": [
-                        "Me gustaría hablarte sobre cómo podemos ayudar a mejorar tus ventas."
+                        "¿Podrías contarme un poco sobre tu modelo de venta actual?"
+                    ],
+                    "branches": []
+                },
+                {
+                    "name": "Pregunta sobre canal actual",
+                    "nodeClass": "extractor",
+                    "description": "El agente indaga sobre los canales de venta que utiliza el cliente.",
+                    "script": [
+                        "¿Qué canales de venta estás utilizando actualmente?"
+                    ],
+                    "branches": []
+                },
+                {
+                    "name": "Pregunta sobre dolor principal",
+                    "nodeClass": "extractor",
+                    "description": "El agente pregunta sobre los principales desafíos que enfrenta el cliente.",
+                    "script": [
+                        "¿Cuál dirías que es tu mayor desafío en ventas en este momento?"
+                    ],
+                    "branches": []
+                },
+                {
+                    "name": "Decisión de agendar",
+                    "nodeClass": "ask_and_branch",
+                    "description": "El agente decide si hay suficientes señales para agendar una reunión.",
+                    "script": [
+                        "Basado en lo que me has contado, creo que podríamos ayudarte. ¿Te gustaría agendar una reunión para discutir más a fondo?"
                     ],
                     "branches": [
-                        "Prospecto muestra interés en mejorar",
-                        "Prospecto no muestra interés"
+                        "Se cumplen al menos dos señales para agendar",
+                        "No se cumplen las señales para agendar"
                     ]
                 },
                 {
-                    "name": "Preguntas de precalificación",
+                    "name": "Agendar reunión",
                     "nodeClass": "ask_and_branch",
-                    "description": "El agente realiza preguntas para determinar si el prospecto califica.",
+                    "description": "El agente agenda una reunión con el cliente.",
                     "script": [
-                        "¿Actualmente estás buscando mejorar tus procesos de ventas?"
-                    ],
-                    "branches": [
-                        "Prospecto responde positivamente a dos o más preguntas",
-                        "Prospecto no cumple con los criterios"
-                    ]
-                },
-                {
-                    "name": "Intento de agendar reunión",
-                    "nodeClass": "ask_and_branch",
-                    "description": "El agente intenta agendar una reunión para una revisión más detallada.",
-                    "script": [
-                        "¿Te gustaría agendar una reunión para discutir esto más a fondo?"
-                    ],
-                    "branches": [
-                        "Prospecto acepta agendar",
-                        "Prospecto no acepta agendar"
-                    ]
-                },
-                {
-                    "name": "Manejo de objeciones",
-                    "nodeClass": "ask_and_branch",
-                    "description": "El prospecto tiene dudas o objeciones que el agente intenta resolver.",
-                    "script": [
-                        "Entiendo tus preocupaciones, permíteme aclarar cualquier duda que tengas."
-                    ],
-                    "branches": [
-                        "Prospecto reconsidera y muestra interés",
-                        "Prospecto mantiene su objeción"
-                    ]
-                },
-                {
-                    "name": "Confirmación de agenda",
-                    "nodeClass": "ask_and_branch",
-                    "description": "El agente confirma la reunión agendada.",
-                    "script": [
-                        "Perfecto, te enviaré una invitación para la reunión."
+                        "Perfecto, ¿qué día y hora te vendría bien para la reunión?"
                     ],
                     "branches": [
                         "Continuar"
                     ]
                 },
                 {
-                    "name": "Fin de la llamada",
+                    "name": "No agendar reunión",
+                    "nodeClass": "ask_and_branch",
+                    "description": "El agente no agenda una reunión y ofrece enviar más información.",
+                    "script": [
+                        "Entiendo, ¿te gustaría que te enviara más información por correo?"
+                    ],
+                    "branches": [
+                        "Continuar"
+                    ]
+                },
+                {
+                    "name": "Cierre de la llamada",
                     "nodeClass": "ask_and_branch",
                     "description": "El agente cierra la llamada de manera cordial.",
                     "script": [
-                        "Gracias por tu tiempo, espero hablar contigo pronto."
+                        "Gracias por tu tiempo, [nombre del cliente]. Espero que podamos hablar pronto. ¡Que tengas un gran día!"
                     ],
                     "branches": []
                 }
             ],
-            "agent_name": "Juan Pérez",
-            "agent_objective": "Agendar una reunión para discutir los servicios de LinkedUpSales",
+            "agent_name": "LinkedUpSales Agent",
+            "agent_objective": "Identificar oportunidades de mejora en el proceso de ventas del cliente y agendar una reunión para discutir soluciones.",
+            "id": "SC-01"
+        },
+        {
+            "scenario_id": "SC-02",
+            "scenario_name": "Evaluación de Interés y Capacidad",
+            "nodes": [
+                {
+                    "name": "Inicio de la llamada",
+                    "nodeClass": "start",
+                    "description": "El agente inicia la llamada con una breve introducción.",
+                    "script": [
+                        "Hola, soy [nombre del agente] de LinkedUpSales. ¿Cómo estás hoy?"
+                    ],
+                    "branches": []
+                },
+                {
+                    "name": "Pregunta sobre modelo de venta",
+                    "nodeClass": "extractor",
+                    "description": "El agente pregunta sobre el modelo de venta actual del cliente.",
+                    "script": [
+                        "¿Podrías contarme un poco sobre tu modelo de venta actual?"
+                    ],
+                    "branches": []
+                },
+                {
+                    "name": "Pregunta sobre canal actual",
+                    "nodeClass": "extractor",
+                    "description": "El agente indaga sobre los canales de venta que utiliza el cliente.",
+                    "script": [
+                        "¿Qué canales de venta estás utilizando actualmente?"
+                    ],
+                    "branches": []
+                },
+                {
+                    "name": "Pregunta sobre dolor principal",
+                    "nodeClass": "extractor",
+                    "description": "El agente pregunta sobre los principales desafíos que enfrenta el cliente.",
+                    "script": [
+                        "¿Cuál dirías que es tu mayor desafío en ventas en este momento?"
+                    ],
+                    "branches": []
+                },
+                {
+                    "name": "Decisión de agendar",
+                    "nodeClass": "ask_and_branch",
+                    "description": "El agente evalúa si hay suficientes señales para agendar una reunión.",
+                    "script": [
+                        "Basado en lo que hemos discutido, creo que podríamos ayudarte. ¿Te gustaría agendar una reunión para profundizar más?"
+                    ],
+                    "branches": [
+                        "Se cumplen al menos dos señales para agendar",
+                        "No se cumplen las señales para agendar"
+                    ]
+                },
+                {
+                    "name": "Agendar reunión",
+                    "nodeClass": "ask_and_branch",
+                    "description": "El agente procede a agendar una reunión si hay interés.",
+                    "script": [
+                        "Genial, ¿qué día y hora te vendría bien para la reunión?"
+                    ],
+                    "branches": [
+                        "Continuar"
+                    ]
+                },
+                {
+                    "name": "No agendar reunión",
+                    "nodeClass": "ask_and_branch",
+                    "description": "El agente no agenda una reunión si no hay interés suficiente.",
+                    "script": [
+                        "Entiendo, si en el futuro cambias de opinión, no dudes en contactarnos."
+                    ],
+                    "branches": [
+                        "Continuar"
+                    ]
+                },
+                {
+                    "name": "Cierre de la llamada",
+                    "nodeClass": "ask_and_branch",
+                    "description": "El agente cierra la llamada de manera cordial.",
+                    "script": [
+                        "Gracias por tu tiempo, que tengas un excelente día."
+                    ],
+                    "branches": []
+                }
+            ],
+            "agent_name": "LinkedUpSales Agent",
+            "agent_objective": "Evaluar el interés y la capacidad del cliente para agendar una reunión de seguimiento.",
+            "id": "SC-02"
+        },
+        {
+            "scenario_id": "SC-03",
+            "scenario_name": "Evaluación de Interés y Priorización",
+            "nodes": [
+                {
+                    "name": "Inicio de la llamada",
+                    "nodeClass": "start",
+                    "description": "El agente inicia la llamada con una breve introducción.",
+                    "script": [
+                        "Hola, soy [nombre del agente] de LinkedUpSales. ¿Cómo estás hoy?"
+                    ],
+                    "branches": []
+                },
+                {
+                    "name": "Pregunta sobre modelo de venta",
+                    "nodeClass": "extractor",
+                    "description": "El agente pregunta sobre el modelo de venta actual del cliente.",
+                    "script": [
+                        "¿Podrías contarme un poco sobre tu modelo de venta actual?"
+                    ],
+                    "branches": []
+                },
+                {
+                    "name": "Pregunta sobre canal actual",
+                    "nodeClass": "extractor",
+                    "description": "El agente indaga sobre los canales de venta que utiliza el cliente.",
+                    "script": [
+                        "¿Qué canales de venta estás utilizando actualmente?"
+                    ],
+                    "branches": []
+                },
+                {
+                    "name": "Pregunta sobre dolor principal",
+                    "nodeClass": "extractor",
+                    "description": "El agente pregunta sobre los principales desafíos que enfrenta el cliente.",
+                    "script": [
+                        "¿Cuál dirías que es tu mayor desafío en ventas en este momento?"
+                    ],
+                    "branches": []
+                },
+                {
+                    "name": "Pregunta sobre prioridad",
+                    "nodeClass": "extractor",
+                    "description": "El agente evalúa la prioridad del cliente para resolver sus desafíos.",
+                    "script": [
+                        "¿Qué tan prioritario es para ti resolver este desafío?"
+                    ],
+                    "branches": []
+                },
+                {
+                    "name": "Decisión de agendar",
+                    "nodeClass": "ask_and_branch",
+                    "description": "El agente decide si hay suficientes señales para agendar una reunión.",
+                    "script": [
+                        "Basado en lo que hemos discutido, creo que podríamos ayudarte. ¿Te gustaría agendar una reunión para hablar más a fondo?"
+                    ],
+                    "branches": [
+                        "Se cumplen al menos dos señales para agendar",
+                        "No se cumplen las señales para agendar"
+                    ]
+                },
+                {
+                    "name": "Agendar reunión",
+                    "nodeClass": "ask_and_branch",
+                    "description": "El agente procede a agendar una reunión si hay interés.",
+                    "script": [
+                        "Genial, ¿qué día y hora te vendría bien para la reunión?"
+                    ],
+                    "branches": [
+                        "Continuar"
+                    ]
+                },
+                {
+                    "name": "No agendar reunión",
+                    "nodeClass": "ask_and_branch",
+                    "description": "El agente no agenda una reunión si no hay suficiente interés.",
+                    "script": [
+                        "Entiendo, si cambias de opinión, no dudes en contactarnos. ¿Hay algo más en lo que pueda ayudarte hoy?"
+                    ],
+                    "branches": [
+                        "Continuar"
+                    ]
+                },
+                {
+                    "name": "Cierre de la llamada",
+                    "nodeClass": "ask_and_branch",
+                    "description": "El agente cierra la llamada de manera cordial.",
+                    "script": [
+                        "Gracias por tu tiempo, que tengas un excelente día."
+                    ],
+                    "branches": []
+                }
+            ],
+            "agent_name": "LinkedUpSales Agent",
+            "agent_objective": "Evaluar el interés del cliente y priorizar la agendación de una reunión para discutir soluciones de ventas.",
             "id": "SC-03"
         },
         {
             "scenario_id": "SC-04",
-            "scenario_name": "Prospecto interesado pero indeciso",
-            "workflow": [
+            "scenario_name": "Evaluación de Interés y Priorización",
+            "nodes": [
                 {
                     "name": "Inicio de la llamada",
                     "nodeClass": "start",
-                    "description": "El agente inicia la llamada con una introducción amigable.",
+                    "description": "El agente inicia la llamada con una breve introducción.",
                     "script": [
-                        "Hola, soy [nombre del agente] de LinkedUpSales. ¿Cómo está hoy?"
+                        "Hola, soy [nombre del agente] de LinkedUpSales. ¿Cómo estás hoy?"
                     ],
                     "branches": []
                 },
                 {
-                    "name": "Introducción a los servicios",
-                    "nodeClass": "ask_and_branch",
-                    "description": "El agente presenta brevemente los servicios de LinkedUpSales.",
+                    "name": "Pregunta sobre modelo de venta",
+                    "nodeClass": "extractor",
+                    "description": "El agente pregunta sobre el modelo de venta actual del cliente.",
                     "script": [
-                        "Me gustaría hablarle sobre cómo podemos ayudar a mejorar su negocio."
+                        "¿Podrías contarme un poco sobre tu modelo de venta actual?"
+                    ],
+                    "branches": []
+                },
+                {
+                    "name": "Pregunta sobre canal actual",
+                    "nodeClass": "extractor",
+                    "description": "El agente indaga sobre los canales de venta que utiliza el cliente.",
+                    "script": [
+                        "¿Qué canales de venta estás utilizando actualmente?"
+                    ],
+                    "branches": []
+                },
+                {
+                    "name": "Pregunta sobre dolor principal",
+                    "nodeClass": "extractor",
+                    "description": "El agente pregunta sobre los principales desafíos que enfrenta el cliente.",
+                    "script": [
+                        "¿Cuál dirías que es tu mayor desafío en ventas en este momento?"
+                    ],
+                    "branches": []
+                },
+                {
+                    "name": "Pregunta sobre prioridad",
+                    "nodeClass": "extractor",
+                    "description": "El agente evalúa la prioridad del cliente para resolver sus desafíos.",
+                    "script": [
+                        "¿Qué tan prioritario es para ti resolver este desafío?"
+                    ],
+                    "branches": []
+                },
+                {
+                    "name": "Decisión de agendar",
+                    "nodeClass": "ask_and_branch",
+                    "description": "El agente decide si hay suficientes señales para agendar una reunión.",
+                    "script": [
+                        "Basado en lo que hemos discutido, creo que podríamos ayudarte. ¿Te gustaría agendar una reunión para hablar más a fondo?"
                     ],
                     "branches": [
-                        "Prospecto muestra interés en mejorar"
+                        "Se cumplen al menos dos señales para agendar",
+                        "No se cumplen las señales para agendar"
                     ]
                 },
                 {
-                    "name": "Preguntas de precalificación",
+                    "name": "Agendar reunión",
                     "nodeClass": "ask_and_branch",
-                    "description": "El agente realiza preguntas para determinar si el prospecto califica.",
+                    "description": "El agente procede a agendar una reunión si hay interés.",
                     "script": [
-                        "¿Está buscando mejorar sus procesos de ventas?",
-                        "¿Tiene experiencia previa con servicios B2B?"
-                    ],
-                    "branches": [
-                        "Prospecto responde positivamente a dos o más preguntas"
-                    ]
-                },
-                {
-                    "name": "Intento de agendar reunión",
-                    "nodeClass": "ask_and_branch",
-                    "description": "El agente intenta agendar una reunión para discutir más detalles.",
-                    "script": [
-                        "¿Podemos agendar una reunión para discutir cómo podemos ayudarle?"
-                    ],
-                    "branches": [
-                        "Prospecto no acepta agendar"
-                    ]
-                },
-                {
-                    "name": "Manejo de objeciones",
-                    "nodeClass": "ask_and_branch",
-                    "description": "El agente maneja las objeciones del prospecto.",
-                    "script": [
-                        "Entiendo que pueda tener dudas, ¿hay algo específico que le preocupe?"
-                    ],
-                    "branches": [
-                        "Prospecto reconsidera y muestra interés"
-                    ]
-                },
-                {
-                    "name": "Intento de agendar reunión",
-                    "nodeClass": "ask_and_branch",
-                    "description": "El agente intenta nuevamente agendar una reunión.",
-                    "script": [
-                        "Dado su interés, ¿podemos agendar una reunión para la próxima semana?"
-                    ],
-                    "branches": [
-                        "Prospecto acepta agendar"
-                    ]
-                },
-                {
-                    "name": "Confirmación de agenda",
-                    "nodeClass": "ask_and_branch",
-                    "description": "El agente confirma la reunión agendada.",
-                    "script": [
-                        "Perfecto, le enviaré una invitación por correo electrónico."
+                        "Genial, ¿qué día y hora te vendría bien para la reunión?"
                     ],
                     "branches": [
                         "Continuar"
                     ]
                 },
                 {
-                    "name": "Fin de la llamada",
+                    "name": "No agendar reunión",
+                    "nodeClass": "ask_and_branch",
+                    "description": "El agente no agenda una reunión si no hay suficiente interés.",
+                    "script": [
+                        "Entiendo, si en el futuro decides que es una prioridad, estaré encantado de ayudarte."
+                    ],
+                    "branches": [
+                        "Continuar"
+                    ]
+                },
+                {
+                    "name": "Cierre de la llamada",
                     "nodeClass": "ask_and_branch",
                     "description": "El agente cierra la llamada de manera cordial.",
                     "script": [
-                        "Gracias por su tiempo, espero con interés nuestra reunión."
+                        "Gracias por tu tiempo, [nombre del cliente]. Espero que tengamos la oportunidad de trabajar juntos pronto. ¡Que tengas un gran día!"
                     ],
                     "branches": []
                 }
             ],
-            "agent_name": "Juan Pérez",
-            "agent_objective": "Agendar una reunión con el prospecto para discutir los servicios de LinkedUpSales.",
+            "agent_name": "LinkedUpSales Agent",
+            "agent_objective": "Evaluar el interés del cliente y priorizar la agendación de una reunión para discutir soluciones de ventas.",
             "id": "SC-04"
         },
         {
             "scenario_id": "SC-05",
-            "scenario_name": "Prospecto interesado pero indeciso",
-            "workflow": [
+            "scenario_name": "Cliente interesado pero indeciso",
+            "nodes": [
                 {
                     "name": "Inicio de la llamada",
                     "nodeClass": "start",
-                    "description": "El agente inicia la llamada con una introducción amigable.",
+                    "description": "El agente inicia la llamada con una breve introducción.",
                     "script": [
-                        "Hola, soy [nombre del agente] de LinkedUpSales. ¿Cómo está hoy?"
+                        "Hola, soy [nombre del agente] de LinkedUpSales. ¿Cómo estás hoy?"
                     ],
                     "branches": []
                 },
                 {
-                    "name": "Introducción a los servicios",
-                    "nodeClass": "ask_and_branch",
-                    "description": "El agente presenta brevemente los servicios de LinkedUpSales.",
+                    "name": "Pregunta sobre modelo de venta",
+                    "nodeClass": "extractor",
+                    "description": "El agente pregunta sobre el modelo de venta actual del cliente.",
                     "script": [
-                        "Me gustaría hablarle sobre cómo podemos ayudar a mejorar su negocio."
+                        "¿Podrías contarme un poco sobre tu modelo de venta actual?"
+                    ],
+                    "branches": []
+                },
+                {
+                    "name": "Pregunta sobre canal actual",
+                    "nodeClass": "extractor",
+                    "description": "El agente indaga sobre los canales de venta que utiliza el cliente.",
+                    "script": [
+                        "¿Qué canales de venta estás utilizando actualmente?"
+                    ],
+                    "branches": []
+                },
+                {
+                    "name": "Pregunta sobre dolor principal",
+                    "nodeClass": "extractor",
+                    "description": "El agente pregunta sobre los principales desafíos que enfrenta el cliente.",
+                    "script": [
+                        "¿Cuál dirías que es tu mayor desafío en ventas en este momento?"
+                    ],
+                    "branches": []
+                },
+                {
+                    "name": "Pregunta sobre capacidad comercial",
+                    "nodeClass": "extractor",
+                    "description": "El agente pregunta sobre la capacidad comercial del cliente.",
+                    "script": [
+                        "¿Cómo describirías tu capacidad comercial actual?"
+                    ],
+                    "branches": []
+                },
+                {
+                    "name": "Pregunta sobre prioridad",
+                    "nodeClass": "extractor",
+                    "description": "El agente pregunta sobre la prioridad de resolver los desafíos actuales.",
+                    "script": [
+                        "¿Qué tan prioritario es para ti resolver estos desafíos?"
+                    ],
+                    "branches": []
+                },
+                {
+                    "name": "Decisión de agendar",
+                    "nodeClass": "ask_and_branch",
+                    "description": "El agente evalúa si se cumplen las señales para agendar una reunión.",
+                    "script": [
+                        "Basado en lo que hemos discutido, creo que podríamos ayudarte. ¿Te gustaría agendar una reunión para profundizar más?"
                     ],
                     "branches": [
-                        "Prospecto muestra interés en mejorar",
-                        "Prospecto no muestra interés"
+                        "Se cumplen al menos dos señales para agendar",
+                        "No se cumplen las señales para agendar"
                     ]
                 },
                 {
-                    "name": "Preguntas de precalificación",
+                    "name": "Agendar reunión",
                     "nodeClass": "ask_and_branch",
-                    "description": "El agente realiza preguntas para determinar si el prospecto califica.",
+                    "description": "El cliente acepta agendar una reunión.",
                     "script": [
-                        "¿Está buscando mejorar sus procesos de ventas?",
-                        "¿Tiene experiencia previa con servicios B2B?"
-                    ],
-                    "branches": [
-                        "Prospecto responde positivamente a dos o más preguntas",
-                        "Prospecto no cumple con los criterios"
-                    ]
-                },
-                {
-                    "name": "Intento de agendar reunión",
-                    "nodeClass": "ask_and_branch",
-                    "description": "El agente intenta agendar una reunión para una revisión más detallada.",
-                    "script": [
-                        "¿Le gustaría agendar una reunión para discutir esto más a fondo?"
-                    ],
-                    "branches": [
-                        "Prospecto acepta agendar",
-                        "Prospecto no acepta agendar"
-                    ]
-                },
-                {
-                    "name": "Manejo de objeciones",
-                    "nodeClass": "ask_and_branch",
-                    "description": "El prospecto tiene dudas, el agente maneja objeciones.",
-                    "script": [
-                        "Entiendo sus preocupaciones, permítame explicarle cómo podemos abordar eso."
-                    ],
-                    "branches": [
-                        "Prospecto reconsidera y muestra interés",
-                        "Prospecto mantiene su objeción"
-                    ]
-                },
-                {
-                    "name": "Confirmación de agenda",
-                    "nodeClass": "ask_and_branch",
-                    "description": "El agente confirma la reunión agendada.",
-                    "script": [
-                        "Perfecto, le enviaré una invitación de calendario para nuestra reunión."
+                        "Genial, ¿qué día y hora te viene mejor para la reunión?"
                     ],
                     "branches": [
                         "Continuar"
                     ]
                 },
                 {
-                    "name": "Fin de la llamada",
+                    "name": "No agendar reunión",
+                    "nodeClass": "ask_and_branch",
+                    "description": "El cliente decide no agendar una reunión en este momento.",
+                    "script": [
+                        "Entiendo, ¿hay algo más en lo que pueda ayudarte hoy?"
+                    ],
+                    "branches": [
+                        "Continuar"
+                    ]
+                },
+                {
+                    "name": "Cierre de la llamada",
                     "nodeClass": "ask_and_branch",
                     "description": "El agente cierra la llamada de manera cordial.",
                     "script": [
-                        "Gracias por su tiempo, espero hablar con usted pronto."
+                        "Gracias por tu tiempo, [nombre del cliente]. Espero que podamos hablar pronto. ¡Que tengas un gran día!"
                     ],
                     "branches": []
                 }
             ],
-            "agent_name": "Juan Pérez",
-            "agent_objective": "Agendar una reunión para discutir los servicios de LinkedUpSales con el prospecto.",
+            "agent_name": "LinkedUpSales Agent",
+            "agent_objective": "Identificar las necesidades del cliente y agendar una reunión para discutir soluciones.",
             "id": "SC-05"
         }
     ]

@@ -1,7 +1,8 @@
 import json
 
-def build_workflow_nodes(md_content, base_json_path, output_json_path, client):
-    print("Ejecutando Paso 2: Construccion de nodos y calculo de conexiones...")
+def build_workflow_nodes(md_content, base_json_path, output_json_path, client, verbose=False):
+    if verbose:
+        print("[Paso 4] Construccion de nodos y calculo de conexiones...")
     
     system_prompt = """
     Eres un analizador de flujos. Extrae TODOS los nodos del Markdown a este JSON estricto:

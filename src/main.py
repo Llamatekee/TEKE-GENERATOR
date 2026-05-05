@@ -31,7 +31,8 @@ def main():
     parser.add_argument("--md_dir", help="Directorio personalizado para los archivos Markdown")
     parser.add_argument("--json_dir", help="Directorio personalizado para los archivos JSON")
     parser.add_argument("--output_name", help="Nombre base personalizado para los archivos de salida")
-    
+    parser.add_argument("--verbose", action="store_true", help="Activa el log detallado de procesos")
+
     args = parser.parse_args()
 
     input_path = os.path.abspath(args.input_file)
@@ -70,38 +71,45 @@ def main():
     try:
         # PASO 1: DOCX a MD
         if input_path.lower().endswith('.docx'):
-            print("[Paso 1] Convirtiendo DOCX a Markdown en bruto...")
+            if args.verbose:
+                print("[Paso 1] Convirtiendo DOCX a Markdown en bruto...")
             raw_content = docx_to_md.docx_to_md(input_path)
             with open(raw_md_path, 'w', encoding='utf-8') as f:
                 f.write(raw_content)
             current_raw_md = raw_md_path
         else:
-            print("[Paso 1] Omitido (el input ya es Markdown)")
+            if args.verbose:
+                print("[Paso 1] Omitido (el input ya es Markdown)")
             current_raw_md = input_path
 
         # PASO 2: Estructurador
-        print("[Paso 2] Estructurando el documento...")
-        structurer.run_structurer(current_raw_md, structured_md_path, client)
+        if args.verbose:
+            print("[Paso 2] Estructurando el documento...")
+        structurer.run_structurer(current_raw_md, structured_md_path, client, verbose=args.verbose)
 
         with open(structured_md_path, 'r', encoding='utf-8') as f:
             structured_md_content = f.read()
 
         # PASO 3: JSON Minimal
-        print("[Paso 3] Generando config global y extracciones...")
-        minimal.generate_minimal_json(structured_md_content, temp_1, client)
+        if args.verbose:
+            print("[Paso 3] Generando config global y extracciones...")
+        minimal.generate_minimal_json(structured_md_content, temp_1, client, verbose=args.verbose)
 
         # PASO 4: Workflow
-        print("[Paso 4] Construyendo flujo conversacional...")
-        workflow.build_workflow_nodes(structured_md_content, temp_1, temp_2, client)
+        if args.verbose:
+            print("[Paso 4] Construyendo flujo conversacional...")
+        workflow.build_workflow_nodes(structured_md_content, temp_1, temp_2, client, verbose=args.verbose)
 
         # PASO 5: Condicionales
-        print("[Paso 5] Inyectando objeciones y FAQs...")
-        conditionals.add_conditionals(structured_md_content, temp_2, final_json_path, client)
+        if args.verbose:
+            print("[Paso 5] Inyectando objeciones y FAQs...")
+        conditionals.add_conditionals(structured_md_content, temp_2, final_json_path, client, verbose=args.verbose)
 
         # PASO 6: Tests
         if args.tests is not None:
-            print(f"[Paso 6] Construyendo {args.tests} escenarios de QA...")
-            tests_gen.generate_tests(structured_md_path, final_json_path, qa_json_path, args.tests, client)
+            if args.verbose:
+                print(f"[Paso 6] Construyendo {args.tests} escenarios de QA...")
+            tests_gen.generate_tests(structured_md_path, final_json_path, qa_json_path, args.tests, client, verbose=args.verbose)
 
         # Limpieza de temporales
         for t in [temp_1, temp_2]:

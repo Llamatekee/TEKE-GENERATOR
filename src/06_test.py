@@ -183,8 +183,9 @@ def generate_synthetic_scenario(client, wf_context, existing_scenarios, scenario
 
     return last_json
 
-def generate_tests(md_path, workflow_path, output_path, total_tests, client):
-    print("[Paso 4] Generando escenarios de QA...")
+def generate_tests(md_path, workflow_path, output_path, total_tests, client, verbose=False):
+    if verbose:
+        print("[Paso 6] Generando escenarios de QA...")
     
     with open(workflow_path, "r", encoding="utf-8") as f:
         workflow_data = json.load(f)

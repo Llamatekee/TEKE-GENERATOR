@@ -1,0 +1,808 @@
+{
+    "metadata": {
+        "Nombre": "Olivia",
+        "Empresa": "LunayWanda",
+        "Objetivo": "El agente gestiona de forma autónoma las consultas y transacciones habituales de los clientes de LunayWanda, sin necesidad de intervención del equipo.",
+        "Identidad percibida": "El asistente de LunayWanda que gestiona consultas y transacciones de manera autónoma.",
+        "Estilo de voz": "Cercano, natural, ágil. Tuteamos al cliente. Sin formalidades innecesarias.",
+        "Guardrails": [
+            "No confirmar una reserva sin verificar el pago.",
+            "No gestionar reservas del mismo día después de las 20:30."
+        ]
+    },
+    "global_criteria": [
+        {
+            "description": "Utilizar el nombre del cliente siempre que sea posible.",
+            "penalty": false
+        },
+        {
+            "description": "Ofrecer productos adicionales antes de enviar el link de pago.",
+            "penalty": false
+        },
+        {
+            "description": "Escalar al equipo si el cliente pide hablar con una persona explícitamente.",
+            "penalty": true
+        },
+        {
+            "description": "Escalar al equipo si la incidencia no tiene respuesta estándar en el manual.",
+            "penalty": true
+        },
+        {
+            "description": "Escalar al equipo si se detecta frustración elevada o urgencia crítica.",
+            "penalty": true
+        }
+    ],
+    "scoring_template": {
+        "structured_script": true,
+        "source": "Manual de Atención al cliente LunayWanda - Tolvia_raw.md",
+        "type": "structured_script"
+    },
+    "scenarios": [
+        {
+            "scenario_id": "SC-01",
+            "nodes": [
+                {
+                    "name": "Inicio de la conversación",
+                    "nodeClass": "start",
+                    "description": "El cliente inicia la conversación para obtener información sobre las tartas.",
+                    "script": [],
+                    "branches": []
+                },
+                {
+                    "name": "Detección de intención",
+                    "nodeClass": "ask_and_branch",
+                    "description": "El sistema detecta la intención del cliente.",
+                    "script": [],
+                    "branches": [
+                        "pregunta_frecuente",
+                        "reserva_mismo_dia",
+                        "encargo_otro_dia",
+                        "modificacion_pedido",
+                        "cambio_franja_envio",
+                        "seguimiento_envio",
+                        "incidencia"
+                    ]
+                },
+                {
+                    "name": "¿Tenéis tarta de queso de Tiramisú?",
+                    "nodeClass": "action",
+                    "description": "El cliente pregunta si hay tarta de queso de Tiramisú.",
+                    "script": [],
+                    "branches": []
+                },
+                {
+                    "name": "Responder pregunta frecuente",
+                    "nodeClass": "extractor",
+                    "description": "El sistema responde a la pregunta frecuente sobre la disponibilidad de la tarta de Tiramisú.",
+                    "script": [],
+                    "branches": []
+                },
+                {
+                    "name": "¿Cómo puedo reservar una tarta?",
+                    "nodeClass": "action",
+                    "description": "El cliente pregunta cómo puede reservar una tarta.",
+                    "script": [],
+                    "branches": []
+                },
+                {
+                    "name": "Gestionar reserva para el mismo día",
+                    "nodeClass": "ask_and_branch",
+                    "description": "El sistema gestiona la reserva para el mismo día.",
+                    "script": [],
+                    "branches": [
+                        "disponibilidad",
+                        "sin_disponibilidad"
+                    ]
+                },
+                {
+                    "name": "Confirmar reserva para el mismo día",
+                    "nodeClass": "extractor",
+                    "description": "El sistema confirma la reserva para el mismo día.",
+                    "script": [],
+                    "branches": []
+                },
+                {
+                    "name": "Finalizar reserva para el mismo día",
+                    "nodeClass": "ask_and_branch",
+                    "description": "El sistema finaliza el proceso de reserva para el mismo día.",
+                    "script": [],
+                    "branches": [
+                        "Continuar"
+                    ]
+                },
+                {
+                    "name": "Fin de la conversación",
+                    "nodeClass": "ask_and_branch",
+                    "description": "El sistema finaliza la conversación después de completar la reserva.",
+                    "script": [],
+                    "branches": []
+                }
+            ],
+            "agent_name": "Asistente de Reservas de Tartas",
+            "agent_objective": "Ayudar a los clientes a obtener información sobre las tartas y gestionar reservas de manera eficiente.",
+            "id": "SC-01"
+        },
+        {
+            "scenario_id": "SC-02",
+            "scenario_name": "Reserva y Modificación de Pedido",
+            "description": "Este escenario cubre el proceso de reserva de una tarta para el mismo día y la modificación del pedido.",
+            "workflow": {
+                "nodes": [
+                    {
+                        "name": "Inicio de la conversación",
+                        "nodeClass": "start",
+                        "description": "El cliente inicia la conversación para realizar una reserva.",
+                        "script": [],
+                        "branches": []
+                    },
+                    {
+                        "name": "Detección de intención",
+                        "nodeClass": "ask_and_branch",
+                        "description": "El sistema detecta que el cliente quiere hacer una reserva para el mismo día.",
+                        "script": [],
+                        "branches": [
+                            "reserva_mismo_dia"
+                        ]
+                    },
+                    {
+                        "name": "Gestionar reserva para el mismo día",
+                        "nodeClass": "ask_and_branch",
+                        "description": "El sistema verifica la disponibilidad para la reserva solicitada.",
+                        "script": [],
+                        "branches": [
+                            "disponibilidad",
+                            "sin_disponibilidad"
+                        ]
+                    },
+                    {
+                        "name": "Confirmar reserva para el mismo día",
+                        "nodeClass": "extractor",
+                        "description": "El sistema confirma la reserva si hay disponibilidad.",
+                        "script": [],
+                        "branches": []
+                    },
+                    {
+                        "name": "Finalizar reserva para el mismo día",
+                        "nodeClass": "ask_and_branch",
+                        "description": "El sistema pregunta si el cliente desea continuar con otra gestión.",
+                        "script": [],
+                        "branches": [
+                            "Continuar"
+                        ]
+                    },
+                    {
+                        "name": "Gestionar modificación de pedido",
+                        "nodeClass": "extractor",
+                        "description": "El cliente decide modificar su pedido existente.",
+                        "script": [],
+                        "branches": []
+                    },
+                    {
+                        "name": "Finalizar modificación de pedido",
+                        "nodeClass": "ask_and_branch",
+                        "description": "El sistema finaliza la modificación del pedido y pregunta si el cliente necesita algo más.",
+                        "script": [],
+                        "branches": [
+                            "Continuar"
+                        ]
+                    },
+                    {
+                        "name": "Fin de la conversación",
+                        "nodeClass": "ask_and_branch",
+                        "description": "El cliente no tiene más solicitudes y la conversación termina.",
+                        "script": [],
+                        "branches": []
+                    }
+                ],
+                "agent_name": "Asistente de Reservas",
+                "agent_objective": "Ayudar a los clientes a realizar y modificar reservas de tartas de manera eficiente."
+            },
+            "id": "SC-02"
+        },
+        {
+            "scenario_id": "SC-03",
+            "scenario_name": "Reserva y Modificación de Pedido",
+            "description": "Este escenario simula una interacción donde un cliente desea realizar una reserva para el mismo día y posteriormente decide modificar su pedido.",
+            "workflow": {
+                "nodes": [
+                    {
+                        "name": "Inicio de la conversación",
+                        "nodeClass": "start",
+                        "description": "El cliente inicia la conversación para realizar una reserva.",
+                        "script": [],
+                        "branches": []
+                    },
+                    {
+                        "name": "Detección de intención",
+                        "nodeClass": "ask_and_branch",
+                        "description": "El sistema detecta que el cliente quiere hacer una reserva para el mismo día.",
+                        "script": [],
+                        "branches": [
+                            "reserva_mismo_dia"
+                        ]
+                    },
+                    {
+                        "name": "Gestionar reserva para el mismo día",
+                        "nodeClass": "ask_and_branch",
+                        "description": "El sistema verifica la disponibilidad para la reserva solicitada.",
+                        "script": [],
+                        "branches": [
+                            "disponibilidad"
+                        ]
+                    },
+                    {
+                        "name": "Confirmar reserva para el mismo día",
+                        "nodeClass": "extractor",
+                        "description": "El sistema confirma la reserva con el cliente.",
+                        "script": [],
+                        "branches": []
+                    },
+                    {
+                        "name": "Finalizar reserva para el mismo día",
+                        "nodeClass": "ask_and_branch",
+                        "description": "El sistema pregunta si el cliente desea continuar con otra gestión.",
+                        "script": [],
+                        "branches": [
+                            "Continuar"
+                        ]
+                    },
+                    {
+                        "name": "Detección de intención",
+                        "nodeClass": "ask_and_branch",
+                        "description": "El cliente decide modificar su pedido.",
+                        "script": [],
+                        "branches": [
+                            "modificacion_pedido"
+                        ]
+                    },
+                    {
+                        "name": "Gestionar modificación de pedido",
+                        "nodeClass": "extractor",
+                        "description": "El sistema gestiona la modificación del pedido según las nuevas instrucciones del cliente.",
+                        "script": [],
+                        "branches": []
+                    },
+                    {
+                        "name": "Finalizar modificación de pedido",
+                        "nodeClass": "ask_and_branch",
+                        "description": "El sistema confirma la modificación y pregunta si el cliente desea realizar otra gestión.",
+                        "script": [],
+                        "branches": [
+                            "Continuar"
+                        ]
+                    },
+                    {
+                        "name": "Fin de la conversación",
+                        "nodeClass": "ask_and_branch",
+                        "description": "El cliente no tiene más gestiones que realizar y la conversación finaliza.",
+                        "script": [],
+                        "branches": []
+                    }
+                ],
+                "agent_name": "Asistente de Reservas",
+                "agent_objective": "Ayudar a los clientes a realizar y modificar reservas de manera eficiente."
+            },
+            "id": "SC-03"
+        },
+        {
+            "scenario_id": "SC-04",
+            "scenario_name": "Reserva y Modificación de Pedido",
+            "description": "Este escenario simula una interacción donde el cliente desea realizar una reserva para el mismo día y posteriormente decide modificar el pedido.",
+            "workflow": {
+                "nodes": [
+                    {
+                        "name": "Inicio de la conversación",
+                        "nodeClass": "start",
+                        "description": "El cliente inicia la conversación para realizar una reserva.",
+                        "script": [],
+                        "branches": []
+                    },
+                    {
+                        "name": "Detección de intención",
+                        "nodeClass": "ask_and_branch",
+                        "description": "El sistema detecta que el cliente quiere hacer una reserva para el mismo día.",
+                        "script": [],
+                        "branches": [
+                            "reserva_mismo_dia"
+                        ]
+                    },
+                    {
+                        "name": "Gestionar reserva para el mismo día",
+                        "nodeClass": "ask_and_branch",
+                        "description": "El sistema verifica la disponibilidad para la reserva solicitada.",
+                        "script": [],
+                        "branches": [
+                            "disponibilidad"
+                        ]
+                    },
+                    {
+                        "name": "Confirmar reserva para el mismo día",
+                        "nodeClass": "extractor",
+                        "description": "El sistema confirma la reserva para el mismo día.",
+                        "script": [],
+                        "branches": []
+                    },
+                    {
+                        "name": "Finalizar reserva para el mismo día",
+                        "nodeClass": "ask_and_branch",
+                        "description": "El sistema pregunta si el cliente desea continuar con otra gestión.",
+                        "script": [],
+                        "branches": [
+                            "Continuar"
+                        ]
+                    },
+                    {
+                        "name": "Detección de intención",
+                        "nodeClass": "ask_and_branch",
+                        "description": "El cliente decide modificar su pedido.",
+                        "script": [],
+                        "branches": [
+                            "modificacion_pedido"
+                        ]
+                    },
+                    {
+                        "name": "Gestionar modificación de pedido",
+                        "nodeClass": "extractor",
+                        "description": "El sistema gestiona la modificación del pedido según las nuevas instrucciones del cliente.",
+                        "script": [],
+                        "branches": []
+                    },
+                    {
+                        "name": "Finalizar modificación de pedido",
+                        "nodeClass": "ask_and_branch",
+                        "description": "El sistema confirma la modificación y pregunta si el cliente necesita algo más.",
+                        "script": [],
+                        "branches": [
+                            "Continuar"
+                        ]
+                    },
+                    {
+                        "name": "Fin de la conversación",
+                        "nodeClass": "ask_and_branch",
+                        "description": "El cliente no requiere más acciones y la conversación finaliza.",
+                        "script": [],
+                        "branches": []
+                    }
+                ],
+                "agent_name": "Asistente de Reservas",
+                "agent_objective": "Ayudar al cliente a realizar y modificar reservas de manera eficiente."
+            },
+            "id": "SC-04"
+        },
+        {
+            "scenario_id": "SC-05",
+            "scenario_name": "Reserva y Modificación de Pedido",
+            "description": "Este escenario simula una interacción donde un cliente desea realizar una reserva para el mismo día y posteriormente decide modificar su pedido.",
+            "workflow": {
+                "nodes": [
+                    {
+                        "name": "Inicio de la conversación",
+                        "nodeClass": "start",
+                        "description": "El cliente inicia la conversación para realizar una reserva.",
+                        "script": [],
+                        "branches": []
+                    },
+                    {
+                        "name": "Detección de intención",
+                        "nodeClass": "ask_and_branch",
+                        "description": "El sistema detecta que el cliente quiere hacer una reserva para el mismo día.",
+                        "script": [],
+                        "branches": [
+                            "reserva_mismo_dia"
+                        ]
+                    },
+                    {
+                        "name": "Gestionar reserva para el mismo día",
+                        "nodeClass": "ask_and_branch",
+                        "description": "El sistema verifica la disponibilidad para la reserva solicitada.",
+                        "script": [],
+                        "branches": [
+                            "disponibilidad"
+                        ]
+                    },
+                    {
+                        "name": "Confirmar reserva para el mismo día",
+                        "nodeClass": "extractor",
+                        "description": "El sistema confirma la reserva con el cliente.",
+                        "script": [],
+                        "branches": []
+                    },
+                    {
+                        "name": "Finalizar reserva para el mismo día",
+                        "nodeClass": "ask_and_branch",
+                        "description": "El cliente decide continuar con la modificación del pedido.",
+                        "script": [],
+                        "branches": [
+                            "Continuar"
+                        ]
+                    },
+                    {
+                        "name": "Gestionar modificación de pedido",
+                        "nodeClass": "extractor",
+                        "description": "El cliente solicita modificar el tipo de tarta en su pedido.",
+                        "script": [],
+                        "branches": []
+                    },
+                    {
+                        "name": "Finalizar modificación de pedido",
+                        "nodeClass": "ask_and_branch",
+                        "description": "El sistema confirma la modificación del pedido.",
+                        "script": [],
+                        "branches": [
+                            "Continuar"
+                        ]
+                    },
+                    {
+                        "name": "Fin de la conversación",
+                        "nodeClass": "ask_and_branch",
+                        "description": "El cliente ha completado su interacción y la conversación finaliza.",
+                        "script": [],
+                        "branches": []
+                    }
+                ],
+                "agent_name": "Asistente de Reservas",
+                "agent_objective": "Ayudar a los clientes a realizar y modificar reservas de tartas de manera eficiente."
+            },
+            "id": "SC-05"
+        },
+        {
+            "scenario_id": "SC-06",
+            "scenario_name": "Reserva y Modificación de Pedido",
+            "description": "Este escenario cubre el flujo de un cliente que desea realizar una reserva para el mismo día y posteriormente modificar su pedido.",
+            "workflow": {
+                "nodes": [
+                    {
+                        "name": "Inicio de la conversación",
+                        "nodeClass": "start",
+                        "description": "El cliente inicia la conversación para realizar una reserva.",
+                        "script": [],
+                        "branches": []
+                    },
+                    {
+                        "name": "Detección de intención",
+                        "nodeClass": "ask_and_branch",
+                        "description": "El sistema detecta que el cliente quiere hacer una reserva para el mismo día.",
+                        "script": [],
+                        "branches": [
+                            "reserva_mismo_dia"
+                        ]
+                    },
+                    {
+                        "name": "Gestionar reserva para el mismo día",
+                        "nodeClass": "ask_and_branch",
+                        "description": "El sistema verifica la disponibilidad para la reserva solicitada.",
+                        "script": [],
+                        "branches": [
+                            "disponibilidad"
+                        ]
+                    },
+                    {
+                        "name": "Confirmar reserva para el mismo día",
+                        "nodeClass": "extractor",
+                        "description": "El sistema confirma la reserva con el cliente.",
+                        "script": [],
+                        "branches": []
+                    },
+                    {
+                        "name": "Finalizar reserva para el mismo día",
+                        "nodeClass": "ask_and_branch",
+                        "description": "El sistema pregunta si el cliente desea continuar con otra gestión.",
+                        "script": [],
+                        "branches": [
+                            "Continuar"
+                        ]
+                    },
+                    {
+                        "name": "Detección de intención",
+                        "nodeClass": "ask_and_branch",
+                        "description": "El cliente ahora desea modificar su pedido.",
+                        "script": [],
+                        "branches": [
+                            "modificacion_pedido"
+                        ]
+                    },
+                    {
+                        "name": "Gestionar modificación de pedido",
+                        "nodeClass": "extractor",
+                        "description": "El sistema gestiona la modificación del pedido según las necesidades del cliente.",
+                        "script": [],
+                        "branches": []
+                    },
+                    {
+                        "name": "Finalizar modificación de pedido",
+                        "nodeClass": "ask_and_branch",
+                        "description": "El sistema confirma la modificación y pregunta si el cliente desea realizar otra gestión.",
+                        "script": [],
+                        "branches": [
+                            "Continuar"
+                        ]
+                    },
+                    {
+                        "name": "Fin de la conversación",
+                        "nodeClass": "ask_and_branch",
+                        "description": "El cliente no tiene más gestiones que realizar y la conversación finaliza.",
+                        "script": [],
+                        "branches": []
+                    }
+                ],
+                "agent_name": "Asistente de Reservas",
+                "agent_objective": "Ayudar a los clientes a realizar y modificar reservas de manera eficiente."
+            },
+            "id": "SC-06"
+        },
+        {
+            "scenario_id": "SC-07",
+            "scenario_name": "Reserva y Modificación de Pedido",
+            "nodes": [
+                {
+                    "name": "Inicio de la conversación",
+                    "nodeClass": "start",
+                    "description": "El cliente inicia la conversación para realizar una reserva.",
+                    "script": [],
+                    "branches": []
+                },
+                {
+                    "name": "Detección de intención",
+                    "nodeClass": "ask_and_branch",
+                    "description": "El sistema detecta que el cliente quiere hacer una reserva.",
+                    "script": [],
+                    "branches": [
+                        "reserva_mismo_dia",
+                        "modificacion_pedido"
+                    ]
+                },
+                {
+                    "name": "Gestionar reserva para el mismo día",
+                    "nodeClass": "ask_and_branch",
+                    "description": "El cliente desea hacer una reserva para el mismo día.",
+                    "script": [],
+                    "branches": [
+                        "disponibilidad",
+                        "sin_disponibilidad"
+                    ]
+                },
+                {
+                    "name": "Confirmar reserva para el mismo día",
+                    "nodeClass": "extractor",
+                    "description": "El sistema confirma la reserva para el mismo día.",
+                    "script": [],
+                    "branches": []
+                },
+                {
+                    "name": "Finalizar reserva para el mismo día",
+                    "nodeClass": "ask_and_branch",
+                    "description": "El cliente decide finalizar la reserva.",
+                    "script": [],
+                    "branches": [
+                        "Continuar"
+                    ]
+                },
+                {
+                    "name": "Gestionar modificación de pedido",
+                    "nodeClass": "extractor",
+                    "description": "El cliente solicita modificar un pedido existente.",
+                    "script": [],
+                    "branches": []
+                },
+                {
+                    "name": "Finalizar modificación de pedido",
+                    "nodeClass": "ask_and_branch",
+                    "description": "El cliente finaliza la modificación del pedido.",
+                    "script": [],
+                    "branches": [
+                        "Continuar"
+                    ]
+                },
+                {
+                    "name": "Fin de la conversación",
+                    "nodeClass": "ask_and_branch",
+                    "description": "La conversación termina después de completar la reserva y modificación.",
+                    "script": [],
+                    "branches": []
+                }
+            ],
+            "agent_name": "Asistente de Reservas",
+            "agent_objective": "Ayudar a los clientes a realizar reservas y modificar pedidos de manera eficiente.",
+            "id": "SC-07"
+        },
+        {
+            "scenario_id": "SC-08",
+            "scenario_name": "Reserva y Modificación de Pedido",
+            "description": "Este escenario cubre el flujo de un cliente que desea realizar una reserva para el mismo día y posteriormente modificar su pedido.",
+            "workflow": {
+                "nodes": [
+                    {
+                        "name": "Inicio de la conversación",
+                        "nodeClass": "start",
+                        "description": "El cliente inicia la conversación para realizar una reserva.",
+                        "script": [],
+                        "branches": []
+                    },
+                    {
+                        "name": "Detección de intención",
+                        "nodeClass": "ask_and_branch",
+                        "description": "El sistema detecta que el cliente quiere hacer una reserva para el mismo día.",
+                        "script": [],
+                        "branches": [
+                            "reserva_mismo_dia"
+                        ]
+                    },
+                    {
+                        "name": "Gestionar reserva para el mismo día",
+                        "nodeClass": "ask_and_branch",
+                        "description": "El sistema verifica la disponibilidad para la reserva solicitada.",
+                        "script": [],
+                        "branches": [
+                            "disponibilidad"
+                        ]
+                    },
+                    {
+                        "name": "Confirmar reserva para el mismo día",
+                        "nodeClass": "extractor",
+                        "description": "El sistema confirma la reserva al cliente.",
+                        "script": [],
+                        "branches": []
+                    },
+                    {
+                        "name": "Finalizar reserva para el mismo día",
+                        "nodeClass": "ask_and_branch",
+                        "description": "El cliente decide continuar con la modificación del pedido.",
+                        "script": [],
+                        "branches": [
+                            "Continuar"
+                        ]
+                    },
+                    {
+                        "name": "Gestionar modificación de pedido",
+                        "nodeClass": "extractor",
+                        "description": "El cliente solicita modificar su pedido.",
+                        "script": [],
+                        "branches": []
+                    },
+                    {
+                        "name": "Finalizar modificación de pedido",
+                        "nodeClass": "ask_and_branch",
+                        "description": "El sistema finaliza la modificación del pedido.",
+                        "script": [],
+                        "branches": [
+                            "Continuar"
+                        ]
+                    },
+                    {
+                        "name": "Fin de la conversación",
+                        "nodeClass": "ask_and_branch",
+                        "description": "El cliente ha completado su interacción.",
+                        "script": [],
+                        "branches": []
+                    }
+                ],
+                "agent_name": "Asistente de Reservas",
+                "agent_objective": "Ayudar al cliente a realizar y modificar una reserva para el mismo día."
+            },
+            "id": "SC-08"
+        },
+        {
+            "scenario_id": "SC-09",
+            "scenario_name": "Reserva y Modificación de Pedido",
+            "description": "Este escenario cubre el flujo de un cliente que desea realizar una reserva para el mismo día y posteriormente modificar su pedido.",
+            "workflow": [
+                {
+                    "node": "Inicio de la conversación",
+                    "action": "El cliente inicia la conversación para realizar una reserva."
+                },
+                {
+                    "node": "Detección de intención",
+                    "action": "El sistema detecta que el cliente quiere hacer una 'reserva_mismo_dia'."
+                },
+                {
+                    "node": "Gestionar reserva para el mismo día",
+                    "action": "El sistema verifica la disponibilidad para el mismo día."
+                },
+                {
+                    "node": "Confirmar reserva para el mismo día",
+                    "action": "El sistema confirma la reserva ya que hay 'disponibilidad'."
+                },
+                {
+                    "node": "Finalizar reserva para el mismo día",
+                    "action": "El cliente decide 'Continuar' con la reserva."
+                },
+                {
+                    "node": "Detección de intención",
+                    "action": "El cliente ahora desea modificar su pedido."
+                },
+                {
+                    "node": "Gestionar modificación de pedido",
+                    "action": "El sistema permite al cliente modificar su pedido."
+                },
+                {
+                    "node": "Finalizar modificación de pedido",
+                    "action": "El cliente confirma la modificación y decide 'Continuar'."
+                },
+                {
+                    "node": "Fin de la conversación",
+                    "action": "El cliente ha completado su interacción y la conversación finaliza."
+                }
+            ],
+            "agent_name": "Asistente de Reservas",
+            "agent_objective": "Ayudar a los clientes a realizar y modificar reservas de manera eficiente.",
+            "id": "SC-09"
+        },
+        {
+            "scenario_id": "SC-10",
+            "scenario_name": "Reserva y Modificación de Pedido",
+            "workflow": {
+                "nodes": [
+                    {
+                        "name": "Inicio de la conversación",
+                        "nodeClass": "start",
+                        "description": "El cliente inicia la conversación para realizar una reserva.",
+                        "script": [],
+                        "branches": []
+                    },
+                    {
+                        "name": "Detección de intención",
+                        "nodeClass": "ask_and_branch",
+                        "description": "El sistema detecta que el cliente quiere hacer una reserva.",
+                        "script": [],
+                        "branches": [
+                            "reserva_mismo_dia",
+                            "modificacion_pedido"
+                        ]
+                    },
+                    {
+                        "name": "Gestionar reserva para el mismo día",
+                        "nodeClass": "ask_and_branch",
+                        "description": "El cliente desea hacer una reserva para el mismo día.",
+                        "script": [],
+                        "branches": [
+                            "disponibilidad",
+                            "sin_disponibilidad"
+                        ]
+                    },
+                    {
+                        "name": "Confirmar reserva para el mismo día",
+                        "nodeClass": "extractor",
+                        "description": "Confirmación de la reserva para el mismo día.",
+                        "script": [],
+                        "branches": []
+                    },
+                    {
+                        "name": "Finalizar reserva para el mismo día",
+                        "nodeClass": "ask_and_branch",
+                        "description": "Finalización del proceso de reserva para el mismo día.",
+                        "script": [],
+                        "branches": [
+                            "Continuar"
+                        ]
+                    },
+                    {
+                        "name": "Gestionar modificación de pedido",
+                        "nodeClass": "extractor",
+                        "description": "El cliente desea modificar un pedido existente.",
+                        "script": [],
+                        "branches": []
+                    },
+                    {
+                        "name": "Finalizar modificación de pedido",
+                        "nodeClass": "ask_and_branch",
+                        "description": "Finalización del proceso de modificación de pedido.",
+                        "script": [],
+                        "branches": [
+                            "Continuar"
+                        ]
+                    },
+                    {
+                        "name": "Fin de la conversación",
+                        "nodeClass": "ask_and_branch",
+                        "description": "El cliente ha completado su interacción.",
+                        "script": [],
+                        "branches": []
+                    }
+                ],
+                "agent_name": "Asistente de Reservas",
+                "agent_objective": "Ayudar a los clientes a realizar reservas y modificar pedidos de manera eficiente."
+            },
+            "id": "SC-10"
+        }
+    ]
+}

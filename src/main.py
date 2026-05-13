@@ -114,7 +114,7 @@ def main():
             tests_gen.generate_tests(structured_md_path, final_json_path, qa_json_path, args.tests, client, verbose=verbose)
 
         if args.rag:
-            rag_path = os.path.join(json_dir, f"{base_name}_rag_briefing.md")
+            rag_path = os.path.join(md_dir, f"{base_name}_rag_briefing.md")
             if verbose: print("[Paso 7] Generando RAG Briefing...")
             with open(raw_md_path, 'r', encoding='utf-8') as f:
                 raw_for_rag = f.read()

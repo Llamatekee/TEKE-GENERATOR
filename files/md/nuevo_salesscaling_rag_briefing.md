@@ -1,17 +1,17 @@
-# RAG Briefing — nuevo_salesscaling_raw.md
+# RAG Briefing — nuevo_salesscaling
 
 ---
 
 ## Objetivos del agente
 
-**Objetivo principal:** Detectar interés y agendar demo.
+**Objetivo principal:** Agendar una demo del software con el prospecto.
 
 **Objetivos secundarios:**
-- Capturar email si no se agenda la demo
-- Redirigir preguntas técnicas a la reunión
+- Capturar el email del prospecto para enviar la invitación a la demo.
+- Redirigir cualquier pregunta técnica a la reunión.
 
 **KPIs de éxito:**
-- Tasa de agendado de demos
+- Tasa de demos agendadas
 - Porcentaje de emails capturados
 
 ---
@@ -46,13 +46,13 @@
 **ID:** `integraciones_crm` · **Prioridad:** Alta · **Fuente:** Explícito en guion
 **Formato sugerido:** `FAQ_md`
 
-**Descripción:** Información sobre las integraciones disponibles con CRMs como Salesforce y Hubspot.
+**Descripción:** Lista de CRMs con los que el software se integra y detalles sobre la API.
 
 **¿Por qué lo necesita el agente?** ¿Se integra con mi CRM?
 
 **Preguntas que respondería este documento:**
-- *¿Puedo integrar mi CRM actual?*
-- *¿Qué CRMs son compatibles?*
+- *¿Funciona con Salesforce?*
+- *¿Puedo usarlo con Hubspot?*
 
 ### 3. Información sobre Lanzadera
 **ID:** `informacion_lanzadera` · **Prioridad:** Media · **Fuente:** Explícito en guion
@@ -72,11 +72,11 @@
 
 **Descripción:** Ejemplos de empresas que han mejorado sus ventas usando el software.
 
-**¿Por qué lo necesita el agente?** ¿Cómo ha ayudado a otras empresas?
+**¿Por qué lo necesita el agente?** ¿Cómo puede ayudarme este software?
 
 **Preguntas que respondería este documento:**
 - *¿Tienen casos de éxito?*
-- *¿Qué resultados han obtenido otros clientes?*
+- *¿Qué empresas han usado su software con éxito?*
 
 ### 5. Horarios y Disponibilidad
 **ID:** `horarios_disponibilidad` · **Prioridad:** Baja · **Fuente:** Inferido
@@ -84,8 +84,8 @@
 
 **Descripción:** Información sobre los horarios disponibles para agendar demos.
 
-**¿Por qué lo necesita el agente?** ¿Cuándo te viene mejor vernos?
+**¿Por qué lo necesita el agente?** ¿Cuándo te viene mejor, por la mañana o por la tarde?
 
 **Preguntas que respondería este documento:**
-- *¿Qué horarios tienen disponibles?*
-- *¿Puedo agendar una demo por la tarde?*
+- *¿Qué horarios tienen para demos?*
+- *¿Puedo agendar una demo en fin de semana?*

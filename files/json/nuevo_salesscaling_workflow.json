@@ -19,9 +19,9 @@
       "Entiendo.",
       "Perfecto."
     ],
-    "globalIdentity": "Oliver de SalesScaling, cuyo objetivo es detectar interés y agendar demo, no vender en la llamada.",
-    "globalStyle": "Natural, directo, no vendedor",
-    "globalGuardrails": "No usar diminutivos ni condicionales. No dar sobreinformación al presentarse. No resolver dudas técnicas en la llamada. No sonar excesivamente vendedor. No interrumpir al prospecto. No justificar demasiado la llamada. No repetir información ya dicha. No mencionar que la demo será con el CEO.",
+    "globalIdentity": "Profesional, directo y enfocado en el cliente. Detectar interés y agendar demo, no vender en la llamada.",
+    "globalStyle": "Natural, breve y al grano.",
+    "globalGuardrails": "No usar diminutivos ni condicionales. No dar sobreinformación al presentarse.",
     "globalInstructions": "No usar diminutivos ni condicionales. No dar sobreinformación al presentarse. Marcar los tiempos de la llamada. Redirigir siempre hacia agendar la reunión.",
     "personalityLanguage": "es-ES",
     "callProblemThreshold": 300,
@@ -44,7 +44,7 @@
       },
       {
         "name": "appointment_confirmed",
-        "description": "Si se confirmó la cita para la demo",
+        "description": "Confirmación de la cita agendada",
         "type": "boolean"
       },
       {
@@ -58,8 +58,8 @@
         "type": "string"
       },
       {
-        "name": "agent_name",
-        "description": "Nombre del agente",
+        "name": "prospect_company",
+        "description": "Nombre de la empresa del prospecto",
         "type": "string"
       },
       {
@@ -68,13 +68,18 @@
         "type": "string"
       },
       {
+        "name": "position_confirmed",
+        "description": "Confirmación del cargo del prospecto",
+        "type": "boolean"
+      },
+      {
         "name": "selling_satisfaction",
-        "description": "Satisfacción del prospecto con sus ventas actuales",
+        "description": "Satisfacción con las ventas actuales",
         "type": "enum"
       },
       {
-        "name": "reason_knowledge",
-        "description": "Conocimiento del prospecto sobre las razones de sus ventas",
+        "name": "reason_known",
+        "description": "Conocimiento de las razones de las ventas",
         "type": "enum"
       },
       {
@@ -83,8 +88,8 @@
         "type": "boolean"
       },
       {
-        "name": "visibility_issue",
-        "description": "Problema de visibilidad identificado",
+        "name": "solution_discussed",
+        "description": "Discusión sobre la solución",
         "type": "boolean"
       },
       {
@@ -98,28 +103,18 @@
         "type": "string"
       },
       {
+        "name": "solution_connected",
+        "description": "Conexión con la solución realizada",
+        "type": "boolean"
+      },
+      {
         "name": "value_proposition_explained",
-        "description": "Si se explicó la propuesta de valor",
+        "description": "Explicación de la propuesta de valor",
         "type": "boolean"
-      },
-      {
-        "name": "transition_to_closure",
-        "description": "Si se realizó la transición al cierre",
-        "type": "boolean"
-      },
-      {
-        "name": "preferred_time",
-        "description": "Franja horaria preferida para la demo",
-        "type": "enum"
-      },
-      {
-        "name": "appointment_day",
-        "description": "Día agendado para la demo",
-        "type": "string"
       },
       {
         "name": "appointment_time",
-        "description": "Hora agendada para la demo",
+        "description": "Hora y fecha de la cita agendada",
         "type": "string"
       },
       {
@@ -234,12 +229,20 @@
               "description": "Nombre del prospecto"
             },
             {
-              "name": "agent_name",
+              "name": "prospect_company",
               "type": "string",
               "choices": [],
               "examples": [],
               "required": false,
-              "description": "Nombre del agente"
+              "description": "Nombre de la empresa del prospecto"
+            },
+            {
+              "name": "prospect_position",
+              "type": "string",
+              "choices": [],
+              "examples": [],
+              "required": false,
+              "description": "Cargo del prospecto"
             }
           ],
           "connector": "node-confirmacion_cargo"
@@ -272,20 +275,12 @@
           "branches": [],
           "extractions": [
             {
-              "name": "prospect_position",
-              "type": "string",
+              "name": "position_confirmed",
+              "type": "boolean",
               "choices": [],
               "examples": [],
               "required": false,
-              "description": "Cargo del prospecto"
-            },
-            {
-              "name": "company_name",
-              "type": "string",
-              "choices": [],
-              "examples": [],
-              "required": false,
-              "description": "Nombre de la empresa del prospecto"
+              "description": "Confirmación del cargo del prospecto"
             }
           ],
           "connector": "node-detectar_intencion"
@@ -317,7 +312,7 @@
           "overrideLlmTimeout": 30,
           "branches": [
             {
-              "id": "si-si",
+              "id": "escenario_si_si",
               "name": "Sí / Sí",
               "next": "node-escenario_si_si",
               "description": "",
@@ -326,7 +321,7 @@
               ]
             },
             {
-              "id": "si-no",
+              "id": "escenario_si_no",
               "name": "Sí / No",
               "next": "node-escenario_si_no",
               "description": "",
@@ -335,7 +330,7 @@
               ]
             },
             {
-              "id": "no-si",
+              "id": "escenario_no_si",
               "name": "No / Sí",
               "next": "node-escenario_no_si",
               "description": "",
@@ -344,7 +339,7 @@
               ]
             },
             {
-              "id": "no-no",
+              "id": "escenario_no_no",
               "name": "No / No",
               "next": "node-escenario_no_no",
               "description": "",
@@ -363,10 +358,10 @@
               ],
               "examples": [],
               "required": false,
-              "description": "Satisfacción del prospecto con sus ventas actuales"
+              "description": "Satisfacción con las ventas actuales"
             },
             {
-              "name": "reason_knowledge",
+              "name": "reason_known",
               "type": "enum",
               "choices": [
                 "sí",
@@ -374,7 +369,7 @@
               ],
               "examples": [],
               "required": false,
-              "description": "Conocimiento del prospecto sobre las razones de sus ventas"
+              "description": "Conocimiento de las razones de las ventas"
             }
           ]
         }
@@ -405,8 +400,8 @@
           "overrideLlmTimeout": 30,
           "branches": [
             {
-              "id": "interes",
-              "name": "Cliente muestra curiosidad o interés",
+              "id": "propuesta_valor",
+              "name": "Curiosidad o interés",
               "next": "node-propuesta_valor",
               "description": "",
               "fillPhrases": [
@@ -453,12 +448,12 @@
           "branches": [],
           "extractions": [
             {
-              "name": "visibility_issue",
+              "name": "solution_discussed",
               "type": "boolean",
               "choices": [],
               "examples": [],
               "required": false,
-              "description": "Problema de visibilidad identificado"
+              "description": "Discusión sobre la solución"
             }
           ],
           "connector": "node-propuesta_valor"
@@ -499,7 +494,7 @@
               "description": "Solución actual del prospecto"
             }
           ],
-          "connector": "node-propuesta_valor"
+          "connector": "node-conectar_solucion"
         }
       },
       {
@@ -537,6 +532,44 @@
               "description": "Gestión actual del seguimiento comercial"
             }
           ],
+          "connector": "node-conectar_solucion"
+        }
+      },
+      {
+        "id": "node-conectar_solucion",
+        "type": "moduleCard",
+        "position": {
+          "x": 1350,
+          "y": 400
+        },
+        "data": {
+          "id": "data-conectar_solucion",
+          "name": "Conectar con la solución",
+          "type": "extractor",
+          "nodeClass": "extractor",
+          "systemMessage": "Por lo que me has contado, creo que tiene sentido que veas la herramienta y valores tú mismo si encaja con vuestro proceso.",
+          "rules": [],
+          "params": {},
+          "autoNext": false,
+          "isEndNode": false,
+          "isGlobalNode": false,
+          "maxIterations": 300,
+          "cannedStarters": [],
+          "knowledgeBaseIds": [],
+          "inputReplacements": [],
+          "responseReplacements": [],
+          "overrideLlmTimeout": 30,
+          "branches": [],
+          "extractions": [
+            {
+              "name": "solution_connected",
+              "type": "boolean",
+              "choices": [],
+              "examples": [],
+              "required": false,
+              "description": "Conexión con la solución realizada"
+            }
+          ],
           "connector": "node-propuesta_valor"
         }
       },
@@ -544,12 +577,12 @@
         "id": "node-propuesta_valor",
         "type": "moduleCard",
         "position": {
-          "x": 1350,
+          "x": 1800,
           "y": 400
         },
         "data": {
           "id": "data-propuesta_valor",
-          "name": "Propuesta de Valor",
+          "name": "Propuesta de valor",
           "type": "extractor",
           "nodeClass": "extractor",
           "systemMessage": "Te lo digo porque tenemos un software que hace justamente eso: ayuda a entender por qué se vende más o menos. La herramienta analiza las interacciones comerciales, las reuniones y los procesos de venta utilizando inteligencia artificial para detectar patrones, oportunidades de mejora y puntos donde se están perdiendo ventas. Además, toda esa información queda organizada automáticamente para que el equipo tenga visibilidad real de lo que está ocurriendo.",
@@ -572,60 +605,22 @@
               "choices": [],
               "examples": [],
               "required": false,
-              "description": "Si se explicó la propuesta de valor"
+              "description": "Explicación de la propuesta de valor"
             }
           ],
-          "connector": "node-transicion_cierre"
+          "connector": "node-cierre_agendado"
         }
       },
       {
-        "id": "node-transicion_cierre",
-        "type": "moduleCard",
-        "position": {
-          "x": 1800,
-          "y": 400
-        },
-        "data": {
-          "id": "data-transicion_cierre",
-          "name": "Transición al Cierre",
-          "type": "extractor",
-          "nodeClass": "extractor",
-          "systemMessage": "Por lo que me has contado, creo que tiene sentido que veas la herramienta y valores tú mismo si encaja con vuestro proceso.",
-          "rules": [],
-          "params": {},
-          "autoNext": false,
-          "isEndNode": false,
-          "isGlobalNode": false,
-          "maxIterations": 300,
-          "cannedStarters": [],
-          "knowledgeBaseIds": [],
-          "inputReplacements": [],
-          "responseReplacements": [],
-          "overrideLlmTimeout": 30,
-          "branches": [],
-          "extractions": [
-            {
-              "name": "transition_to_closure",
-              "type": "boolean",
-              "choices": [],
-              "examples": [],
-              "required": false,
-              "description": "Si se realizó la transición al cierre"
-            }
-          ],
-          "connector": "node-tecnica_embudo"
-        }
-      },
-      {
-        "id": "node-tecnica_embudo",
+        "id": "node-cierre_agendado",
         "type": "moduleCard",
         "position": {
           "x": 0,
           "y": 800
         },
         "data": {
-          "id": "data-tecnica_embudo",
-          "name": "Técnica de Embudo",
+          "id": "data-cierre_agendado",
+          "name": "Cierre y agendado",
           "type": "extractor",
           "nodeClass": "extractor",
           "systemMessage": "¿Qué te viene mejor, por la mañana o por la tarde? Perfecto. ¿Mañana te encajaría o prefieres otro día? Vale, entonces te reservo el [día] a las [hora].",
@@ -643,31 +638,12 @@
           "branches": [],
           "extractions": [
             {
-              "name": "preferred_time",
-              "type": "enum",
-              "choices": [
-                "mañana",
-                "tarde"
-              ],
-              "examples": [],
-              "required": false,
-              "description": "Franja horaria preferida para la demo"
-            },
-            {
-              "name": "appointment_day",
-              "type": "string",
-              "choices": [],
-              "examples": [],
-              "required": false,
-              "description": "Día agendado para la demo"
-            },
-            {
               "name": "appointment_time",
               "type": "string",
               "choices": [],
               "examples": [],
               "required": false,
-              "description": "Hora agendada para la demo"
+              "description": "Hora y fecha de la cita agendada"
             }
           ],
           "connector": "node-captura_email"
@@ -682,7 +658,7 @@
         },
         "data": {
           "id": "data-captura_email",
-          "name": "Captura de Email",
+          "name": "Captura de email",
           "type": "extractor",
           "nodeClass": "extractor",
           "systemMessage": "Genial. Dime tu email y te dejo la invitación enviada.",
@@ -1495,7 +1471,7 @@
                     "operator": "AND",
                     "conditions": [
                       {
-                        "value": "privac",
+                        "value": "detall",
                         "operator": "contains",
                         "variable": "{{_chat_history_3}}",
                         "valueType": "string"
@@ -1925,7 +1901,7 @@
                     "operator": "AND",
                     "conditions": [
                       {
-                        "value": "lengua",
+                        "value": "internacional",
                         "operator": "contains",
                         "variable": "{{_chat_history_3}}",
                         "valueType": "string"
@@ -1973,34 +1949,34 @@
         "sourceHandle": "data-confirmacion_cargo-conversational-connector"
       },
       {
-        "id": "xy-edge__node-detectar_intencionsi-si-node-escenario_si_si",
+        "id": "xy-edge__node-detectar_intencionescenario_si_si-node-escenario_si_si",
         "source": "node-detectar_intencion",
         "target": "node-escenario_si_si",
-        "sourceHandle": "si-si"
+        "sourceHandle": "escenario_si_si"
       },
       {
-        "id": "xy-edge__node-detectar_intencionsi-no-node-escenario_si_no",
+        "id": "xy-edge__node-detectar_intencionescenario_si_no-node-escenario_si_no",
         "source": "node-detectar_intencion",
         "target": "node-escenario_si_no",
-        "sourceHandle": "si-no"
+        "sourceHandle": "escenario_si_no"
       },
       {
-        "id": "xy-edge__node-detectar_intencionno-si-node-escenario_no_si",
+        "id": "xy-edge__node-detectar_intencionescenario_no_si-node-escenario_no_si",
         "source": "node-detectar_intencion",
         "target": "node-escenario_no_si",
-        "sourceHandle": "no-si"
+        "sourceHandle": "escenario_no_si"
       },
       {
-        "id": "xy-edge__node-detectar_intencionno-no-node-escenario_no_no",
+        "id": "xy-edge__node-detectar_intencionescenario_no_no-node-escenario_no_no",
         "source": "node-detectar_intencion",
         "target": "node-escenario_no_no",
-        "sourceHandle": "no-no"
+        "sourceHandle": "escenario_no_no"
       },
       {
-        "id": "xy-edge__node-escenario_si_siinteres-node-propuesta_valor",
+        "id": "xy-edge__node-escenario_si_sipropuesta_valor-node-propuesta_valor",
         "source": "node-escenario_si_si",
         "target": "node-propuesta_valor",
-        "sourceHandle": "interes"
+        "sourceHandle": "propuesta_valor"
       },
       {
         "id": "xy-edge__node-escenario_si_nodata-escenario_si_no-conversational-connector-node-propuesta_valor",
@@ -2009,34 +1985,34 @@
         "sourceHandle": "data-escenario_si_no-conversational-connector"
       },
       {
-        "id": "xy-edge__node-escenario_no_sidata-escenario_no_si-conversational-connector-node-propuesta_valor",
+        "id": "xy-edge__node-escenario_no_sidata-escenario_no_si-conversational-connector-node-conectar_solucion",
         "source": "node-escenario_no_si",
-        "target": "node-propuesta_valor",
+        "target": "node-conectar_solucion",
         "sourceHandle": "data-escenario_no_si-conversational-connector"
       },
       {
-        "id": "xy-edge__node-escenario_no_nodata-escenario_no_no-conversational-connector-node-propuesta_valor",
+        "id": "xy-edge__node-escenario_no_nodata-escenario_no_no-conversational-connector-node-conectar_solucion",
         "source": "node-escenario_no_no",
-        "target": "node-propuesta_valor",
+        "target": "node-conectar_solucion",
         "sourceHandle": "data-escenario_no_no-conversational-connector"
       },
       {
-        "id": "xy-edge__node-propuesta_valordata-propuesta_valor-conversational-connector-node-transicion_cierre",
+        "id": "xy-edge__node-conectar_soluciondata-conectar_solucion-conversational-connector-node-propuesta_valor",
+        "source": "node-conectar_solucion",
+        "target": "node-propuesta_valor",
+        "sourceHandle": "data-conectar_solucion-conversational-connector"
+      },
+      {
+        "id": "xy-edge__node-propuesta_valordata-propuesta_valor-conversational-connector-node-cierre_agendado",
         "source": "node-propuesta_valor",
-        "target": "node-transicion_cierre",
+        "target": "node-cierre_agendado",
         "sourceHandle": "data-propuesta_valor-conversational-connector"
       },
       {
-        "id": "xy-edge__node-transicion_cierredata-transicion_cierre-conversational-connector-node-tecnica_embudo",
-        "source": "node-transicion_cierre",
-        "target": "node-tecnica_embudo",
-        "sourceHandle": "data-transicion_cierre-conversational-connector"
-      },
-      {
-        "id": "xy-edge__node-tecnica_embudodata-tecnica_embudo-conversational-connector-node-captura_email",
-        "source": "node-tecnica_embudo",
+        "id": "xy-edge__node-cierre_agendadodata-cierre_agendado-conversational-connector-node-captura_email",
+        "source": "node-cierre_agendado",
         "target": "node-captura_email",
-        "sourceHandle": "data-tecnica_embudo-conversational-connector"
+        "sourceHandle": "data-cierre_agendado-conversational-connector"
       },
       {
         "id": "xy-edge__node-captura_emaildata-captura_email-conversational-connector-node-end",

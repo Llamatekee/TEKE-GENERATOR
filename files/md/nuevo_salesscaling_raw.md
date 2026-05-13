@@ -27,7 +27,7 @@ El orden del opening es fijo:
 
 ## Apertura
 
-«¿[Nombre]? Sí, buenas. Soy [Nombre agente], de Sales Scaling. ¿Cómo va el día?»
+«¿[Nombre]? Sí, buenas. Soy Oliver, de Sales Scaling. ¿Cómo va el día?»
 «Somos una de las startups de innovación e IA que forma parte de Lanzadera, la aceleradora de Juan Roig aquí en Valencia. No sé si la ubicas.»
 → Esperar respuesta antes de continuar.
 «Te llamaba porque he visto que eres [Cargo] en [Empresa], ¿es así?»

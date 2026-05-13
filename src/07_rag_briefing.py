@@ -184,7 +184,7 @@ def generate_rag_briefing(md_content: str, output_path: str, client, source_name
 
     n_cands = len(data.get("rag_candidates", []))
     if verbose:
-        print(f"  → {n_cands} candidatos RAG identificados.")
+        print(f"  -> {n_cands} candidatos RAG identificados.")
 
     md_output = _render_md(data, source_name or os.path.basename(output_path))
 
@@ -193,7 +193,7 @@ def generate_rag_briefing(md_content: str, output_path: str, client, source_name
         f.write(md_output)
 
     if verbose:
-        print(f"  → RAG Briefing guardado en: {output_path}")
+        print(f"  -> RAG Briefing guardado en: {output_path}")
 
     return True
 

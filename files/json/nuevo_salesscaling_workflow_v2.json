@@ -1,0 +1,2055 @@
+{
+  "version": "2.0",
+  "exportedAt": "2026-05-12T00:00:00.000Z",
+  "agentName": "Oliver",
+  "agentConfig": {
+    "name": "Oliver",
+    "language": "es-ES",
+    "timeZone": "Europe/Madrid",
+    "serviceLlm": "openai/gpt-oss-20b",
+    "nodeLlm": "llama-3.3-70b-versatile",
+    "postCallExtractionsLlm": "openai/gpt-oss-120b",
+    "llmTemperature": 0.57,
+    "conversationalMode": null,
+    "llmStreamMode": true,
+    "answerPhrase": "¿[Nombre]? Sí, buenas. Soy Oliver, de Sales Scaling. ¿Cómo va el día?",
+    "hangupPhrase": "Gracias por tu tiempo y hasta pronto.",
+    "genericFillPhrases": [
+      "Claro.",
+      "Entiendo.",
+      "Perfecto."
+    ],
+    "globalIdentity": "Oliver de SalesScaling, cuyo objetivo es detectar interés y agendar demo, no vender en la llamada.",
+    "globalStyle": "Natural, directo, no vendedor. Sin diminutivos ni condicionales. Frases cortas. No sobreinformar. No repetir lo ya dicho.\n\nADAPTACIÓN DE TONO POR PERFIL:\n• CEO / Founder → visión estratégica y ahorro de tiempo. Foco: control total del proceso y automatización.\n• Sales Manager → tono par (de vendedor a vendedor). Foco: mejora del equipo y feedback de llamadas.\n• Perfil Técnico (Ingeniería) → precisión y tecnicismos. Foco: extracción de datos técnicos y piezas.\nAjusta el énfasis según el cargo detectado.",
+    "globalGuardrails": "No usar diminutivos ni condicionales. No dar sobreinformación al presentarse. No resolver dudas técnicas en la llamada. No sonar excesivamente vendedor. No interrumpir al prospecto. No justificar demasiado la llamada. No repetir información ya dicha. No mencionar que la demo será con el CEO.\n\nPERSONA EQUIVOCADA: Si el interlocutor no es quien buscamos, disculparse brevemente y cerrar la llamada.\n\nHORARIO COMERCIAL: No agendar fuera de horario comercial (lunes a viernes, 9:00-18:00). Si el prospecto propone un horario fuera de ese rango, redirigir amablemente.",
+    "globalInstructions": "No usar diminutivos ni condicionales. No dar sobreinformación al presentarse. Marcar los tiempos de la llamada. Redirigir siempre hacia agendar la reunión.",
+    "personalityLanguage": "es-ES",
+    "callProblemThreshold": 300,
+    "callProblemProtocol": "transfer",
+    "postCallExtractions": [
+      {
+        "name": "prospect_name",
+        "description": "Nombre del prospecto",
+        "type": "string"
+      },
+      {
+        "name": "company_name",
+        "description": "Nombre de la empresa del prospecto",
+        "type": "string"
+      },
+      {
+        "name": "interest_level",
+        "description": "Nivel de interés del prospecto",
+        "type": "enum"
+      },
+      {
+        "name": "appointment_confirmed",
+        "description": "Si se confirmó la cita para la demo",
+        "type": "boolean"
+      },
+      {
+        "name": "objection_raised",
+        "description": "Objeción planteada por el prospecto",
+        "type": "string"
+      },
+      {
+        "name": "call_start_time",
+        "description": "Hora de inicio de la llamada",
+        "type": "string"
+      },
+      {
+        "name": "agent_name",
+        "description": "Nombre del agente",
+        "type": "string"
+      },
+      {
+        "name": "prospect_position",
+        "description": "Cargo del prospecto",
+        "type": "string"
+      },
+      {
+        "name": "selling_satisfaction",
+        "description": "Satisfacción del prospecto con sus ventas actuales",
+        "type": "enum"
+      },
+      {
+        "name": "reason_knowledge",
+        "description": "Conocimiento del prospecto sobre las razones de sus ventas",
+        "type": "enum"
+      },
+      {
+        "name": "interest_shown",
+        "description": "Interés mostrado por el prospecto",
+        "type": "boolean"
+      },
+      {
+        "name": "visibility_issue",
+        "description": "Problema de visibilidad identificado",
+        "type": "boolean"
+      },
+      {
+        "name": "current_solution",
+        "description": "Solución actual del prospecto",
+        "type": "string"
+      },
+      {
+        "name": "current_management",
+        "description": "Gestión actual del seguimiento comercial",
+        "type": "string"
+      },
+      {
+        "name": "value_proposition_explained",
+        "description": "Si se explicó la propuesta de valor",
+        "type": "boolean"
+      },
+      {
+        "name": "transition_to_closure",
+        "description": "Si se realizó la transición al cierre",
+        "type": "boolean"
+      },
+      {
+        "name": "preferred_time",
+        "description": "Franja horaria preferida para la demo",
+        "type": "enum"
+      },
+      {
+        "name": "appointment_day",
+        "description": "Día agendado para la demo",
+        "type": "string"
+      },
+      {
+        "name": "appointment_time",
+        "description": "Hora agendada para la demo",
+        "type": "string"
+      },
+      {
+        "name": "prospect_email",
+        "description": "Email del prospecto",
+        "type": "string"
+      },
+      {
+        "name": "call_end_time",
+        "description": "Hora de fin de la llamada",
+        "type": "string"
+      }
+    ],
+    "voice": "HIYif4jehvc9P9A8DYbX",
+    "voiceSynthesizer": "elevenlabs",
+    "voiceSynthesizerModel": "eleven_turbo_v2_5",
+    "stability": 0.5,
+    "similarityBoost": 0.75,
+    "speed": 1,
+    "capabilities": {
+      "inboundCalls": true,
+      "outboundCalls": true,
+      "email": false,
+      "messaging": false
+    },
+    "responseReplacements": [],
+    "inputReplacements": [],
+    "memoryConfig": {
+      "sessionsCount": 0,
+      "lifeTimeSummaryEnabled": false,
+      "messagesPerSessionCount": 10
+    },
+    "ragConfig": {
+      "ragType": "keywords",
+      "maxDocuments": 3,
+      "reranking": false,
+      "backflow": false
+    }
+  },
+  "workflow": {
+    "nodes": [
+      {
+        "id": "node-start",
+        "type": "moduleCard",
+        "position": {
+          "x": 0,
+          "y": 0
+        },
+        "data": {
+          "id": "data-start",
+          "name": "Inicio de la llamada",
+          "type": "start",
+          "nodeClass": "start",
+          "systemMessage": "¿[Nombre]? Sí, buenas. Soy Oliver, de Sales Scaling. ¿Cómo va el día?",
+          "rules": [],
+          "params": {},
+          "autoNext": false,
+          "isEndNode": false,
+          "isGlobalNode": false,
+          "maxIterations": 3,
+          "cannedStarters": [],
+          "knowledgeBaseIds": [],
+          "inputReplacements": [],
+          "responseReplacements": [],
+          "overrideLlmTimeout": 30,
+          "branches": [],
+          "extractions": [
+            {
+              "name": "call_start_time",
+              "type": "string",
+              "choices": [],
+              "examples": [],
+              "required": false,
+              "description": "Hora de inicio de la llamada"
+            }
+          ],
+          "connector": "node-presentacion_contexto"
+        }
+      },
+      {
+        "id": "node-presentacion_contexto",
+        "type": "moduleCard",
+        "position": {
+          "x": 450,
+          "y": 0
+        },
+        "data": {
+          "id": "data-presentacion_contexto",
+          "name": "Presentación y contexto",
+          "type": "extractor",
+          "nodeClass": "extractor",
+          "systemMessage": "Somos una de las startups de innovación e IA que forma parte de Lanzadera, la aceleradora de Juan Roig aquí en Valencia. No sé si la ubicas.",
+          "rules": [],
+          "params": {},
+          "autoNext": false,
+          "isEndNode": false,
+          "isGlobalNode": false,
+          "maxIterations": 300,
+          "cannedStarters": [],
+          "knowledgeBaseIds": [],
+          "inputReplacements": [],
+          "responseReplacements": [],
+          "overrideLlmTimeout": 30,
+          "branches": [],
+          "extractions": [
+            {
+              "name": "prospect_name",
+              "type": "string",
+              "choices": [],
+              "examples": [],
+              "required": false,
+              "description": "Nombre del prospecto"
+            },
+            {
+              "name": "agent_name",
+              "type": "string",
+              "choices": [],
+              "examples": [],
+              "required": false,
+              "description": "Nombre del agente"
+            }
+          ],
+          "connector": "node-confirmacion_cargo"
+        }
+      },
+      {
+        "id": "node-confirmacion_cargo",
+        "type": "moduleCard",
+        "position": {
+          "x": 900,
+          "y": 0
+        },
+        "data": {
+          "id": "data-confirmacion_cargo",
+          "name": "Confirmación del cargo",
+          "type": "extractor",
+          "nodeClass": "extractor",
+          "systemMessage": "Te llamaba porque he visto que eres [Cargo] en [Empresa], ¿es así?",
+          "rules": [],
+          "params": {},
+          "autoNext": false,
+          "isEndNode": false,
+          "isGlobalNode": false,
+          "maxIterations": 300,
+          "cannedStarters": [],
+          "knowledgeBaseIds": [],
+          "inputReplacements": [],
+          "responseReplacements": [],
+          "overrideLlmTimeout": 30,
+          "branches": [],
+          "extractions": [
+            {
+              "name": "prospect_position",
+              "type": "string",
+              "choices": [],
+              "examples": [],
+              "required": false,
+              "description": "Cargo del prospecto"
+            },
+            {
+              "name": "company_name",
+              "type": "string",
+              "choices": [],
+              "examples": [],
+              "required": false,
+              "description": "Nombre de la empresa del prospecto"
+            }
+          ],
+          "connector": "node-detectar_intencion"
+        }
+      },
+      {
+        "id": "node-detectar_intencion",
+        "type": "moduleCard",
+        "position": {
+          "x": 1350,
+          "y": 0
+        },
+        "data": {
+          "id": "data-detectar_intencion",
+          "name": "Detección de intención",
+          "type": "conversational",
+          "nodeClass": "ask_and_branch",
+          "systemMessage": "FASE 2: DESCUBRIMIENTO — Dos preguntas en secuencia. No avanzar a la segunda sin respuesta clara a la primera.\n\nPregunta 1:\n«Quería preguntarte una cosa muy rápida. ¿Actualmente estáis vendiendo todo lo que os gustaría?»\n→ Esperar respuesta.\n\nPregunta 2 (siempre, independientemente de la respuesta anterior):\n«¿Y sabes exactamente por qué?»\n→ Esperar respuesta.\n\nUna vez tengas las dos respuestas, clasifica y toma la rama correspondiente:\n• Sí / Sí  → venden bien Y saben por qué\n• Sí / No  → venden bien pero NO saben por qué\n• No / Sí  → NO venden todo lo que quieren pero SÍ saben el motivo\n• No / No  → NO venden todo lo que quieren y NO saben por qué\n\n[REGLA CRÍTICA]: No tomes la rama hasta haber recibido respuesta a AMBAS preguntas.",
+          "rules": [],
+          "params": {},
+          "autoNext": false,
+          "isEndNode": false,
+          "isGlobalNode": false,
+          "maxIterations": 300,
+          "cannedStarters": [],
+          "knowledgeBaseIds": [],
+          "inputReplacements": [],
+          "responseReplacements": [],
+          "overrideLlmTimeout": 30,
+          "branches": [
+            {
+              "id": "si-si",
+              "name": "Sí / Sí",
+              "next": "node-escenario_si_si",
+              "description": "El prospecto afirma que vende todo lo que quiere Y que sabe exactamente por qué.",
+              "fillPhrases": [
+                "Entendido."
+              ]
+            },
+            {
+              "id": "si-no",
+              "name": "Sí / No",
+              "next": "node-escenario_si_no",
+              "description": "El prospecto afirma que vende bien pero NO sabe exactamente las razones.",
+              "fillPhrases": [
+                "Entiendo."
+              ]
+            },
+            {
+              "id": "no-si",
+              "name": "No / Sí",
+              "next": "node-escenario_no_si",
+              "description": "El prospecto dice que NO vende todo lo que quiere pero SÍ sabe el motivo.",
+              "fillPhrases": [
+                "Entendido."
+              ]
+            },
+            {
+              "id": "no-no",
+              "name": "No / No",
+              "next": "node-escenario_no_no",
+              "description": "El prospecto dice que NO vende todo lo que quiere y TAMPOCO sabe por qué.",
+              "fillPhrases": [
+                "Perfecto."
+              ]
+            }
+          ],
+          "extractions": [
+            {
+              "name": "selling_satisfaction",
+              "type": "enum",
+              "choices": [
+                "sí",
+                "no"
+              ],
+              "examples": [],
+              "required": false,
+              "description": "Satisfacción del prospecto con sus ventas actuales"
+            },
+            {
+              "name": "reason_knowledge",
+              "type": "enum",
+              "choices": [
+                "sí",
+                "no"
+              ],
+              "examples": [],
+              "required": false,
+              "description": "Conocimiento del prospecto sobre las razones de sus ventas"
+            }
+          ]
+        }
+      },
+      {
+        "id": "node-escenario_si_si",
+        "type": "moduleCard",
+        "position": {
+          "x": 1800,
+          "y": 0
+        },
+        "data": {
+          "id": "data-escenario_si_si",
+          "name": "Escenario Sí / Sí",
+          "type": "conversational",
+          "nodeClass": "ask_and_branch",
+          "systemMessage": "Di: «Perfecto, entonces parece que lo tenéis muy controlado. No quiero hacerte perder tiempo.»\n→ PAUSA. Escucha la reacción del prospecto antes de decidir qué hacer.\n\nSi el prospecto muestra curiosidad, hace una pregunta o expresa interés → toma la rama 'Cliente muestra curiosidad o interés'.\nSi el prospecto da por concluida la llamada o no reacciona → despídete y cierra.",
+          "rules": [],
+          "params": {},
+          "autoNext": false,
+          "isEndNode": false,
+          "isGlobalNode": false,
+          "maxIterations": 300,
+          "cannedStarters": [],
+          "knowledgeBaseIds": [],
+          "inputReplacements": [],
+          "responseReplacements": [],
+          "overrideLlmTimeout": 30,
+          "branches": [
+            {
+              "id": "interes",
+              "name": "Cliente muestra curiosidad o interés",
+              "next": "node-propuesta_valor",
+              "description": "",
+              "fillPhrases": [
+                "Claro."
+              ]
+            },
+            {
+              "id": "sin-interes",
+              "name": "Cliente no muestra interés / cierra",
+              "next": "node-end",
+              "description": "El prospecto no muestra interés tras la frase de cierre y da la llamada por terminada.",
+              "fillPhrases": [
+                "Perfecto, gracias por tu tiempo."
+              ]
+            }
+          ],
+          "extractions": [
+            {
+              "name": "interest_shown",
+              "type": "boolean",
+              "choices": [],
+              "examples": [],
+              "required": false,
+              "description": "Interés mostrado por el prospecto"
+            }
+          ]
+        }
+      },
+      {
+        "id": "node-escenario_si_no",
+        "type": "moduleCard",
+        "position": {
+          "x": 0,
+          "y": 400
+        },
+        "data": {
+          "id": "data-escenario_si_no",
+          "name": "Escenario Sí / No",
+          "type": "extractor",
+          "nodeClass": "extractor",
+          "systemMessage": "Entiendo. Justamente ahí solemos ayudar bastante, porque muchas empresas tienen resultados pero no visibilidad real de qué acciones están generando esos resultados.",
+          "rules": [],
+          "params": {},
+          "autoNext": false,
+          "isEndNode": false,
+          "isGlobalNode": false,
+          "maxIterations": 300,
+          "cannedStarters": [],
+          "knowledgeBaseIds": [],
+          "inputReplacements": [],
+          "responseReplacements": [],
+          "overrideLlmTimeout": 30,
+          "branches": [],
+          "extractions": [
+            {
+              "name": "visibility_issue",
+              "type": "boolean",
+              "choices": [],
+              "examples": [],
+              "required": false,
+              "description": "Problema de visibilidad identificado"
+            }
+          ],
+          "connector": "node-propuesta_valor"
+        }
+      },
+      {
+        "id": "node-escenario_no_si",
+        "type": "moduleCard",
+        "position": {
+          "x": 450,
+          "y": 400
+        },
+        "data": {
+          "id": "data-escenario_no_si",
+          "name": "Escenario No / Sí",
+          "type": "extractor",
+          "nodeClass": "extractor",
+          "systemMessage": "¿Y qué estáis haciendo ahora mismo para solucionarlo?",
+          "rules": [],
+          "params": {},
+          "autoNext": false,
+          "isEndNode": false,
+          "isGlobalNode": false,
+          "maxIterations": 300,
+          "cannedStarters": [],
+          "knowledgeBaseIds": [],
+          "inputReplacements": [],
+          "responseReplacements": [],
+          "overrideLlmTimeout": 30,
+          "branches": [],
+          "extractions": [
+            {
+              "name": "current_solution",
+              "type": "string",
+              "choices": [],
+              "examples": [],
+              "required": false,
+              "description": "Solución actual del prospecto"
+            }
+          ],
+          "connector": "node-propuesta_valor"
+        }
+      },
+      {
+        "id": "node-escenario_no_no",
+        "type": "moduleCard",
+        "position": {
+          "x": 900,
+          "y": 400
+        },
+        "data": {
+          "id": "data-escenario_no_no",
+          "name": "Escenario No / No",
+          "type": "extractor",
+          "nodeClass": "extractor",
+          "systemMessage": "Entonces te he caído del cielo. ¿Cómo estáis gestionando ahora mismo el seguimiento comercial y las reuniones?",
+          "rules": [],
+          "params": {},
+          "autoNext": false,
+          "isEndNode": false,
+          "isGlobalNode": false,
+          "maxIterations": 300,
+          "cannedStarters": [],
+          "knowledgeBaseIds": [],
+          "inputReplacements": [],
+          "responseReplacements": [],
+          "overrideLlmTimeout": 30,
+          "branches": [],
+          "extractions": [
+            {
+              "name": "current_management",
+              "type": "string",
+              "choices": [],
+              "examples": [],
+              "required": false,
+              "description": "Gestión actual del seguimiento comercial"
+            }
+          ],
+          "connector": "node-propuesta_valor"
+        }
+      },
+      {
+        "id": "node-propuesta_valor",
+        "type": "moduleCard",
+        "position": {
+          "x": 1350,
+          "y": 400
+        },
+        "data": {
+          "id": "data-propuesta_valor",
+          "name": "Propuesta de Valor",
+          "type": "extractor",
+          "nodeClass": "extractor",
+          "systemMessage": "Te lo digo porque tenemos un software que hace justamente eso: ayuda a entender por qué se vende más o menos. La herramienta analiza las interacciones comerciales, las reuniones y los procesos de venta utilizando inteligencia artificial para detectar patrones, oportunidades de mejora y puntos donde se están perdiendo ventas. Además, toda esa información queda organizada automáticamente para que el equipo tenga visibilidad real de lo que está ocurriendo.",
+          "rules": [],
+          "params": {},
+          "autoNext": false,
+          "isEndNode": false,
+          "isGlobalNode": false,
+          "maxIterations": 300,
+          "cannedStarters": [],
+          "knowledgeBaseIds": [],
+          "inputReplacements": [],
+          "responseReplacements": [],
+          "overrideLlmTimeout": 30,
+          "branches": [],
+          "extractions": [
+            {
+              "name": "value_proposition_explained",
+              "type": "boolean",
+              "choices": [],
+              "examples": [],
+              "required": false,
+              "description": "Si se explicó la propuesta de valor"
+            }
+          ],
+          "connector": "node-transicion_cierre"
+        }
+      },
+      {
+        "id": "node-transicion_cierre",
+        "type": "moduleCard",
+        "position": {
+          "x": 1800,
+          "y": 400
+        },
+        "data": {
+          "id": "data-transicion_cierre",
+          "name": "Transición al Cierre",
+          "type": "extractor",
+          "nodeClass": "extractor",
+          "systemMessage": "Por lo que me has contado, creo que tiene sentido que veas la herramienta y valores tú mismo si encaja con vuestro proceso.",
+          "rules": [],
+          "params": {},
+          "autoNext": false,
+          "isEndNode": false,
+          "isGlobalNode": false,
+          "maxIterations": 300,
+          "cannedStarters": [],
+          "knowledgeBaseIds": [],
+          "inputReplacements": [],
+          "responseReplacements": [],
+          "overrideLlmTimeout": 30,
+          "branches": [],
+          "extractions": [
+            {
+              "name": "transition_to_closure",
+              "type": "boolean",
+              "choices": [],
+              "examples": [],
+              "required": false,
+              "description": "Si se realizó la transición al cierre"
+            }
+          ],
+          "connector": "node-tecnica_embudo"
+        }
+      },
+      {
+        "id": "node-tecnica_embudo",
+        "type": "moduleCard",
+        "position": {
+          "x": 0,
+          "y": 800
+        },
+        "data": {
+          "id": "data-tecnica_embudo",
+          "name": "Técnica de Embudo",
+          "type": "extractor",
+          "nodeClass": "extractor",
+          "systemMessage": "¿Qué te viene mejor, por la mañana o por la tarde? Perfecto. ¿Mañana te encajaría o prefieres otro día? Vale, entonces te reservo el [día] a las [hora].",
+          "rules": [],
+          "params": {},
+          "autoNext": false,
+          "isEndNode": false,
+          "isGlobalNode": false,
+          "maxIterations": 300,
+          "cannedStarters": [],
+          "knowledgeBaseIds": [],
+          "inputReplacements": [],
+          "responseReplacements": [],
+          "overrideLlmTimeout": 30,
+          "branches": [],
+          "extractions": [
+            {
+              "name": "preferred_time",
+              "type": "enum",
+              "choices": [
+                "mañana",
+                "tarde"
+              ],
+              "examples": [],
+              "required": false,
+              "description": "Franja horaria preferida para la demo"
+            },
+            {
+              "name": "appointment_day",
+              "type": "string",
+              "choices": [],
+              "examples": [],
+              "required": false,
+              "description": "Día agendado para la demo"
+            },
+            {
+              "name": "appointment_time",
+              "type": "string",
+              "choices": [],
+              "examples": [],
+              "required": false,
+              "description": "Hora agendada para la demo"
+            }
+          ],
+          "connector": "node-captura_email"
+        }
+      },
+      {
+        "id": "node-captura_email",
+        "type": "moduleCard",
+        "position": {
+          "x": 450,
+          "y": 800
+        },
+        "data": {
+          "id": "data-captura_email",
+          "name": "Captura de Email",
+          "type": "extractor",
+          "nodeClass": "extractor",
+          "systemMessage": "Genial. Dime tu email y te dejo la invitación enviada.",
+          "rules": [],
+          "params": {},
+          "autoNext": false,
+          "isEndNode": false,
+          "isGlobalNode": false,
+          "maxIterations": 300,
+          "cannedStarters": [],
+          "knowledgeBaseIds": [],
+          "inputReplacements": [],
+          "responseReplacements": [],
+          "overrideLlmTimeout": 30,
+          "branches": [],
+          "extractions": [
+            {
+              "name": "prospect_email",
+              "type": "string",
+              "choices": [],
+              "examples": [],
+              "required": false,
+              "description": "Email del prospecto"
+            }
+          ],
+          "connector": "node-end"
+        }
+      },
+      {
+        "id": "node-end",
+        "type": "moduleCard",
+        "position": {
+          "x": 900,
+          "y": 800
+        },
+        "data": {
+          "id": "data-end",
+          "name": "Fin de la llamada",
+          "type": "extractor",
+          "nodeClass": "extractor",
+          "systemMessage": "FASE FINAL — Cierre de llamada.\n\nUsa una de estas despedidas según el resultado (no las repitas si ya se usó una):\n• Demo agendada: «Perfecto, [Nombre]. Te llega la invitación al correo. Hasta el [día]. ¡Que vaya bien!»\n• Sin demo pero cordial: «Entendido. Si en algún momento cambia la situación, ya sabes dónde estamos. Hasta pronto.»\n• Escenario Sí/Sí sin interés: «Perfecto, me alegra escucharlo. Si en algún momento queréis darle una vuelta, aquí estamos. ¡Hasta pronto!»\n\nDIRECTIVA CRÍTICA: Despídete y CUELGA LA LLAMADA inmediatamente tras la despedida.",
+          "rules": [],
+          "params": {},
+          "autoNext": false,
+          "isEndNode": true,
+          "isGlobalNode": false,
+          "maxIterations": 300,
+          "cannedStarters": [],
+          "knowledgeBaseIds": [],
+          "inputReplacements": [],
+          "responseReplacements": [],
+          "overrideLlmTimeout": 30,
+          "branches": [],
+          "extractions": [
+            {
+              "name": "call_end_time",
+              "type": "string",
+              "choices": [],
+              "examples": [],
+              "required": false,
+              "description": "Hora de fin de la llamada"
+            }
+          ]
+        }
+      },
+      {
+        "id": "node-obj_no_tiempo_ahora",
+        "type": "moduleCard",
+        "position": {
+          "x": 0,
+          "y": 1200
+        },
+        "data": {
+          "id": "data-obj_no_tiempo_ahora",
+          "name": "No tengo tiempo ahora / Envíame un correo",
+          "type": "conversational_conditional",
+          "nodeClass": "action",
+          "systemMessage": "GESTIÓN DE OBJECIÓN — No tengo tiempo / Envíame un correo:\n\nPrimera respuesta:\n«Entiendo. Pero ambos sabemos cómo termina eso. Por lo que me has contado, creo que tiene sentido que lo veas tú mismo en 20 minutos. ¿Cuándo te viene mejor, por la mañana o por la tarde?»\n\nSi insiste en el correo (segunda vez):\n«[Nombre], date cuenta de que acabas de contarme que [dolor detectado en el descubrimiento]. Eso es exactamente lo que resolvemos. La inversión de tiempo realmente merece la pena. ¿Cuándo nos vemos?»\n\n→ Continúa por donde estabas en el flujo.",
+          "rules": [
+            {
+              "conditions": {
+                "groups": [
+                  {
+                    "operator": "AND",
+                    "conditions": [
+                      {
+                        "value": "tiem",
+                        "operator": "contains",
+                        "variable": "{{_chat_history_3}}",
+                        "valueType": "string"
+                      }
+                    ]
+                  }
+                ],
+                "operator": "AND"
+              },
+              "description": ""
+            },
+            {
+              "conditions": {
+                "groups": [
+                  {
+                    "operator": "AND",
+                    "conditions": [
+                      {
+                        "value": "corr",
+                        "operator": "contains",
+                        "variable": "{{_chat_history_3}}",
+                        "valueType": "string"
+                      }
+                    ]
+                  }
+                ],
+                "operator": "AND"
+              },
+              "description": ""
+            },
+            {
+              "conditions": {
+                "groups": [
+                  {
+                    "operator": "AND",
+                    "conditions": [
+                      {
+                        "value": "prisa",
+                        "operator": "contains",
+                        "variable": "{{_chat_history_3}}",
+                        "valueType": "string"
+                      }
+                    ]
+                  }
+                ],
+                "operator": "AND"
+              },
+              "description": ""
+            },
+            {
+              "conditions": {
+                "groups": [
+                  {
+                    "operator": "AND",
+                    "conditions": [
+                      {
+                        "value": "mail",
+                        "operator": "contains",
+                        "variable": "{{_chat_history_3}}",
+                        "valueType": "string"
+                      }
+                    ]
+                  }
+                ],
+                "operator": "AND"
+              },
+              "description": ""
+            }
+          ],
+          "params": {},
+          "autoNext": false,
+          "isEndNode": false,
+          "isGlobalNode": false,
+          "maxIterations": 3,
+          "cannedStarters": [],
+          "knowledgeBaseIds": [],
+          "inputReplacements": [],
+          "responseReplacements": [],
+          "overrideLlmTimeout": 30,
+          "branches": [],
+          "extractions": []
+        }
+      },
+      {
+        "id": "node-obj_no_decido",
+        "type": "moduleCard",
+        "position": {
+          "x": 450,
+          "y": 1200
+        },
+        "data": {
+          "id": "data-obj_no_decido",
+          "name": "Yo no decido / Habla con [otra persona]",
+          "type": "conversational_conditional",
+          "nodeClass": "action",
+          "systemMessage": "GESTION DE OBJECION: Genial. Pásame su email y yo contacto con él para ahorrarte el trabajo. y continua por donde ibas.",
+          "rules": [
+            {
+              "conditions": {
+                "groups": [
+                  {
+                    "operator": "AND",
+                    "conditions": [
+                      {
+                        "value": "decid",
+                        "operator": "contains",
+                        "variable": "{{_chat_history_3}}",
+                        "valueType": "string"
+                      }
+                    ]
+                  }
+                ],
+                "operator": "AND"
+              },
+              "description": ""
+            },
+            {
+              "conditions": {
+                "groups": [
+                  {
+                    "operator": "AND",
+                    "conditions": [
+                      {
+                        "value": "otra",
+                        "operator": "contains",
+                        "variable": "{{_chat_history_3}}",
+                        "valueType": "string"
+                      }
+                    ]
+                  }
+                ],
+                "operator": "AND"
+              },
+              "description": ""
+            },
+            {
+              "conditions": {
+                "groups": [
+                  {
+                    "operator": "AND",
+                    "conditions": [
+                      {
+                        "value": "deleg",
+                        "operator": "contains",
+                        "variable": "{{_chat_history_3}}",
+                        "valueType": "string"
+                      }
+                    ]
+                  }
+                ],
+                "operator": "AND"
+              },
+              "description": ""
+            }
+          ],
+          "params": {},
+          "autoNext": false,
+          "isEndNode": false,
+          "isGlobalNode": false,
+          "maxIterations": 3,
+          "cannedStarters": [],
+          "knowledgeBaseIds": [],
+          "inputReplacements": [],
+          "responseReplacements": [],
+          "overrideLlmTimeout": 30,
+          "branches": [],
+          "extractions": []
+        }
+      },
+      {
+        "id": "node-obj_mal_momento",
+        "type": "moduleCard",
+        "position": {
+          "x": 900,
+          "y": 1200
+        },
+        "data": {
+          "id": "data-obj_mal_momento",
+          "name": "Estoy de vacaciones / Es mal momento",
+          "type": "conversational_conditional",
+          "nodeClass": "action",
+          "systemMessage": "GESTION DE OBJECION: Totalmente, es un momento para descansar. Dime cuando te vuelves y me lo apunto para llamarte. y continua por donde ibas.",
+          "rules": [
+            {
+              "conditions": {
+                "groups": [
+                  {
+                    "operator": "AND",
+                    "conditions": [
+                      {
+                        "value": "vaca",
+                        "operator": "contains",
+                        "variable": "{{_chat_history_3}}",
+                        "valueType": "string"
+                      }
+                    ]
+                  }
+                ],
+                "operator": "AND"
+              },
+              "description": ""
+            },
+            {
+              "conditions": {
+                "groups": [
+                  {
+                    "operator": "AND",
+                    "conditions": [
+                      {
+                        "value": "mome",
+                        "operator": "contains",
+                        "variable": "{{_chat_history_3}}",
+                        "valueType": "string"
+                      }
+                    ]
+                  }
+                ],
+                "operator": "AND"
+              },
+              "description": ""
+            },
+            {
+              "conditions": {
+                "groups": [
+                  {
+                    "operator": "AND",
+                    "conditions": [
+                      {
+                        "value": "descans",
+                        "operator": "contains",
+                        "variable": "{{_chat_history_3}}",
+                        "valueType": "string"
+                      }
+                    ]
+                  }
+                ],
+                "operator": "AND"
+              },
+              "description": ""
+            }
+          ],
+          "params": {},
+          "autoNext": false,
+          "isEndNode": false,
+          "isGlobalNode": false,
+          "maxIterations": 3,
+          "cannedStarters": [],
+          "knowledgeBaseIds": [],
+          "inputReplacements": [],
+          "responseReplacements": [],
+          "overrideLlmTimeout": 30,
+          "branches": [],
+          "extractions": []
+        }
+      },
+      {
+        "id": "node-obj_de_donde_llamas",
+        "type": "moduleCard",
+        "position": {
+          "x": 1350,
+          "y": 1200
+        },
+        "data": {
+          "id": "data-obj_de_donde_llamas",
+          "name": "¿De dónde me llamas? / ¿Cómo se llama tu empresa?",
+          "type": "conversational_conditional",
+          "nodeClass": "action",
+          "systemMessage": "GESTION DE OBJECION: De Sales Scaling (escalar ventas, todo junto en inglés). Somos una startup de innovación e IA que forma parte de Lanzadera, la aceleradora de Juan Roig aquí en Valencia. Si ubicas Lanzadera, ahí tienes un poco de contexto. y continua por donde ibas.",
+          "rules": [
+            {
+              "conditions": {
+                "groups": [
+                  {
+                    "operator": "AND",
+                    "conditions": [
+                      {
+                        "value": "dond",
+                        "operator": "contains",
+                        "variable": "{{_chat_history_3}}",
+                        "valueType": "string"
+                      }
+                    ]
+                  }
+                ],
+                "operator": "AND"
+              },
+              "description": ""
+            },
+            {
+              "conditions": {
+                "groups": [
+                  {
+                    "operator": "AND",
+                    "conditions": [
+                      {
+                        "value": "llam",
+                        "operator": "contains",
+                        "variable": "{{_chat_history_3}}",
+                        "valueType": "string"
+                      }
+                    ]
+                  }
+                ],
+                "operator": "AND"
+              },
+              "description": ""
+            },
+            {
+              "conditions": {
+                "groups": [
+                  {
+                    "operator": "AND",
+                    "conditions": [
+                      {
+                        "value": "empresa",
+                        "operator": "contains",
+                        "variable": "{{_chat_history_3}}",
+                        "valueType": "string"
+                      }
+                    ]
+                  }
+                ],
+                "operator": "AND"
+              },
+              "description": ""
+            }
+          ],
+          "params": {},
+          "autoNext": false,
+          "isEndNode": false,
+          "isGlobalNode": false,
+          "maxIterations": 3,
+          "cannedStarters": [],
+          "knowledgeBaseIds": [],
+          "inputReplacements": [],
+          "responseReplacements": [],
+          "overrideLlmTimeout": 30,
+          "branches": [],
+          "extractions": []
+        }
+      },
+      {
+        "id": "node-obj_como_conseguiste_numero",
+        "type": "moduleCard",
+        "position": {
+          "x": 1800,
+          "y": 1200
+        },
+        "data": {
+          "id": "data-obj_como_conseguiste_numero",
+          "name": "¿Cómo has conseguido mi número? / ¿Es mi número personal?",
+          "type": "conversational_conditional",
+          "nodeClass": "action",
+          "systemMessage": "FAQ / OBJECIÓN — ¿Cómo has conseguido mi número? / ¿Es mi número personal?\n\nPrimera respuesta: «LinkedIn.» [Silencio de 1 segundo máximo]. No dar más información proactivamente.\n\nSi insisten: «[Nombre], despreocúpate, quito tu número de la BBDD. Pero aprovechando que hablamos, te llamaba porque he visto que eres [cargo] en [empresa]…» → Retomar el guión.\n\nNo entrar en debate ni justificarse más de lo necesario.",
+          "rules": [
+            {
+              "conditions": {
+                "groups": [
+                  {
+                    "operator": "AND",
+                    "conditions": [
+                      {
+                        "value": "número",
+                        "operator": "contains",
+                        "variable": "{{_chat_history_3}}",
+                        "valueType": "string"
+                      }
+                    ]
+                  }
+                ],
+                "operator": "AND"
+              },
+              "description": ""
+            },
+            {
+              "conditions": {
+                "groups": [
+                  {
+                    "operator": "AND",
+                    "conditions": [
+                      {
+                        "value": "num",
+                        "operator": "contains",
+                        "variable": "{{_chat_history_3}}",
+                        "valueType": "string"
+                      }
+                    ]
+                  }
+                ],
+                "operator": "AND"
+              },
+              "description": ""
+            },
+            {
+              "conditions": {
+                "groups": [
+                  {
+                    "operator": "AND",
+                    "conditions": [
+                      {
+                        "value": "linkedin",
+                        "operator": "contains",
+                        "variable": "{{_chat_history_3}}",
+                        "valueType": "string"
+                      }
+                    ]
+                  }
+                ],
+                "operator": "AND"
+              },
+              "description": ""
+            },
+            {
+              "conditions": {
+                "groups": [
+                  {
+                    "operator": "AND",
+                    "conditions": [
+                      {
+                        "value": "bbdd",
+                        "operator": "contains",
+                        "variable": "{{_chat_history_3}}",
+                        "valueType": "string"
+                      }
+                    ]
+                  }
+                ],
+                "operator": "AND"
+              },
+              "description": ""
+            },
+            {
+              "conditions": {
+                "groups": [
+                  {
+                    "operator": "AND",
+                    "conditions": [
+                      {
+                        "value": "personal",
+                        "operator": "contains",
+                        "variable": "{{_chat_history_3}}",
+                        "valueType": "string"
+                      }
+                    ]
+                  }
+                ],
+                "operator": "AND"
+              },
+              "description": ""
+            }
+          ],
+          "params": {},
+          "autoNext": false,
+          "isEndNode": false,
+          "isGlobalNode": false,
+          "maxIterations": 3,
+          "cannedStarters": [],
+          "knowledgeBaseIds": [],
+          "inputReplacements": [],
+          "responseReplacements": [],
+          "overrideLlmTimeout": 30,
+          "branches": [],
+          "extractions": []
+        }
+      },
+      {
+        "id": "node-obj_no_nos_conocemos",
+        "type": "moduleCard",
+        "position": {
+          "x": 0,
+          "y": 1600
+        },
+        "data": {
+          "id": "data-obj_no_nos_conocemos",
+          "name": "No nos conocemos de nada / ¿Te conozco?",
+          "type": "conversational_conditional",
+          "nodeClass": "action",
+          "systemMessage": "GESTION DE OBJECION: No, no intentes hacer memoria porque no nos conocemos. De momento solo tenemos en común el sector. Pero te llamaba por algo muy concreto… y continua por donde ibas.",
+          "rules": [
+            {
+              "conditions": {
+                "groups": [
+                  {
+                    "operator": "AND",
+                    "conditions": [
+                      {
+                        "value": "cono",
+                        "operator": "contains",
+                        "variable": "{{_chat_history_3}}",
+                        "valueType": "string"
+                      }
+                    ]
+                  }
+                ],
+                "operator": "AND"
+              },
+              "description": ""
+            },
+            {
+              "conditions": {
+                "groups": [
+                  {
+                    "operator": "AND",
+                    "conditions": [
+                      {
+                        "value": "nada",
+                        "operator": "contains",
+                        "variable": "{{_chat_history_3}}",
+                        "valueType": "string"
+                      }
+                    ]
+                  }
+                ],
+                "operator": "AND"
+              },
+              "description": ""
+            },
+            {
+              "conditions": {
+                "groups": [
+                  {
+                    "operator": "AND",
+                    "conditions": [
+                      {
+                        "value": "reconoc",
+                        "operator": "contains",
+                        "variable": "{{_chat_history_3}}",
+                        "valueType": "string"
+                      }
+                    ]
+                  }
+                ],
+                "operator": "AND"
+              },
+              "description": ""
+            }
+          ],
+          "params": {},
+          "autoNext": false,
+          "isEndNode": false,
+          "isGlobalNode": false,
+          "maxIterations": 3,
+          "cannedStarters": [],
+          "knowledgeBaseIds": [],
+          "inputReplacements": [],
+          "responseReplacements": [],
+          "overrideLlmTimeout": 30,
+          "branches": [],
+          "extractions": []
+        }
+      },
+      {
+        "id": "node-obj_me_pillas_fatal",
+        "type": "moduleCard",
+        "position": {
+          "x": 450,
+          "y": 1600
+        },
+        "data": {
+          "id": "data-obj_me_pillas_fatal",
+          "name": "Me pillas fatal / Estoy en una reunión / Estoy conduciendo",
+          "type": "conversational_conditional",
+          "nodeClass": "action",
+          "systemMessage": "GESTION DE OBJECION: Como vas conduciendo, dime tu email y te dejo una propuesta de hueco para la semana que viene. y continua por donde ibas.",
+          "rules": [
+            {
+              "conditions": {
+                "groups": [
+                  {
+                    "operator": "AND",
+                    "conditions": [
+                      {
+                        "value": "pill",
+                        "operator": "contains",
+                        "variable": "{{_chat_history_3}}",
+                        "valueType": "string"
+                      }
+                    ]
+                  }
+                ],
+                "operator": "AND"
+              },
+              "description": ""
+            },
+            {
+              "conditions": {
+                "groups": [
+                  {
+                    "operator": "AND",
+                    "conditions": [
+                      {
+                        "value": "fata",
+                        "operator": "contains",
+                        "variable": "{{_chat_history_3}}",
+                        "valueType": "string"
+                      }
+                    ]
+                  }
+                ],
+                "operator": "AND"
+              },
+              "description": ""
+            },
+            {
+              "conditions": {
+                "groups": [
+                  {
+                    "operator": "AND",
+                    "conditions": [
+                      {
+                        "value": "ocup",
+                        "operator": "contains",
+                        "variable": "{{_chat_history_3}}",
+                        "valueType": "string"
+                      }
+                    ]
+                  }
+                ],
+                "operator": "AND"
+              },
+              "description": ""
+            }
+          ],
+          "params": {},
+          "autoNext": false,
+          "isEndNode": false,
+          "isGlobalNode": false,
+          "maxIterations": 3,
+          "cannedStarters": [],
+          "knowledgeBaseIds": [],
+          "inputReplacements": [],
+          "responseReplacements": [],
+          "overrideLlmTimeout": 30,
+          "branches": [],
+          "extractions": []
+        }
+      },
+      {
+        "id": "node-obj_somos_desarrolladores",
+        "type": "moduleCard",
+        "position": {
+          "x": 900,
+          "y": 1600
+        },
+        "data": {
+          "id": "data-obj_somos_desarrolladores",
+          "name": "Somos desarrolladores, nosotros ya hacemos software",
+          "type": "conversational_conditional",
+          "nodeClass": "action",
+          "systemMessage": "GESTION DE OBJECION: Justo por eso te llamaba. Porque vuestra venta es muy cualitativa y técnica. Nosotros trabajamos con empresas de software que tienen el problema de que la información se queda en la cabeza del comercial y no baja al CRM. y continua por donde ibas.",
+          "rules": [
+            {
+              "conditions": {
+                "groups": [
+                  {
+                    "operator": "AND",
+                    "conditions": [
+                      {
+                        "value": "desa",
+                        "operator": "contains",
+                        "variable": "{{_chat_history_3}}",
+                        "valueType": "string"
+                      }
+                    ]
+                  }
+                ],
+                "operator": "AND"
+              },
+              "description": ""
+            },
+            {
+              "conditions": {
+                "groups": [
+                  {
+                    "operator": "AND",
+                    "conditions": [
+                      {
+                        "value": "soft",
+                        "operator": "contains",
+                        "variable": "{{_chat_history_3}}",
+                        "valueType": "string"
+                      }
+                    ]
+                  }
+                ],
+                "operator": "AND"
+              },
+              "description": ""
+            },
+            {
+              "conditions": {
+                "groups": [
+                  {
+                    "operator": "AND",
+                    "conditions": [
+                      {
+                        "value": "desarroll",
+                        "operator": "contains",
+                        "variable": "{{_chat_history_3}}",
+                        "valueType": "string"
+                      }
+                    ]
+                  }
+                ],
+                "operator": "AND"
+              },
+              "description": ""
+            }
+          ],
+          "params": {},
+          "autoNext": false,
+          "isEndNode": false,
+          "isGlobalNode": false,
+          "maxIterations": 3,
+          "cannedStarters": [],
+          "knowledgeBaseIds": [],
+          "inputReplacements": [],
+          "responseReplacements": [],
+          "overrideLlmTimeout": 30,
+          "branches": [],
+          "extractions": []
+        }
+      },
+      {
+        "id": "node-obj_preguntas_tecnicas",
+        "type": "moduleCard",
+        "position": {
+          "x": 1350,
+          "y": 1600
+        },
+        "data": {
+          "id": "data-obj_preguntas_tecnicas",
+          "name": "Preguntas técnicas detalladas (seguridad, privacidad, integraciones)",
+          "type": "conversational_conditional",
+          "nodeClass": "action",
+          "systemMessage": "GESTION DE OBJECION: Mira, yo no tengo tanto detalle sobre eso, es precisamente por eso por lo que me encantaría que tuvieras una reunión de 20 minutos con quién puede explicártelo con precisión. ¿Cómo lo tienes el [Día]? y continua por donde ibas.",
+          "rules": [
+            {
+              "conditions": {
+                "groups": [
+                  {
+                    "operator": "AND",
+                    "conditions": [
+                      {
+                        "value": "tecn",
+                        "operator": "contains",
+                        "variable": "{{_chat_history_3}}",
+                        "valueType": "string"
+                      }
+                    ]
+                  }
+                ],
+                "operator": "AND"
+              },
+              "description": ""
+            },
+            {
+              "conditions": {
+                "groups": [
+                  {
+                    "operator": "AND",
+                    "conditions": [
+                      {
+                        "value": "segu",
+                        "operator": "contains",
+                        "variable": "{{_chat_history_3}}",
+                        "valueType": "string"
+                      }
+                    ]
+                  }
+                ],
+                "operator": "AND"
+              },
+              "description": ""
+            },
+            {
+              "conditions": {
+                "groups": [
+                  {
+                    "operator": "AND",
+                    "conditions": [
+                      {
+                        "value": "privac",
+                        "operator": "contains",
+                        "variable": "{{_chat_history_3}}",
+                        "valueType": "string"
+                      }
+                    ]
+                  }
+                ],
+                "operator": "AND"
+              },
+              "description": ""
+            }
+          ],
+          "params": {},
+          "autoNext": false,
+          "isEndNode": false,
+          "isGlobalNode": false,
+          "maxIterations": 3,
+          "cannedStarters": [],
+          "knowledgeBaseIds": [],
+          "inputReplacements": [],
+          "responseReplacements": [],
+          "overrideLlmTimeout": 30,
+          "branches": [],
+          "extractions": []
+        }
+      },
+      {
+        "id": "node-faq_se_integra_con_mi_crm",
+        "type": "moduleCard",
+        "position": {
+          "x": 450,
+          "y": 2000
+        },
+        "data": {
+          "id": "data-faq_se_integra_con_mi_crm",
+          "name": "¿Se integra con mi CRM?",
+          "type": "conversational_conditional",
+          "nodeClass": "action",
+          "systemMessage": "FAQ INLINE: Sí, tenemos API abierta y nos integramos con los principales (Salesforce, Hubspot, etc.) o incluso herramientas no-code.",
+          "rules": [
+            {
+              "conditions": {
+                "groups": [
+                  {
+                    "operator": "AND",
+                    "conditions": [
+                      {
+                        "value": "integracion",
+                        "operator": "contains",
+                        "variable": "{{_chat_history_3}}",
+                        "valueType": "string"
+                      }
+                    ]
+                  }
+                ],
+                "operator": "AND"
+              },
+              "description": ""
+            },
+            {
+              "conditions": {
+                "groups": [
+                  {
+                    "operator": "AND",
+                    "conditions": [
+                      {
+                        "value": "crm",
+                        "operator": "contains",
+                        "variable": "{{_chat_history_3}}",
+                        "valueType": "string"
+                      }
+                    ]
+                  }
+                ],
+                "operator": "AND"
+              },
+              "description": ""
+            },
+            {
+              "conditions": {
+                "groups": [
+                  {
+                    "operator": "AND",
+                    "conditions": [
+                      {
+                        "value": "api",
+                        "operator": "contains",
+                        "variable": "{{_chat_history_3}}",
+                        "valueType": "string"
+                      }
+                    ]
+                  }
+                ],
+                "operator": "AND"
+              },
+              "description": ""
+            }
+          ],
+          "params": {},
+          "autoNext": false,
+          "isEndNode": false,
+          "isGlobalNode": false,
+          "maxIterations": 3,
+          "cannedStarters": [],
+          "knowledgeBaseIds": [],
+          "inputReplacements": [],
+          "responseReplacements": [],
+          "overrideLlmTimeout": 30,
+          "branches": [],
+          "extractions": []
+        }
+      },
+      {
+        "id": "node-faq_es_seguro_privado",
+        "type": "moduleCard",
+        "position": {
+          "x": 900,
+          "y": 2000
+        },
+        "data": {
+          "id": "data-faq_es_seguro_privado",
+          "name": "¿Es seguro / privado?",
+          "type": "conversational_conditional",
+          "nodeClass": "action",
+          "systemMessage": "FAQ INLINE: Imprescindible. Se guarda en repositorio propio con acceso exclusivo para ti. Si profundizan: redirigir a reunión.",
+          "rules": [
+            {
+              "conditions": {
+                "groups": [
+                  {
+                    "operator": "AND",
+                    "conditions": [
+                      {
+                        "value": "seguridad",
+                        "operator": "contains",
+                        "variable": "{{_chat_history_3}}",
+                        "valueType": "string"
+                      }
+                    ]
+                  }
+                ],
+                "operator": "AND"
+              },
+              "description": ""
+            },
+            {
+              "conditions": {
+                "groups": [
+                  {
+                    "operator": "AND",
+                    "conditions": [
+                      {
+                        "value": "privacidad",
+                        "operator": "contains",
+                        "variable": "{{_chat_history_3}}",
+                        "valueType": "string"
+                      }
+                    ]
+                  }
+                ],
+                "operator": "AND"
+              },
+              "description": ""
+            },
+            {
+              "conditions": {
+                "groups": [
+                  {
+                    "operator": "AND",
+                    "conditions": [
+                      {
+                        "value": "seguro",
+                        "operator": "contains",
+                        "variable": "{{_chat_history_3}}",
+                        "valueType": "string"
+                      }
+                    ]
+                  }
+                ],
+                "operator": "AND"
+              },
+              "description": ""
+            }
+          ],
+          "params": {},
+          "autoNext": false,
+          "isEndNode": false,
+          "isGlobalNode": false,
+          "maxIterations": 3,
+          "cannedStarters": [],
+          "knowledgeBaseIds": [],
+          "inputReplacements": [],
+          "responseReplacements": [],
+          "overrideLlmTimeout": 30,
+          "branches": [],
+          "extractions": []
+        }
+      },
+      {
+        "id": "node-faq_traduce_idiomas",
+        "type": "moduleCard",
+        "position": {
+          "x": 1350,
+          "y": 2000
+        },
+        "data": {
+          "id": "data-faq_traduce_idiomas",
+          "name": "¿Traduce idiomas?",
+          "type": "conversational_conditional",
+          "nodeClass": "action",
+          "systemMessage": "FAQ INLINE: Sí, al ser IA detecta y traduce. Ayudamos a empresas con reuniones internacionales (Japón, India, USA).",
+          "rules": [
+            {
+              "conditions": {
+                "groups": [
+                  {
+                    "operator": "AND",
+                    "conditions": [
+                      {
+                        "value": "traduccion",
+                        "operator": "contains",
+                        "variable": "{{_chat_history_3}}",
+                        "valueType": "string"
+                      }
+                    ]
+                  }
+                ],
+                "operator": "AND"
+              },
+              "description": ""
+            },
+            {
+              "conditions": {
+                "groups": [
+                  {
+                    "operator": "AND",
+                    "conditions": [
+                      {
+                        "value": "idioma",
+                        "operator": "contains",
+                        "variable": "{{_chat_history_3}}",
+                        "valueType": "string"
+                      }
+                    ]
+                  }
+                ],
+                "operator": "AND"
+              },
+              "description": ""
+            },
+            {
+              "conditions": {
+                "groups": [
+                  {
+                    "operator": "AND",
+                    "conditions": [
+                      {
+                        "value": "lengua",
+                        "operator": "contains",
+                        "variable": "{{_chat_history_3}}",
+                        "valueType": "string"
+                      }
+                    ]
+                  }
+                ],
+                "operator": "AND"
+              },
+              "description": ""
+            }
+          ],
+          "params": {},
+          "autoNext": false,
+          "isEndNode": false,
+          "isGlobalNode": false,
+          "maxIterations": 3,
+          "cannedStarters": [],
+          "knowledgeBaseIds": [],
+          "inputReplacements": [],
+          "responseReplacements": [],
+          "overrideLlmTimeout": 30,
+          "branches": [],
+          "extractions": []
+        }
+      },
+      {
+        "id": "node-persona_equivocada",
+        "type": "moduleCard",
+        "position": {
+          "x": 1800,
+          "y": 1200
+        },
+        "data": {
+          "id": "data-persona_equivocada",
+          "name": "Persona equivocada",
+          "type": "conversational_conditional",
+          "nodeClass": "action",
+          "systemMessage": "RUPTURA — Persona equivocada:\n\n«Disculpa, parece que me he equivocado de contacto. No te quito más tiempo. ¡Hasta pronto!»\n\n→ CUELGA inmediatamente. No intentar redirigir.",
+          "rules": [
+            {
+              "conditions": {
+                "groups": [
+                  {
+                    "operator": "AND",
+                    "conditions": [
+                      {
+                        "value": "equivocado",
+                        "operator": "contains",
+                        "variable": "{{_chat_history_3}}",
+                        "valueType": "string"
+                      }
+                    ]
+                  }
+                ],
+                "operator": "AND"
+              },
+              "description": ""
+            },
+            {
+              "conditions": {
+                "groups": [
+                  {
+                    "operator": "AND",
+                    "conditions": [
+                      {
+                        "value": "equivoca",
+                        "operator": "contains",
+                        "variable": "{{_chat_history_3}}",
+                        "valueType": "string"
+                      }
+                    ]
+                  }
+                ],
+                "operator": "AND"
+              },
+              "description": ""
+            },
+            {
+              "conditions": {
+                "groups": [
+                  {
+                    "operator": "AND",
+                    "conditions": [
+                      {
+                        "value": "no soy",
+                        "operator": "contains",
+                        "variable": "{{_chat_history_3}}",
+                        "valueType": "string"
+                      }
+                    ]
+                  }
+                ],
+                "operator": "AND"
+              },
+              "description": ""
+            },
+            {
+              "conditions": {
+                "groups": [
+                  {
+                    "operator": "AND",
+                    "conditions": [
+                      {
+                        "value": "número incorrecto",
+                        "operator": "contains",
+                        "variable": "{{_chat_history_3}}",
+                        "valueType": "string"
+                      }
+                    ]
+                  }
+                ],
+                "operator": "AND"
+              },
+              "description": ""
+            }
+          ],
+          "params": {},
+          "autoNext": false,
+          "isEndNode": false,
+          "isGlobalNode": true,
+          "maxIterations": 3,
+          "cannedStarters": [],
+          "knowledgeBaseIds": [],
+          "inputReplacements": [],
+          "responseReplacements": [],
+          "overrideLlmTimeout": 30,
+          "branches": [],
+          "extractions": []
+        }
+      }
+    ],
+    "edges": [
+      {
+        "id": "xy-edge__node-startdata-start-conversational-connector-node-presentacion_contexto",
+        "source": "node-start",
+        "target": "node-presentacion_contexto",
+        "sourceHandle": "data-start-conversational-connector"
+      },
+      {
+        "id": "xy-edge__node-presentacion_contextodata-presentacion_contexto-conversational-connector-node-confirmacion_cargo",
+        "source": "node-presentacion_contexto",
+        "target": "node-confirmacion_cargo",
+        "sourceHandle": "data-presentacion_contexto-conversational-connector"
+      },
+      {
+        "id": "xy-edge__node-confirmacion_cargodata-confirmacion_cargo-conversational-connector-node-detectar_intencion",
+        "source": "node-confirmacion_cargo",
+        "target": "node-detectar_intencion",
+        "sourceHandle": "data-confirmacion_cargo-conversational-connector"
+      },
+      {
+        "id": "xy-edge__node-detectar_intencionsi-si-node-escenario_si_si",
+        "source": "node-detectar_intencion",
+        "target": "node-escenario_si_si",
+        "sourceHandle": "si-si"
+      },
+      {
+        "id": "xy-edge__node-detectar_intencionsi-no-node-escenario_si_no",
+        "source": "node-detectar_intencion",
+        "target": "node-escenario_si_no",
+        "sourceHandle": "si-no"
+      },
+      {
+        "id": "xy-edge__node-detectar_intencionno-si-node-escenario_no_si",
+        "source": "node-detectar_intencion",
+        "target": "node-escenario_no_si",
+        "sourceHandle": "no-si"
+      },
+      {
+        "id": "xy-edge__node-detectar_intencionno-no-node-escenario_no_no",
+        "source": "node-detectar_intencion",
+        "target": "node-escenario_no_no",
+        "sourceHandle": "no-no"
+      },
+      {
+        "id": "xy-edge__node-escenario_si_siinteres-node-propuesta_valor",
+        "source": "node-escenario_si_si",
+        "target": "node-propuesta_valor",
+        "sourceHandle": "interes"
+      },
+      {
+        "id": "xy-edge__node-escenario_si_nodata-escenario_si_no-conversational-connector-node-propuesta_valor",
+        "source": "node-escenario_si_no",
+        "target": "node-propuesta_valor",
+        "sourceHandle": "data-escenario_si_no-conversational-connector"
+      },
+      {
+        "id": "xy-edge__node-escenario_no_sidata-escenario_no_si-conversational-connector-node-propuesta_valor",
+        "source": "node-escenario_no_si",
+        "target": "node-propuesta_valor",
+        "sourceHandle": "data-escenario_no_si-conversational-connector"
+      },
+      {
+        "id": "xy-edge__node-escenario_no_nodata-escenario_no_no-conversational-connector-node-propuesta_valor",
+        "source": "node-escenario_no_no",
+        "target": "node-propuesta_valor",
+        "sourceHandle": "data-escenario_no_no-conversational-connector"
+      },
+      {
+        "id": "xy-edge__node-propuesta_valordata-propuesta_valor-conversational-connector-node-transicion_cierre",
+        "source": "node-propuesta_valor",
+        "target": "node-transicion_cierre",
+        "sourceHandle": "data-propuesta_valor-conversational-connector"
+      },
+      {
+        "id": "xy-edge__node-transicion_cierredata-transicion_cierre-conversational-connector-node-tecnica_embudo",
+        "source": "node-transicion_cierre",
+        "target": "node-tecnica_embudo",
+        "sourceHandle": "data-transicion_cierre-conversational-connector"
+      },
+      {
+        "id": "xy-edge__node-tecnica_embudodata-tecnica_embudo-conversational-connector-node-captura_email",
+        "source": "node-tecnica_embudo",
+        "target": "node-captura_email",
+        "sourceHandle": "data-tecnica_embudo-conversational-connector"
+      },
+      {
+        "id": "xy-edge__node-captura_emaildata-captura_email-conversational-connector-node-end",
+        "source": "node-captura_email",
+        "target": "node-end",
+        "sourceHandle": "data-captura_email-conversational-connector"
+      },
+      {
+        "id": "xy-edge__node-escenario_si_sisin-interes-node-end",
+        "source": "node-escenario_si_si",
+        "target": "node-end",
+        "sourceHandle": "sin-interes"
+      }
+    ],
+    "variables": {}
+  }
+}

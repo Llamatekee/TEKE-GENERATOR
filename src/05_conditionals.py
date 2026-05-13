@@ -14,14 +14,19 @@ def add_conditionals(md_content, input_json_path, output_json_path, client, verb
         {
           "id": "<ID unico, ej. obj_tiempo o faq_precio>",
           "name": "<Nombre de la objecion o FAQ>",
-          "keywords": ["<raiz1>", "<raiz2>", "<raiz3>"],
-          "systemMessage": "<Formatea la respuesta y directivas juntas. Empieza siempre con 'GESTION DE OBJECION:' o 'FAQ INLINE:', luego pon la frase literal que dice el agente, y termina con la directiva (ej. 'y continua por donde ibas').>"
+          "keywords": ["<raiz1>", "<raiz2>", "<raiz3>", "<raiz4>", "<raiz5>", "<raiz6>"],
+          "systemMessage": "<Empieza con 'GESTION DE OBJECION:' o 'FAQ INLINE:', luego la frase literal del agente, termina con la directiva (ej. 'y continua por donde ibas').>"
         }
       ]
     }
     
-    REGLA CLAVE PARA KEYWORDS: Extrae la raiz de la palabra para maximizar coincidencias. 
-    Ejemplo: Para 'correo', usa 'corre'. Para 'ocupado', usa 'ocup'. Para 'LinkedIn', usa 'linkedin'. Incluye siempre 3 o 4 variaciones logicas.
+    REGLAS PARA KEYWORDS (MINIMO 6, MAXIMO 8 por condicional):
+    - Extrae la raiz de la palabra para maximizar coincidencias: 'correo' -> 'corre', 'ocupado' -> 'ocup'.
+    - Incluye sinonimos y variantes: si la objecion es sobre tiempo, incluye raices de 'tiempo', 'ahora', 'momento', 'prisa', 'rapido', 'luego'.
+    - Incluye variantes en distinto idioma si el prospecto puede hablar en otro: 'time', 'busy', 'later'.
+    - Incluye formas verbales distintas: 'llama' y 'llamo' son raices distintas, incluye ambas si aplican.
+    - Si el trigger tiene una palabra muy especifica (nombre propio, marca), incluye esa palabra completa ademas de su raiz.
+    - Nunca repitas la misma raiz dos veces. Cada keyword debe aportar cobertura nueva.
     """
 
     response = client.chat.completions.create(
@@ -83,6 +88,8 @@ def add_conditionals(md_content, input_json_path, output_json_path, client, verb
                 "isEndNode": False,
                 "isGlobalNode": False,
                 "maxIterations": 3,
+                "asyncExecution": False,
+                "blockUserInput": False,
                 "cannedStarters": [],
                 "knowledgeBaseIds": [],
                 "inputReplacements": [],

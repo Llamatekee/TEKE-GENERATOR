@@ -19,9 +19,9 @@
       "Entiendo.",
       "Perfecto."
     ],
-    "globalIdentity": "Profesional, directo y enfocado en el cliente. Detectar interés y agendar demo, no vender en la llamada.",
-    "globalStyle": "Natural, breve y al grano.",
-    "globalGuardrails": "No usar diminutivos ni condicionales. No dar sobreinformación al presentarse.",
+    "globalIdentity": "Oliver de SalesScaling, cuyo objetivo es detectar interés y agendar demo, no vender en la llamada.",
+    "globalStyle": "Natural, directo, no vendedor",
+    "globalGuardrails": "No usar diminutivos ni condicionales. No dar sobreinformación al presentarse. No resolver dudas técnicas en la llamada. No sonar excesivamente vendedor. No interrumpir al prospecto. No justificar demasiado la llamada. No repetir información ya dicha. No mencionar que la demo será con el CEO.",
     "globalInstructions": "No usar diminutivos ni condicionales. No dar sobreinformación al presentarse. Marcar los tiempos de la llamada. Redirigir siempre hacia agendar la reunión.",
     "personalityLanguage": "es-ES",
     "callProblemThreshold": 300,
@@ -33,8 +33,78 @@
         "type": "string"
       },
       {
+        "name": "prospect_position",
+        "description": "Cargo del prospecto",
+        "type": "string"
+      },
+      {
         "name": "company_name",
         "description": "Nombre de la empresa del prospecto",
+        "type": "string"
+      },
+      {
+        "name": "contact_number_source",
+        "description": "Fuente de obtención del número de contacto",
+        "type": "string"
+      },
+      {
+        "name": "current_sales_satisfaction",
+        "description": "Satisfacción con las ventas actuales",
+        "type": "enum"
+      },
+      {
+        "name": "sales_reason_knowledge",
+        "description": "Conocimiento de las razones de las ventas",
+        "type": "enum"
+      },
+      {
+        "name": "interest_in_demo",
+        "description": "Interés en la demo si el prospecto muestra curiosidad",
+        "type": "boolean"
+      },
+      {
+        "name": "move_to_value_proposition",
+        "description": "Decisión de avanzar hacia la propuesta de valor",
+        "type": "boolean"
+      },
+      {
+        "name": "current_solution_attempts",
+        "description": "Acciones actuales para solucionar problemas de ventas",
+        "type": "string"
+      },
+      {
+        "name": "current_follow_up_management",
+        "description": "Gestión actual del seguimiento comercial y reuniones",
+        "type": "string"
+      },
+      {
+        "name": "value_proposition_explained",
+        "description": "Si se explicó la propuesta de valor",
+        "type": "boolean"
+      },
+      {
+        "name": "transition_to_closure",
+        "description": "Si se realizó la transición al cierre",
+        "type": "boolean"
+      },
+      {
+        "name": "preferred_time_slot",
+        "description": "Franja horaria preferida para la demo",
+        "type": "enum"
+      },
+      {
+        "name": "appointment_day",
+        "description": "Día agendado para la demo",
+        "type": "string"
+      },
+      {
+        "name": "appointment_time",
+        "description": "Hora agendada para la demo",
+        "type": "string"
+      },
+      {
+        "name": "prospect_email",
+        "description": "Email del prospecto",
         "type": "string"
       },
       {
@@ -44,87 +114,12 @@
       },
       {
         "name": "appointment_confirmed",
-        "description": "Confirmación de la cita agendada",
+        "description": "Si se confirmó la cita para la demo",
         "type": "boolean"
       },
       {
         "name": "objection_raised",
-        "description": "Objeción planteada por el prospecto",
-        "type": "string"
-      },
-      {
-        "name": "call_start_time",
-        "description": "Hora de inicio de la llamada",
-        "type": "string"
-      },
-      {
-        "name": "prospect_company",
-        "description": "Nombre de la empresa del prospecto",
-        "type": "string"
-      },
-      {
-        "name": "prospect_position",
-        "description": "Cargo del prospecto",
-        "type": "string"
-      },
-      {
-        "name": "position_confirmed",
-        "description": "Confirmación del cargo del prospecto",
-        "type": "boolean"
-      },
-      {
-        "name": "selling_satisfaction",
-        "description": "Satisfacción con las ventas actuales",
-        "type": "enum"
-      },
-      {
-        "name": "reason_known",
-        "description": "Conocimiento de las razones de las ventas",
-        "type": "enum"
-      },
-      {
-        "name": "interest_shown",
-        "description": "Interés mostrado por el prospecto",
-        "type": "boolean"
-      },
-      {
-        "name": "solution_discussed",
-        "description": "Discusión sobre la solución",
-        "type": "boolean"
-      },
-      {
-        "name": "current_solution",
-        "description": "Solución actual del prospecto",
-        "type": "string"
-      },
-      {
-        "name": "current_management",
-        "description": "Gestión actual del seguimiento comercial",
-        "type": "string"
-      },
-      {
-        "name": "solution_connected",
-        "description": "Conexión con la solución realizada",
-        "type": "boolean"
-      },
-      {
-        "name": "value_proposition_explained",
-        "description": "Explicación de la propuesta de valor",
-        "type": "boolean"
-      },
-      {
-        "name": "appointment_time",
-        "description": "Hora y fecha de la cita agendada",
-        "type": "string"
-      },
-      {
-        "name": "prospect_email",
-        "description": "Email del prospecto",
-        "type": "string"
-      },
-      {
-        "name": "call_end_time",
-        "description": "Hora de fin de la llamada",
+        "description": "Objeción planteada por el prospecto durante la llamada",
         "type": "string"
       }
     ],
@@ -165,54 +160,18 @@
         },
         "data": {
           "id": "data-start",
-          "name": "Inicio de la llamada",
+          "name": "inicio - Inicio de la llamada",
           "type": "start",
           "nodeClass": "start",
-          "systemMessage": "¿[Nombre]? Sí, buenas. Soy Oliver, de Sales Scaling. ¿Cómo va el día?",
+          "systemMessage": "OBJETIVO: \n- Iniciar la conversación con el prospecto.\nSUPUESTO: \n- El agente tiene el nombre, cargo y empresa del prospecto.\n\"¿{prospect_name}? Sí, buenas. Soy Oliver, de Sales Scaling. ¿Cómo va el día?\" CUANDO el agente inicia la llamada.\nNo hay reglas de clasificación de respuesta en este nodo.\nNo digas nada y toma la rama detectar_intencion.",
           "rules": [],
           "params": {},
           "autoNext": false,
           "isEndNode": false,
           "isGlobalNode": false,
           "maxIterations": 3,
-          "cannedStarters": [],
-          "knowledgeBaseIds": [],
-          "inputReplacements": [],
-          "responseReplacements": [],
-          "overrideLlmTimeout": 30,
-          "branches": [],
-          "extractions": [
-            {
-              "name": "call_start_time",
-              "type": "string",
-              "choices": [],
-              "examples": [],
-              "required": false,
-              "description": "Hora de inicio de la llamada"
-            }
-          ],
-          "connector": "node-presentacion_contexto"
-        }
-      },
-      {
-        "id": "node-presentacion_contexto",
-        "type": "moduleCard",
-        "position": {
-          "x": 450,
-          "y": 0
-        },
-        "data": {
-          "id": "data-presentacion_contexto",
-          "name": "Presentación y contexto",
-          "type": "extractor",
-          "nodeClass": "extractor",
-          "systemMessage": "Somos una de las startups de innovación e IA que forma parte de Lanzadera, la aceleradora de Juan Roig aquí en Valencia. No sé si la ubicas.",
-          "rules": [],
-          "params": {},
-          "autoNext": false,
-          "isEndNode": false,
-          "isGlobalNode": false,
-          "maxIterations": 300,
+          "asyncExecution": false,
+          "blockUserInput": false,
           "cannedStarters": [],
           "knowledgeBaseIds": [],
           "inputReplacements": [],
@@ -229,58 +188,20 @@
               "description": "Nombre del prospecto"
             },
             {
-              "name": "prospect_company",
-              "type": "string",
-              "choices": [],
-              "examples": [],
-              "required": false,
-              "description": "Nombre de la empresa del prospecto"
-            },
-            {
               "name": "prospect_position",
               "type": "string",
               "choices": [],
               "examples": [],
               "required": false,
               "description": "Cargo del prospecto"
-            }
-          ],
-          "connector": "node-confirmacion_cargo"
-        }
-      },
-      {
-        "id": "node-confirmacion_cargo",
-        "type": "moduleCard",
-        "position": {
-          "x": 900,
-          "y": 0
-        },
-        "data": {
-          "id": "data-confirmacion_cargo",
-          "name": "Confirmación del cargo",
-          "type": "extractor",
-          "nodeClass": "extractor",
-          "systemMessage": "Te llamaba porque he visto que eres [Cargo] en [Empresa], ¿es así?",
-          "rules": [],
-          "params": {},
-          "autoNext": false,
-          "isEndNode": false,
-          "isGlobalNode": false,
-          "maxIterations": 300,
-          "cannedStarters": [],
-          "knowledgeBaseIds": [],
-          "inputReplacements": [],
-          "responseReplacements": [],
-          "overrideLlmTimeout": 30,
-          "branches": [],
-          "extractions": [
+            },
             {
-              "name": "position_confirmed",
-              "type": "boolean",
+              "name": "company_name",
+              "type": "string",
               "choices": [],
               "examples": [],
               "required": false,
-              "description": "Confirmación del cargo del prospecto"
+              "description": "Nombre de la empresa del prospecto"
             }
           ],
           "connector": "node-detectar_intencion"
@@ -290,21 +211,23 @@
         "id": "node-detectar_intencion",
         "type": "moduleCard",
         "position": {
-          "x": 1350,
+          "x": 450,
           "y": 0
         },
         "data": {
           "id": "data-detectar_intencion",
-          "name": "Detección de intención",
+          "name": "distribuidor - Detección de intención",
           "type": "conversational",
           "nodeClass": "ask_and_branch",
-          "systemMessage": "Quería preguntarte una cosa muy rápida. ¿Actualmente estáis vendiendo todo lo que os gustaría?",
+          "systemMessage": "OBJETIVO: \n- Determinar el interés del prospecto.\nSUPUESTO: \n- El prospecto ha respondido al saludo inicial.\n\"Somos una de las startups de innovación e IA que forma parte de Lanzadera, la aceleradora de Juan Roig aquí en Valencia. No sé si la ubicas.\" CUANDO el prospecto pregunta sobre la empresa.\n\"Te llamaba porque he visto que eres {prospect_position} en {company_name}, ¿es así?\" CUANDO el agente confirma el cargo del prospecto.\nReglas de clasificación de respuesta: SI / NO / OBJECION / PREGUNTA / AMBIGUO.\nSi el prospecto pregunta '¿De dónde has sacado mi número?', toma la rama gestion_numero.\nSi el prospecto confirma cargo, toma la rama pregunta_1.",
           "rules": [],
           "params": {},
           "autoNext": false,
           "isEndNode": false,
           "isGlobalNode": false,
           "maxIterations": 300,
+          "asyncExecution": false,
+          "blockUserInput": false,
           "cannedStarters": [],
           "knowledgeBaseIds": [],
           "inputReplacements": [],
@@ -312,45 +235,125 @@
           "overrideLlmTimeout": 30,
           "branches": [
             {
-              "id": "escenario_si_si",
-              "name": "Sí / Sí",
-              "next": "node-escenario_si_si",
+              "id": "prospecto_pregunta_numero",
+              "name": "Prospecto pregunta '¿De dónde has sacado mi número?'",
+              "next": "node-gestion_numero",
               "description": "",
               "fillPhrases": [
-                "Claro."
+                "Responder de forma breve y natural."
               ]
             },
             {
-              "id": "escenario_si_no",
-              "name": "Sí / No",
-              "next": "node-escenario_si_no",
+              "id": "prospecto_confirma_cargo",
+              "name": "Prospecto confirma cargo",
+              "next": "node-pregunta_1",
               "description": "",
               "fillPhrases": [
-                "Claro."
-              ]
-            },
-            {
-              "id": "escenario_no_si",
-              "name": "No / Sí",
-              "next": "node-escenario_no_si",
-              "description": "",
-              "fillPhrases": [
-                "Claro."
-              ]
-            },
-            {
-              "id": "escenario_no_no",
-              "name": "No / No",
-              "next": "node-escenario_no_no",
-              "description": "",
-              "fillPhrases": [
-                "Claro."
+                "Continuar con el descubrimiento."
               ]
             }
           ],
           "extractions": [
             {
-              "name": "selling_satisfaction",
+              "name": "contact_number_source",
+              "type": "string",
+              "choices": [],
+              "examples": [],
+              "required": false,
+              "description": "Fuente de obtención del número de contacto"
+            }
+          ]
+        }
+      },
+      {
+        "id": "node-gestion_numero",
+        "type": "moduleCard",
+        "position": {
+          "x": 900,
+          "y": 0
+        },
+        "data": {
+          "id": "data-gestion_numero",
+          "name": "respuesta - Gestión de número de contacto",
+          "type": "conversational",
+          "nodeClass": "ask_and_branch",
+          "systemMessage": "OBJETIVO: \n- Responder a la pregunta sobre el origen del número.\nSUPUESTO: \n- El prospecto ha preguntado sobre el origen del número.\n\"Trabajamos con empresas de vuestro sector y revisando información pública vi tu perfil y la empresa.\" CUANDO el prospecto pregunta sobre el origen del número.\nNo hay reglas de clasificación de respuesta en este nodo.\nNo digas nada y toma la rama pregunta_1.",
+          "rules": [],
+          "params": {},
+          "autoNext": false,
+          "isEndNode": false,
+          "isGlobalNode": false,
+          "maxIterations": 300,
+          "asyncExecution": false,
+          "blockUserInput": false,
+          "cannedStarters": [],
+          "knowledgeBaseIds": [],
+          "inputReplacements": [],
+          "responseReplacements": [],
+          "overrideLlmTimeout": 30,
+          "branches": [
+            {
+              "id": "branch_continuar",
+              "name": "Continuar",
+              "next": "node-pregunta_1",
+              "description": "Transicion automatica",
+              "fillPhrases": [
+                "Claro."
+              ]
+            }
+          ],
+          "extractions": []
+        }
+      },
+      {
+        "id": "node-pregunta_1",
+        "type": "moduleCard",
+        "position": {
+          "x": 1350,
+          "y": 0
+        },
+        "data": {
+          "id": "data-pregunta_1",
+          "name": "pregunta - Pregunta sobre ventas actuales",
+          "type": "conversational",
+          "nodeClass": "ask_and_branch",
+          "systemMessage": "OBJETIVO: \n- Iniciar el descubrimiento sobre las ventas del prospecto.\nSUPUESTO: \n- El prospecto ha confirmado su cargo.\n\"Quería preguntarte una cosa muy rápida. ¿Actualmente estáis vendiendo todo lo que os gustaría?\" CUANDO el agente inicia el descubrimiento sobre ventas.\nReglas de clasificación de respuesta: SI / NO.\nSi el prospecto responde 'Sí', toma la rama pregunta_2.\nSi el prospecto responde 'No', toma la rama pregunta_2.",
+          "rules": [],
+          "params": {},
+          "autoNext": false,
+          "isEndNode": false,
+          "isGlobalNode": false,
+          "maxIterations": 300,
+          "asyncExecution": false,
+          "blockUserInput": false,
+          "cannedStarters": [],
+          "knowledgeBaseIds": [],
+          "inputReplacements": [],
+          "responseReplacements": [],
+          "overrideLlmTimeout": 30,
+          "branches": [
+            {
+              "id": "prospecto_responde_si",
+              "name": "Prospecto responde 'Sí'",
+              "next": "node-pregunta_2",
+              "description": "",
+              "fillPhrases": [
+                "Continuar con la siguiente pregunta."
+              ]
+            },
+            {
+              "id": "prospecto_responde_no",
+              "name": "Prospecto responde 'No'",
+              "next": "node-pregunta_2",
+              "description": "",
+              "fillPhrases": [
+                "Continuar con la siguiente pregunta."
+              ]
+            }
+          ],
+          "extractions": [
+            {
+              "name": "current_sales_satisfaction",
               "type": "enum",
               "choices": [
                 "sí",
@@ -359,9 +362,77 @@
               "examples": [],
               "required": false,
               "description": "Satisfacción con las ventas actuales"
+            }
+          ]
+        }
+      },
+      {
+        "id": "node-pregunta_2",
+        "type": "moduleCard",
+        "position": {
+          "x": 1800,
+          "y": 0
+        },
+        "data": {
+          "id": "data-pregunta_2",
+          "name": "pregunta - Pregunta sobre razones de ventas",
+          "type": "conversational",
+          "nodeClass": "ask_and_branch",
+          "systemMessage": "OBJETIVO: \n- Profundizar en las razones detrás de las ventas.\nSUPUESTO: \n- El prospecto ha respondido sobre su satisfacción con las ventas.\n\"¿Y sabes exactamente por qué?\" CUANDO el agente profundiza en las razones de las ventas.\nReglas de clasificación de respuesta: SI / NO.\nSi el prospecto responde 'Sí' y 'Sí', toma la rama escenario_1.\nSi el prospecto responde 'Sí' y 'No', toma la rama escenario_2.\nSi el prospecto responde 'No' y 'Sí', toma la rama escenario_3.\nSi el prospecto responde 'No' y 'No', toma la rama escenario_4.",
+          "rules": [],
+          "params": {},
+          "autoNext": false,
+          "isEndNode": false,
+          "isGlobalNode": false,
+          "maxIterations": 300,
+          "asyncExecution": false,
+          "blockUserInput": false,
+          "cannedStarters": [],
+          "knowledgeBaseIds": [],
+          "inputReplacements": [],
+          "responseReplacements": [],
+          "overrideLlmTimeout": 30,
+          "branches": [
+            {
+              "id": "escenario_1",
+              "name": "Escenario 1 — Sí / Sí",
+              "next": "node-escenario_1",
+              "description": "",
+              "fillPhrases": [
+                "El cliente afirma que venden todo lo que quieren y sabe por qué."
+              ]
             },
             {
-              "name": "reason_known",
+              "id": "escenario_2",
+              "name": "Escenario 2 — Sí / No",
+              "next": "node-escenario_2",
+              "description": "",
+              "fillPhrases": [
+                "El cliente cree que venden bien pero no entiende las razones."
+              ]
+            },
+            {
+              "id": "escenario_3",
+              "name": "Escenario 3 — No / Sí",
+              "next": "node-escenario_3",
+              "description": "",
+              "fillPhrases": [
+                "El cliente no vende todo lo que quiere pero cree saber el motivo."
+              ]
+            },
+            {
+              "id": "escenario_4",
+              "name": "Escenario 4 — No / No",
+              "next": "node-escenario_4",
+              "description": "",
+              "fillPhrases": [
+                "El cliente no vende todo lo que quiere y no sabe por qué."
+              ]
+            }
+          ],
+          "extractions": [
+            {
+              "name": "sales_reason_knowledge",
               "type": "enum",
               "choices": [
                 "sí",
@@ -375,24 +446,26 @@
         }
       },
       {
-        "id": "node-escenario_si_si",
+        "id": "node-escenario_1",
         "type": "moduleCard",
         "position": {
-          "x": 1800,
-          "y": 0
+          "x": 0,
+          "y": 400
         },
         "data": {
-          "id": "data-escenario_si_si",
-          "name": "Escenario Sí / Sí",
+          "id": "data-escenario_1",
+          "name": "respuesta - Escenario 1 — Sí / Sí",
           "type": "conversational",
           "nodeClass": "ask_and_branch",
-          "systemMessage": "Perfecto, entonces parece que lo tenéis muy controlado. No quiero hacerte perder tiempo.",
+          "systemMessage": "OBJETIVO: \n- Cerrar la conversación si el prospecto está satisfecho.\nSUPUESTO: \n- El prospecto está satisfecho con sus ventas y conoce las razones.\n\"Perfecto, entonces parece que lo tenéis muy controlado. No quiero hacerte perder tiempo.\" CUANDO el prospecto está satisfecho.\nReglas de clasificación de respuesta: SI / NO.\nSi el cliente muestra curiosidad o interés, toma la rama propuesta_valor.",
           "rules": [],
           "params": {},
           "autoNext": false,
           "isEndNode": false,
           "isGlobalNode": false,
           "maxIterations": 300,
+          "asyncExecution": false,
+          "blockUserInput": false,
           "cannedStarters": [],
           "knowledgeBaseIds": [],
           "inputReplacements": [],
@@ -400,84 +473,48 @@
           "overrideLlmTimeout": 30,
           "branches": [
             {
-              "id": "propuesta_valor",
-              "name": "Curiosidad o interés",
+              "id": "cliente_muestra_curiosidad",
+              "name": "Cliente muestra curiosidad o interés",
               "next": "node-propuesta_valor",
               "description": "",
               "fillPhrases": [
-                "Claro."
+                "Continuar hacia demo."
               ]
             }
           ],
           "extractions": [
             {
-              "name": "interest_shown",
+              "name": "interest_in_demo",
               "type": "boolean",
               "choices": [],
               "examples": [],
               "required": false,
-              "description": "Interés mostrado por el prospecto"
+              "description": "Interés en la demo si el prospecto muestra curiosidad"
             }
           ]
         }
       },
       {
-        "id": "node-escenario_si_no",
-        "type": "moduleCard",
-        "position": {
-          "x": 0,
-          "y": 400
-        },
-        "data": {
-          "id": "data-escenario_si_no",
-          "name": "Escenario Sí / No",
-          "type": "extractor",
-          "nodeClass": "extractor",
-          "systemMessage": "Entiendo. Justamente ahí solemos ayudar bastante, porque muchas empresas tienen resultados pero no visibilidad real de qué acciones están generando esos resultados.",
-          "rules": [],
-          "params": {},
-          "autoNext": false,
-          "isEndNode": false,
-          "isGlobalNode": false,
-          "maxIterations": 300,
-          "cannedStarters": [],
-          "knowledgeBaseIds": [],
-          "inputReplacements": [],
-          "responseReplacements": [],
-          "overrideLlmTimeout": 30,
-          "branches": [],
-          "extractions": [
-            {
-              "name": "solution_discussed",
-              "type": "boolean",
-              "choices": [],
-              "examples": [],
-              "required": false,
-              "description": "Discusión sobre la solución"
-            }
-          ],
-          "connector": "node-propuesta_valor"
-        }
-      },
-      {
-        "id": "node-escenario_no_si",
+        "id": "node-escenario_2",
         "type": "moduleCard",
         "position": {
           "x": 450,
           "y": 400
         },
         "data": {
-          "id": "data-escenario_no_si",
-          "name": "Escenario No / Sí",
+          "id": "data-escenario_2",
+          "name": "respuesta - Escenario 2 — Sí / No",
           "type": "extractor",
           "nodeClass": "extractor",
-          "systemMessage": "¿Y qué estáis haciendo ahora mismo para solucionarlo?",
+          "systemMessage": "OBJETIVO: \n- Avanzar hacia la solución.\nSUPUESTO: \n- El prospecto tiene resultados pero no visibilidad de las razones.\n\"Entiendo. Justamente ahí solemos ayudar bastante, porque muchas empresas tienen resultados pero no visibilidad real de qué acciones están generando esos resultados.\" CUANDO el prospecto no entiende las razones de sus ventas.\nNo hay reglas de clasificación de respuesta en este nodo.\nNo digas nada y toma la rama propuesta_valor.",
           "rules": [],
           "params": {},
           "autoNext": false,
           "isEndNode": false,
           "isGlobalNode": false,
           "maxIterations": 300,
+          "asyncExecution": false,
+          "blockUserInput": false,
           "cannedStarters": [],
           "knowledgeBaseIds": [],
           "inputReplacements": [],
@@ -486,36 +523,38 @@
           "branches": [],
           "extractions": [
             {
-              "name": "current_solution",
-              "type": "string",
+              "name": "move_to_value_proposition",
+              "type": "boolean",
               "choices": [],
               "examples": [],
               "required": false,
-              "description": "Solución actual del prospecto"
+              "description": "Decisión de avanzar hacia la propuesta de valor"
             }
           ],
-          "connector": "node-conectar_solucion"
+          "connector": "node-propuesta_valor"
         }
       },
       {
-        "id": "node-escenario_no_no",
+        "id": "node-escenario_3",
         "type": "moduleCard",
         "position": {
           "x": 900,
           "y": 400
         },
         "data": {
-          "id": "data-escenario_no_no",
-          "name": "Escenario No / No",
+          "id": "data-escenario_3",
+          "name": "pregunta - Escenario 3 — No / Sí",
           "type": "extractor",
           "nodeClass": "extractor",
-          "systemMessage": "Entonces te he caído del cielo. ¿Cómo estáis gestionando ahora mismo el seguimiento comercial y las reuniones?",
+          "systemMessage": "OBJETIVO: \n- Profundizar en las acciones actuales del prospecto.\nSUPUESTO: \n- El prospecto no vende todo lo que quiere pero cree saber el motivo.\n\"¿Y qué estáis haciendo ahora mismo para solucionarlo?\" CUANDO el prospecto cree saber el motivo de sus ventas.\nNo hay reglas de clasificación de respuesta en este nodo.\nNo digas nada y toma la rama propuesta_valor.",
           "rules": [],
           "params": {},
           "autoNext": false,
           "isEndNode": false,
           "isGlobalNode": false,
           "maxIterations": 300,
+          "asyncExecution": false,
+          "blockUserInput": false,
           "cannedStarters": [],
           "knowledgeBaseIds": [],
           "inputReplacements": [],
@@ -524,36 +563,38 @@
           "branches": [],
           "extractions": [
             {
-              "name": "current_management",
+              "name": "current_solution_attempts",
               "type": "string",
               "choices": [],
               "examples": [],
               "required": false,
-              "description": "Gestión actual del seguimiento comercial"
+              "description": "Acciones actuales para solucionar problemas de ventas"
             }
           ],
-          "connector": "node-conectar_solucion"
+          "connector": "node-propuesta_valor"
         }
       },
       {
-        "id": "node-conectar_solucion",
+        "id": "node-escenario_4",
         "type": "moduleCard",
         "position": {
           "x": 1350,
           "y": 400
         },
         "data": {
-          "id": "data-conectar_solucion",
-          "name": "Conectar con la solución",
+          "id": "data-escenario_4",
+          "name": "pregunta - Escenario 4 — No / No",
           "type": "extractor",
           "nodeClass": "extractor",
-          "systemMessage": "Por lo que me has contado, creo que tiene sentido que veas la herramienta y valores tú mismo si encaja con vuestro proceso.",
+          "systemMessage": "OBJETIVO: \n- Explorar la gestión actual del prospecto.\nSUPUESTO: \n- El prospecto no vende todo lo que quiere y no sabe por qué.\n\"Entonces te he caído del cielo.\" CUANDO el prospecto no sabe por qué no vende.\n\"¿Cómo estáis gestionando ahora mismo el seguimiento comercial y las reuniones?\" CUANDO el prospecto no sabe por qué no vende.\nNo hay reglas de clasificación de respuesta en este nodo.\nNo digas nada y toma la rama propuesta_valor.",
           "rules": [],
           "params": {},
           "autoNext": false,
           "isEndNode": false,
           "isGlobalNode": false,
           "maxIterations": 300,
+          "asyncExecution": false,
+          "blockUserInput": false,
           "cannedStarters": [],
           "knowledgeBaseIds": [],
           "inputReplacements": [],
@@ -562,12 +603,12 @@
           "branches": [],
           "extractions": [
             {
-              "name": "solution_connected",
-              "type": "boolean",
+              "name": "current_follow_up_management",
+              "type": "string",
               "choices": [],
               "examples": [],
               "required": false,
-              "description": "Conexión con la solución realizada"
+              "description": "Gestión actual del seguimiento comercial y reuniones"
             }
           ],
           "connector": "node-propuesta_valor"
@@ -582,16 +623,18 @@
         },
         "data": {
           "id": "data-propuesta_valor",
-          "name": "Propuesta de valor",
+          "name": "informacion - Propuesta de Valor",
           "type": "extractor",
           "nodeClass": "extractor",
-          "systemMessage": "Te lo digo porque tenemos un software que hace justamente eso: ayuda a entender por qué se vende más o menos. La herramienta analiza las interacciones comerciales, las reuniones y los procesos de venta utilizando inteligencia artificial para detectar patrones, oportunidades de mejora y puntos donde se están perdiendo ventas. Además, toda esa información queda organizada automáticamente para que el equipo tenga visibilidad real de lo que está ocurriendo.",
+          "systemMessage": "OBJETIVO: \n- Presentar brevemente la propuesta de valor de SalesScaling.\nSUPUESTO: \n- El prospecto ha mostrado interés o curiosidad.\n\"Te lo digo porque tenemos un software que hace justamente eso: ayuda a entender por qué se vende más o menos.\" CUANDO el prospecto muestra interés.\n\"La herramienta analiza las interacciones comerciales, las reuniones y los procesos de venta utilizando inteligencia artificial para detectar patrones, oportunidades de mejora y puntos donde se están perdiendo ventas.\" CUANDO el prospecto muestra interés.\n\"Además, toda esa información queda organizada automáticamente para que el equipo tenga visibilidad real de lo que está ocurriendo.\" CUANDO el prospecto muestra interés.\nNo hay reglas de clasificación de respuesta en este nodo.\nNo digas nada y toma la rama transicion_cierre.",
           "rules": [],
           "params": {},
           "autoNext": false,
           "isEndNode": false,
           "isGlobalNode": false,
           "maxIterations": 300,
+          "asyncExecution": false,
+          "blockUserInput": false,
           "cannedStarters": [],
           "knowledgeBaseIds": [],
           "inputReplacements": [],
@@ -605,31 +648,33 @@
               "choices": [],
               "examples": [],
               "required": false,
-              "description": "Explicación de la propuesta de valor"
+              "description": "Si se explicó la propuesta de valor"
             }
           ],
-          "connector": "node-cierre_agendado"
+          "connector": "node-transicion_cierre"
         }
       },
       {
-        "id": "node-cierre_agendado",
+        "id": "node-transicion_cierre",
         "type": "moduleCard",
         "position": {
           "x": 0,
           "y": 800
         },
         "data": {
-          "id": "data-cierre_agendado",
-          "name": "Cierre y agendado",
+          "id": "data-transicion_cierre",
+          "name": "transicion - Transición al Cierre",
           "type": "extractor",
           "nodeClass": "extractor",
-          "systemMessage": "¿Qué te viene mejor, por la mañana o por la tarde? Perfecto. ¿Mañana te encajaría o prefieres otro día? Vale, entonces te reservo el [día] a las [hora].",
+          "systemMessage": "OBJETIVO: \n- Preparar al prospecto para agendar una demo.\nSUPUESTO: \n- El prospecto ha escuchado la propuesta de valor.\n\"Por lo que me has contado, creo que tiene sentido que veas la herramienta y valores tú mismo si encaja con vuestro proceso.\" CUANDO el prospecto ha escuchado la propuesta de valor.\nNo hay reglas de clasificación de respuesta en este nodo.\nNo digas nada y toma la rama tecnica_embudo.",
           "rules": [],
           "params": {},
           "autoNext": false,
           "isEndNode": false,
           "isGlobalNode": false,
           "maxIterations": 300,
+          "asyncExecution": false,
+          "blockUserInput": false,
           "cannedStarters": [],
           "knowledgeBaseIds": [],
           "inputReplacements": [],
@@ -638,12 +683,71 @@
           "branches": [],
           "extractions": [
             {
+              "name": "transition_to_closure",
+              "type": "boolean",
+              "choices": [],
+              "examples": [],
+              "required": false,
+              "description": "Si se realizó la transición al cierre"
+            }
+          ],
+          "connector": "node-tecnica_embudo"
+        }
+      },
+      {
+        "id": "node-tecnica_embudo",
+        "type": "moduleCard",
+        "position": {
+          "x": 450,
+          "y": 800
+        },
+        "data": {
+          "id": "data-tecnica_embudo",
+          "name": "cierre - Técnica de Embudo",
+          "type": "extractor",
+          "nodeClass": "extractor",
+          "systemMessage": "OBJETIVO: \n- Agendar una demo con el prospecto.\nSUPUESTO: \n- El prospecto está preparado para agendar una demo.\n\"¿Qué te viene mejor, por la mañana o por la tarde?\" CUANDO el prospecto está preparado para agendar una demo.\n\"Perfecto. ¿Mañana te encajaría o prefieres otro día?\" CUANDO el prospecto está preparado para agendar una demo.\n\"Vale, entonces te reservo el [día] a las [hora].\" CUANDO el prospecto está preparado para agendar una demo.\nNo hay reglas de clasificación de respuesta en este nodo.\nNo digas nada y toma la rama captura_email.",
+          "rules": [],
+          "params": {},
+          "autoNext": false,
+          "isEndNode": false,
+          "isGlobalNode": false,
+          "maxIterations": 300,
+          "asyncExecution": false,
+          "blockUserInput": false,
+          "cannedStarters": [],
+          "knowledgeBaseIds": [],
+          "inputReplacements": [],
+          "responseReplacements": [],
+          "overrideLlmTimeout": 30,
+          "branches": [],
+          "extractions": [
+            {
+              "name": "preferred_time_slot",
+              "type": "enum",
+              "choices": [
+                "mañana",
+                "tarde"
+              ],
+              "examples": [],
+              "required": false,
+              "description": "Franja horaria preferida para la demo"
+            },
+            {
+              "name": "appointment_day",
+              "type": "string",
+              "choices": [],
+              "examples": [],
+              "required": false,
+              "description": "Día agendado para la demo"
+            },
+            {
               "name": "appointment_time",
               "type": "string",
               "choices": [],
               "examples": [],
               "required": false,
-              "description": "Hora y fecha de la cita agendada"
+              "description": "Hora agendada para la demo"
             }
           ],
           "connector": "node-captura_email"
@@ -653,21 +757,23 @@
         "id": "node-captura_email",
         "type": "moduleCard",
         "position": {
-          "x": 450,
+          "x": 900,
           "y": 800
         },
         "data": {
           "id": "data-captura_email",
-          "name": "Captura de email",
+          "name": "informacion - Captura de Email",
           "type": "extractor",
           "nodeClass": "extractor",
-          "systemMessage": "Genial. Dime tu email y te dejo la invitación enviada.",
+          "systemMessage": "OBJETIVO: \n- Obtener el email del prospecto para enviar la invitación.\nSUPUESTO: \n- El prospecto ha agendado una demo.\n\"Genial. Dime tu email y te dejo la invitación enviada.\" CUANDO el prospecto ha agendado una demo.\nNo hay reglas de clasificación de respuesta en este nodo.\nNo digas nada y toma la rama end.",
           "rules": [],
           "params": {},
           "autoNext": false,
           "isEndNode": false,
           "isGlobalNode": false,
           "maxIterations": 300,
+          "asyncExecution": false,
+          "blockUserInput": false,
           "cannedStarters": [],
           "knowledgeBaseIds": [],
           "inputReplacements": [],
@@ -691,37 +797,30 @@
         "id": "node-end",
         "type": "moduleCard",
         "position": {
-          "x": 900,
+          "x": 1350,
           "y": 800
         },
         "data": {
           "id": "data-end",
-          "name": "Fin de la llamada",
-          "type": "extractor",
-          "nodeClass": "extractor",
-          "systemMessage": "\n\nDIRECTIVA CRITICA: Despidete del usuario y CUELGA LA LLAMADA inmediatamente.",
+          "name": "fin - Fin de la llamada",
+          "type": "conversational",
+          "nodeClass": "ask_and_branch",
+          "systemMessage": "OBJETIVO: \n- Cerrar la llamada de manera adecuada.\nSUPUESTO: \n- El prospecto ha proporcionado su email.\nNo hay script en este nodo.\nNo hay reglas de clasificación de respuesta en este nodo.\nNo digas nada y termina la llamada.\n\nDIRECTIVA CRITICA: Despidete del usuario y CUELGA LA LLAMADA inmediatamente.",
           "rules": [],
           "params": {},
           "autoNext": false,
           "isEndNode": false,
           "isGlobalNode": false,
           "maxIterations": 300,
+          "asyncExecution": false,
+          "blockUserInput": false,
           "cannedStarters": [],
           "knowledgeBaseIds": [],
           "inputReplacements": [],
           "responseReplacements": [],
           "overrideLlmTimeout": 30,
           "branches": [],
-          "extractions": [
-            {
-              "name": "call_end_time",
-              "type": "string",
-              "choices": [],
-              "examples": [],
-              "required": false,
-              "description": "Hora de fin de la llamada"
-            }
-          ]
+          "extractions": []
         }
       },
       {
@@ -745,7 +844,7 @@
                     "operator": "AND",
                     "conditions": [
                       {
-                        "value": "tiem",
+                        "value": "tiemp",
                         "operator": "contains",
                         "variable": "{{_chat_history_3}}",
                         "valueType": "string"
@@ -764,7 +863,7 @@
                     "operator": "AND",
                     "conditions": [
                       {
-                        "value": "corr",
+                        "value": "corre",
                         "operator": "contains",
                         "variable": "{{_chat_history_3}}",
                         "valueType": "string"
@@ -794,6 +893,63 @@
                 "operator": "AND"
               },
               "description": ""
+            },
+            {
+              "conditions": {
+                "groups": [
+                  {
+                    "operator": "AND",
+                    "conditions": [
+                      {
+                        "value": "ocup",
+                        "operator": "contains",
+                        "variable": "{{_chat_history_3}}",
+                        "valueType": "string"
+                      }
+                    ]
+                  }
+                ],
+                "operator": "AND"
+              },
+              "description": ""
+            },
+            {
+              "conditions": {
+                "groups": [
+                  {
+                    "operator": "AND",
+                    "conditions": [
+                      {
+                        "value": "luego",
+                        "operator": "contains",
+                        "variable": "{{_chat_history_3}}",
+                        "valueType": "string"
+                      }
+                    ]
+                  }
+                ],
+                "operator": "AND"
+              },
+              "description": ""
+            },
+            {
+              "conditions": {
+                "groups": [
+                  {
+                    "operator": "AND",
+                    "conditions": [
+                      {
+                        "value": "busy",
+                        "operator": "contains",
+                        "variable": "{{_chat_history_3}}",
+                        "valueType": "string"
+                      }
+                    ]
+                  }
+                ],
+                "operator": "AND"
+              },
+              "description": ""
             }
           ],
           "params": {},
@@ -801,6 +957,8 @@
           "isEndNode": false,
           "isGlobalNode": false,
           "maxIterations": 3,
+          "asyncExecution": false,
+          "blockUserInput": false,
           "cannedStarters": [],
           "knowledgeBaseIds": [],
           "inputReplacements": [],
@@ -850,7 +1008,7 @@
                     "operator": "AND",
                     "conditions": [
                       {
-                        "value": "otra",
+                        "value": "habla",
                         "operator": "contains",
                         "variable": "{{_chat_history_3}}",
                         "valueType": "string"
@@ -880,6 +1038,63 @@
                 "operator": "AND"
               },
               "description": ""
+            },
+            {
+              "conditions": {
+                "groups": [
+                  {
+                    "operator": "AND",
+                    "conditions": [
+                      {
+                        "value": "otro",
+                        "operator": "contains",
+                        "variable": "{{_chat_history_3}}",
+                        "valueType": "string"
+                      }
+                    ]
+                  }
+                ],
+                "operator": "AND"
+              },
+              "description": ""
+            },
+            {
+              "conditions": {
+                "groups": [
+                  {
+                    "operator": "AND",
+                    "conditions": [
+                      {
+                        "value": "contact",
+                        "operator": "contains",
+                        "variable": "{{_chat_history_3}}",
+                        "valueType": "string"
+                      }
+                    ]
+                  }
+                ],
+                "operator": "AND"
+              },
+              "description": ""
+            },
+            {
+              "conditions": {
+                "groups": [
+                  {
+                    "operator": "AND",
+                    "conditions": [
+                      {
+                        "value": "email",
+                        "operator": "contains",
+                        "variable": "{{_chat_history_3}}",
+                        "valueType": "string"
+                      }
+                    ]
+                  }
+                ],
+                "operator": "AND"
+              },
+              "description": ""
             }
           ],
           "params": {},
@@ -887,6 +1102,8 @@
           "isEndNode": false,
           "isGlobalNode": false,
           "maxIterations": 3,
+          "asyncExecution": false,
+          "blockUserInput": false,
           "cannedStarters": [],
           "knowledgeBaseIds": [],
           "inputReplacements": [],
@@ -917,7 +1134,7 @@
                     "operator": "AND",
                     "conditions": [
                       {
-                        "value": "vaca",
+                        "value": "vacac",
                         "operator": "contains",
                         "variable": "{{_chat_history_3}}",
                         "valueType": "string"
@@ -936,7 +1153,7 @@
                     "operator": "AND",
                     "conditions": [
                       {
-                        "value": "mome",
+                        "value": "momen",
                         "operator": "contains",
                         "variable": "{{_chat_history_3}}",
                         "valueType": "string"
@@ -966,6 +1183,63 @@
                 "operator": "AND"
               },
               "description": ""
+            },
+            {
+              "conditions": {
+                "groups": [
+                  {
+                    "operator": "AND",
+                    "conditions": [
+                      {
+                        "value": "luego",
+                        "operator": "contains",
+                        "variable": "{{_chat_history_3}}",
+                        "valueType": "string"
+                      }
+                    ]
+                  }
+                ],
+                "operator": "AND"
+              },
+              "description": ""
+            },
+            {
+              "conditions": {
+                "groups": [
+                  {
+                    "operator": "AND",
+                    "conditions": [
+                      {
+                        "value": "despu",
+                        "operator": "contains",
+                        "variable": "{{_chat_history_3}}",
+                        "valueType": "string"
+                      }
+                    ]
+                  }
+                ],
+                "operator": "AND"
+              },
+              "description": ""
+            },
+            {
+              "conditions": {
+                "groups": [
+                  {
+                    "operator": "AND",
+                    "conditions": [
+                      {
+                        "value": "later",
+                        "operator": "contains",
+                        "variable": "{{_chat_history_3}}",
+                        "valueType": "string"
+                      }
+                    ]
+                  }
+                ],
+                "operator": "AND"
+              },
+              "description": ""
             }
           ],
           "params": {},
@@ -973,6 +1247,8 @@
           "isEndNode": false,
           "isGlobalNode": false,
           "maxIterations": 3,
+          "asyncExecution": false,
+          "blockUserInput": false,
           "cannedStarters": [],
           "knowledgeBaseIds": [],
           "inputReplacements": [],
@@ -1003,7 +1279,7 @@
                     "operator": "AND",
                     "conditions": [
                       {
-                        "value": "dond",
+                        "value": "llama",
                         "operator": "contains",
                         "variable": "{{_chat_history_3}}",
                         "valueType": "string"
@@ -1022,7 +1298,7 @@
                     "operator": "AND",
                     "conditions": [
                       {
-                        "value": "llam",
+                        "value": "empre",
                         "operator": "contains",
                         "variable": "{{_chat_history_3}}",
                         "valueType": "string"
@@ -1041,7 +1317,64 @@
                     "operator": "AND",
                     "conditions": [
                       {
-                        "value": "empresa",
+                        "value": "nombre",
+                        "operator": "contains",
+                        "variable": "{{_chat_history_3}}",
+                        "valueType": "string"
+                      }
+                    ]
+                  }
+                ],
+                "operator": "AND"
+              },
+              "description": ""
+            },
+            {
+              "conditions": {
+                "groups": [
+                  {
+                    "operator": "AND",
+                    "conditions": [
+                      {
+                        "value": "sales",
+                        "operator": "contains",
+                        "variable": "{{_chat_history_3}}",
+                        "valueType": "string"
+                      }
+                    ]
+                  }
+                ],
+                "operator": "AND"
+              },
+              "description": ""
+            },
+            {
+              "conditions": {
+                "groups": [
+                  {
+                    "operator": "AND",
+                    "conditions": [
+                      {
+                        "value": "scaling",
+                        "operator": "contains",
+                        "variable": "{{_chat_history_3}}",
+                        "valueType": "string"
+                      }
+                    ]
+                  }
+                ],
+                "operator": "AND"
+              },
+              "description": ""
+            },
+            {
+              "conditions": {
+                "groups": [
+                  {
+                    "operator": "AND",
+                    "conditions": [
+                      {
+                        "value": "lanzadera",
                         "operator": "contains",
                         "variable": "{{_chat_history_3}}",
                         "valueType": "string"
@@ -1059,6 +1392,8 @@
           "isEndNode": false,
           "isGlobalNode": false,
           "maxIterations": 3,
+          "asyncExecution": false,
+          "blockUserInput": false,
           "cannedStarters": [],
           "knowledgeBaseIds": [],
           "inputReplacements": [],
@@ -1080,7 +1415,7 @@
           "name": "¿Cómo has conseguido mi número? / ¿Es mi número personal?",
           "type": "conversational_conditional",
           "nodeClass": "action",
-          "systemMessage": "GESTION DE OBJECION: LinkedIn. y continua por donde ibas.",
+          "systemMessage": "GESTION DE OBJECION: LinkedIn. [Silencio]. No dar más información. y continua por donde ibas.",
           "rules": [
             {
               "conditions": {
@@ -1089,7 +1424,7 @@
                     "operator": "AND",
                     "conditions": [
                       {
-                        "value": "cons",
+                        "value": "numer",
                         "operator": "contains",
                         "variable": "{{_chat_history_3}}",
                         "valueType": "string"
@@ -1108,7 +1443,7 @@
                     "operator": "AND",
                     "conditions": [
                       {
-                        "value": "nume",
+                        "value": "perso",
                         "operator": "contains",
                         "variable": "{{_chat_history_3}}",
                         "valueType": "string"
@@ -1127,7 +1462,64 @@
                     "operator": "AND",
                     "conditions": [
                       {
-                        "value": "personal",
+                        "value": "contact",
+                        "operator": "contains",
+                        "variable": "{{_chat_history_3}}",
+                        "valueType": "string"
+                      }
+                    ]
+                  }
+                ],
+                "operator": "AND"
+              },
+              "description": ""
+            },
+            {
+              "conditions": {
+                "groups": [
+                  {
+                    "operator": "AND",
+                    "conditions": [
+                      {
+                        "value": "linkedin",
+                        "operator": "contains",
+                        "variable": "{{_chat_history_3}}",
+                        "valueType": "string"
+                      }
+                    ]
+                  }
+                ],
+                "operator": "AND"
+              },
+              "description": ""
+            },
+            {
+              "conditions": {
+                "groups": [
+                  {
+                    "operator": "AND",
+                    "conditions": [
+                      {
+                        "value": "privac",
+                        "operator": "contains",
+                        "variable": "{{_chat_history_3}}",
+                        "valueType": "string"
+                      }
+                    ]
+                  }
+                ],
+                "operator": "AND"
+              },
+              "description": ""
+            },
+            {
+              "conditions": {
+                "groups": [
+                  {
+                    "operator": "AND",
+                    "conditions": [
+                      {
+                        "value": "datos",
                         "operator": "contains",
                         "variable": "{{_chat_history_3}}",
                         "valueType": "string"
@@ -1145,6 +1537,8 @@
           "isEndNode": false,
           "isGlobalNode": false,
           "maxIterations": 3,
+          "asyncExecution": false,
+          "blockUserInput": false,
           "cannedStarters": [],
           "knowledgeBaseIds": [],
           "inputReplacements": [],
@@ -1175,7 +1569,7 @@
                     "operator": "AND",
                     "conditions": [
                       {
-                        "value": "cono",
+                        "value": "conoc",
                         "operator": "contains",
                         "variable": "{{_chat_history_3}}",
                         "valueType": "string"
@@ -1213,7 +1607,64 @@
                     "operator": "AND",
                     "conditions": [
                       {
-                        "value": "reconoc",
+                        "value": "memoria",
+                        "operator": "contains",
+                        "variable": "{{_chat_history_3}}",
+                        "valueType": "string"
+                      }
+                    ]
+                  }
+                ],
+                "operator": "AND"
+              },
+              "description": ""
+            },
+            {
+              "conditions": {
+                "groups": [
+                  {
+                    "operator": "AND",
+                    "conditions": [
+                      {
+                        "value": "sector",
+                        "operator": "contains",
+                        "variable": "{{_chat_history_3}}",
+                        "valueType": "string"
+                      }
+                    ]
+                  }
+                ],
+                "operator": "AND"
+              },
+              "description": ""
+            },
+            {
+              "conditions": {
+                "groups": [
+                  {
+                    "operator": "AND",
+                    "conditions": [
+                      {
+                        "value": "llama",
+                        "operator": "contains",
+                        "variable": "{{_chat_history_3}}",
+                        "valueType": "string"
+                      }
+                    ]
+                  }
+                ],
+                "operator": "AND"
+              },
+              "description": ""
+            },
+            {
+              "conditions": {
+                "groups": [
+                  {
+                    "operator": "AND",
+                    "conditions": [
+                      {
+                        "value": "contact",
                         "operator": "contains",
                         "variable": "{{_chat_history_3}}",
                         "valueType": "string"
@@ -1231,6 +1682,8 @@
           "isEndNode": false,
           "isGlobalNode": false,
           "maxIterations": 3,
+          "asyncExecution": false,
+          "blockUserInput": false,
           "cannedStarters": [],
           "knowledgeBaseIds": [],
           "inputReplacements": [],
@@ -1261,7 +1714,7 @@
                     "operator": "AND",
                     "conditions": [
                       {
-                        "value": "pill",
+                        "value": "pilla",
                         "operator": "contains",
                         "variable": "{{_chat_history_3}}",
                         "valueType": "string"
@@ -1280,7 +1733,26 @@
                     "operator": "AND",
                     "conditions": [
                       {
-                        "value": "fata",
+                        "value": "reuni",
+                        "operator": "contains",
+                        "variable": "{{_chat_history_3}}",
+                        "valueType": "string"
+                      }
+                    ]
+                  }
+                ],
+                "operator": "AND"
+              },
+              "description": ""
+            },
+            {
+              "conditions": {
+                "groups": [
+                  {
+                    "operator": "AND",
+                    "conditions": [
+                      {
+                        "value": "condu",
                         "operator": "contains",
                         "variable": "{{_chat_history_3}}",
                         "valueType": "string"
@@ -1310,6 +1782,44 @@
                 "operator": "AND"
               },
               "description": ""
+            },
+            {
+              "conditions": {
+                "groups": [
+                  {
+                    "operator": "AND",
+                    "conditions": [
+                      {
+                        "value": "ahora",
+                        "operator": "contains",
+                        "variable": "{{_chat_history_3}}",
+                        "valueType": "string"
+                      }
+                    ]
+                  }
+                ],
+                "operator": "AND"
+              },
+              "description": ""
+            },
+            {
+              "conditions": {
+                "groups": [
+                  {
+                    "operator": "AND",
+                    "conditions": [
+                      {
+                        "value": "busy",
+                        "operator": "contains",
+                        "variable": "{{_chat_history_3}}",
+                        "valueType": "string"
+                      }
+                    ]
+                  }
+                ],
+                "operator": "AND"
+              },
+              "description": ""
             }
           ],
           "params": {},
@@ -1317,6 +1827,8 @@
           "isEndNode": false,
           "isGlobalNode": false,
           "maxIterations": 3,
+          "asyncExecution": false,
+          "blockUserInput": false,
           "cannedStarters": [],
           "knowledgeBaseIds": [],
           "inputReplacements": [],
@@ -1347,7 +1859,7 @@
                     "operator": "AND",
                     "conditions": [
                       {
-                        "value": "desa",
+                        "value": "desar",
                         "operator": "contains",
                         "variable": "{{_chat_history_3}}",
                         "valueType": "string"
@@ -1366,7 +1878,7 @@
                     "operator": "AND",
                     "conditions": [
                       {
-                        "value": "soft",
+                        "value": "softw",
                         "operator": "contains",
                         "variable": "{{_chat_history_3}}",
                         "valueType": "string"
@@ -1385,7 +1897,64 @@
                     "operator": "AND",
                     "conditions": [
                       {
-                        "value": "desarroll",
+                        "value": "tecnic",
+                        "operator": "contains",
+                        "variable": "{{_chat_history_3}}",
+                        "valueType": "string"
+                      }
+                    ]
+                  }
+                ],
+                "operator": "AND"
+              },
+              "description": ""
+            },
+            {
+              "conditions": {
+                "groups": [
+                  {
+                    "operator": "AND",
+                    "conditions": [
+                      {
+                        "value": "crm",
+                        "operator": "contains",
+                        "variable": "{{_chat_history_3}}",
+                        "valueType": "string"
+                      }
+                    ]
+                  }
+                ],
+                "operator": "AND"
+              },
+              "description": ""
+            },
+            {
+              "conditions": {
+                "groups": [
+                  {
+                    "operator": "AND",
+                    "conditions": [
+                      {
+                        "value": "inform",
+                        "operator": "contains",
+                        "variable": "{{_chat_history_3}}",
+                        "valueType": "string"
+                      }
+                    ]
+                  }
+                ],
+                "operator": "AND"
+              },
+              "description": ""
+            },
+            {
+              "conditions": {
+                "groups": [
+                  {
+                    "operator": "AND",
+                    "conditions": [
+                      {
+                        "value": "comercial",
                         "operator": "contains",
                         "variable": "{{_chat_history_3}}",
                         "valueType": "string"
@@ -1403,6 +1972,8 @@
           "isEndNode": false,
           "isGlobalNode": false,
           "maxIterations": 3,
+          "asyncExecution": false,
+          "blockUserInput": false,
           "cannedStarters": [],
           "knowledgeBaseIds": [],
           "inputReplacements": [],
@@ -1452,7 +2023,7 @@
                     "operator": "AND",
                     "conditions": [
                       {
-                        "value": "segu",
+                        "value": "segur",
                         "operator": "contains",
                         "variable": "{{_chat_history_3}}",
                         "valueType": "string"
@@ -1471,7 +2042,64 @@
                     "operator": "AND",
                     "conditions": [
                       {
-                        "value": "detall",
+                        "value": "priva",
+                        "operator": "contains",
+                        "variable": "{{_chat_history_3}}",
+                        "valueType": "string"
+                      }
+                    ]
+                  }
+                ],
+                "operator": "AND"
+              },
+              "description": ""
+            },
+            {
+              "conditions": {
+                "groups": [
+                  {
+                    "operator": "AND",
+                    "conditions": [
+                      {
+                        "value": "integ",
+                        "operator": "contains",
+                        "variable": "{{_chat_history_3}}",
+                        "valueType": "string"
+                      }
+                    ]
+                  }
+                ],
+                "operator": "AND"
+              },
+              "description": ""
+            },
+            {
+              "conditions": {
+                "groups": [
+                  {
+                    "operator": "AND",
+                    "conditions": [
+                      {
+                        "value": "api",
+                        "operator": "contains",
+                        "variable": "{{_chat_history_3}}",
+                        "valueType": "string"
+                      }
+                    ]
+                  }
+                ],
+                "operator": "AND"
+              },
+              "description": ""
+            },
+            {
+              "conditions": {
+                "groups": [
+                  {
+                    "operator": "AND",
+                    "conditions": [
+                      {
+                        "value": "detalle",
                         "operator": "contains",
                         "variable": "{{_chat_history_3}}",
                         "valueType": "string"
@@ -1489,6 +2117,8 @@
           "isEndNode": false,
           "isGlobalNode": false,
           "maxIterations": 3,
+          "asyncExecution": false,
+          "blockUserInput": false,
           "cannedStarters": [],
           "knowledgeBaseIds": [],
           "inputReplacements": [],
@@ -1519,7 +2149,7 @@
                     "operator": "AND",
                     "conditions": [
                       {
-                        "value": "resp",
+                        "value": "respu",
                         "operator": "contains",
                         "variable": "{{_chat_history_3}}",
                         "valueType": "string"
@@ -1538,7 +2168,7 @@
                     "operator": "AND",
                     "conditions": [
                       {
-                        "value": "dese",
+                        "value": "desea",
                         "operator": "contains",
                         "variable": "{{_chat_history_3}}",
                         "valueType": "string"
@@ -1568,6 +2198,63 @@
                 "operator": "AND"
               },
               "description": ""
+            },
+            {
+              "conditions": {
+                "groups": [
+                  {
+                    "operator": "AND",
+                    "conditions": [
+                      {
+                        "value": "pregun",
+                        "operator": "contains",
+                        "variable": "{{_chat_history_3}}",
+                        "valueType": "string"
+                      }
+                    ]
+                  }
+                ],
+                "operator": "AND"
+              },
+              "description": ""
+            },
+            {
+              "conditions": {
+                "groups": [
+                  {
+                    "operator": "AND",
+                    "conditions": [
+                      {
+                        "value": "objec",
+                        "operator": "contains",
+                        "variable": "{{_chat_history_3}}",
+                        "valueType": "string"
+                      }
+                    ]
+                  }
+                ],
+                "operator": "AND"
+              },
+              "description": ""
+            },
+            {
+              "conditions": {
+                "groups": [
+                  {
+                    "operator": "AND",
+                    "conditions": [
+                      {
+                        "value": "insist",
+                        "operator": "contains",
+                        "variable": "{{_chat_history_3}}",
+                        "valueType": "string"
+                      }
+                    ]
+                  }
+                ],
+                "operator": "AND"
+              },
+              "description": ""
             }
           ],
           "params": {},
@@ -1575,6 +2262,8 @@
           "isEndNode": false,
           "isGlobalNode": false,
           "maxIterations": 3,
+          "asyncExecution": false,
+          "blockUserInput": false,
           "cannedStarters": [],
           "knowledgeBaseIds": [],
           "inputReplacements": [],
@@ -1596,7 +2285,7 @@
           "name": "¿Cómo tenéis mi número?",
           "type": "conversational_conditional",
           "nodeClass": "action",
-          "systemMessage": "FAQ INLINE: LinkedIn. Silencio (Mas corto). No ofrecer el borrado proactivamente. Si insisten: Lo borro ahora mismo, no te preocupes.",
+          "systemMessage": "FAQ INLINE: \"LinkedIn.\" Silencio (Mas corto). No ofrecer el borrado proactivamente. Si insisten: \"Lo borro ahora mismo, no te preocupes.\"",
           "rules": [
             {
               "conditions": {
@@ -1643,7 +2332,64 @@
                     "operator": "AND",
                     "conditions": [
                       {
-                        "value": "obten",
+                        "value": "linkedin",
+                        "operator": "contains",
+                        "variable": "{{_chat_history_3}}",
+                        "valueType": "string"
+                      }
+                    ]
+                  }
+                ],
+                "operator": "AND"
+              },
+              "description": ""
+            },
+            {
+              "conditions": {
+                "groups": [
+                  {
+                    "operator": "AND",
+                    "conditions": [
+                      {
+                        "value": "privac",
+                        "operator": "contains",
+                        "variable": "{{_chat_history_3}}",
+                        "valueType": "string"
+                      }
+                    ]
+                  }
+                ],
+                "operator": "AND"
+              },
+              "description": ""
+            },
+            {
+              "conditions": {
+                "groups": [
+                  {
+                    "operator": "AND",
+                    "conditions": [
+                      {
+                        "value": "datos",
+                        "operator": "contains",
+                        "variable": "{{_chat_history_3}}",
+                        "valueType": "string"
+                      }
+                    ]
+                  }
+                ],
+                "operator": "AND"
+              },
+              "description": ""
+            },
+            {
+              "conditions": {
+                "groups": [
+                  {
+                    "operator": "AND",
+                    "conditions": [
+                      {
+                        "value": "inform",
                         "operator": "contains",
                         "variable": "{{_chat_history_3}}",
                         "valueType": "string"
@@ -1661,6 +2407,8 @@
           "isEndNode": false,
           "isGlobalNode": false,
           "maxIterations": 3,
+          "asyncExecution": false,
+          "blockUserInput": false,
           "cannedStarters": [],
           "knowledgeBaseIds": [],
           "inputReplacements": [],
@@ -1682,7 +2430,7 @@
           "name": "¿Se integra con mi CRM?",
           "type": "conversational_conditional",
           "nodeClass": "action",
-          "systemMessage": "FAQ INLINE: Sí, tenemos API abierta y nos integramos con los principales (Salesforce, Hubspot, etc.) o incluso herramientas no-code.",
+          "systemMessage": "FAQ INLINE: \"Sí, tenemos API abierta y nos integramos con los principales (Salesforce, Hubspot, etc.) o incluso herramientas no-code.\"",
           "rules": [
             {
               "conditions": {
@@ -1740,6 +2488,63 @@
                 "operator": "AND"
               },
               "description": ""
+            },
+            {
+              "conditions": {
+                "groups": [
+                  {
+                    "operator": "AND",
+                    "conditions": [
+                      {
+                        "value": "salesforce",
+                        "operator": "contains",
+                        "variable": "{{_chat_history_3}}",
+                        "valueType": "string"
+                      }
+                    ]
+                  }
+                ],
+                "operator": "AND"
+              },
+              "description": ""
+            },
+            {
+              "conditions": {
+                "groups": [
+                  {
+                    "operator": "AND",
+                    "conditions": [
+                      {
+                        "value": "hubspot",
+                        "operator": "contains",
+                        "variable": "{{_chat_history_3}}",
+                        "valueType": "string"
+                      }
+                    ]
+                  }
+                ],
+                "operator": "AND"
+              },
+              "description": ""
+            },
+            {
+              "conditions": {
+                "groups": [
+                  {
+                    "operator": "AND",
+                    "conditions": [
+                      {
+                        "value": "herramient",
+                        "operator": "contains",
+                        "variable": "{{_chat_history_3}}",
+                        "valueType": "string"
+                      }
+                    ]
+                  }
+                ],
+                "operator": "AND"
+              },
+              "description": ""
             }
           ],
           "params": {},
@@ -1747,6 +2552,8 @@
           "isEndNode": false,
           "isGlobalNode": false,
           "maxIterations": 3,
+          "asyncExecution": false,
+          "blockUserInput": false,
           "cannedStarters": [],
           "knowledgeBaseIds": [],
           "inputReplacements": [],
@@ -1768,7 +2575,7 @@
           "name": "¿Es seguro / privado?",
           "type": "conversational_conditional",
           "nodeClass": "action",
-          "systemMessage": "FAQ INLINE: Imprescindible. Se guarda en repositorio propio con acceso exclusivo para ti. Si profundizan: redirigir a reunión.",
+          "systemMessage": "FAQ INLINE: Respuesta breve: \"Imprescindible. Se guarda en repositorio propio con acceso exclusivo para ti.\" Si profundizan: redirigir a reunión.",
           "rules": [
             {
               "conditions": {
@@ -1815,7 +2622,64 @@
                     "operator": "AND",
                     "conditions": [
                       {
-                        "value": "seguro",
+                        "value": "repositorio",
+                        "operator": "contains",
+                        "variable": "{{_chat_history_3}}",
+                        "valueType": "string"
+                      }
+                    ]
+                  }
+                ],
+                "operator": "AND"
+              },
+              "description": ""
+            },
+            {
+              "conditions": {
+                "groups": [
+                  {
+                    "operator": "AND",
+                    "conditions": [
+                      {
+                        "value": "acceso",
+                        "operator": "contains",
+                        "variable": "{{_chat_history_3}}",
+                        "valueType": "string"
+                      }
+                    ]
+                  }
+                ],
+                "operator": "AND"
+              },
+              "description": ""
+            },
+            {
+              "conditions": {
+                "groups": [
+                  {
+                    "operator": "AND",
+                    "conditions": [
+                      {
+                        "value": "exclusivo",
+                        "operator": "contains",
+                        "variable": "{{_chat_history_3}}",
+                        "valueType": "string"
+                      }
+                    ]
+                  }
+                ],
+                "operator": "AND"
+              },
+              "description": ""
+            },
+            {
+              "conditions": {
+                "groups": [
+                  {
+                    "operator": "AND",
+                    "conditions": [
+                      {
+                        "value": "datos",
                         "operator": "contains",
                         "variable": "{{_chat_history_3}}",
                         "valueType": "string"
@@ -1833,6 +2697,8 @@
           "isEndNode": false,
           "isGlobalNode": false,
           "maxIterations": 3,
+          "asyncExecution": false,
+          "blockUserInput": false,
           "cannedStarters": [],
           "knowledgeBaseIds": [],
           "inputReplacements": [],
@@ -1854,7 +2720,7 @@
           "name": "¿Traduce idiomas?",
           "type": "conversational_conditional",
           "nodeClass": "action",
-          "systemMessage": "FAQ INLINE: Sí, al ser IA detecta y traduce. Ayudamos a empresas con reuniones internacionales (Japón, India, USA).",
+          "systemMessage": "FAQ INLINE: \"Sí, al ser IA detecta y traduce. Ayudamos a empresas con reuniones internacionales (Japón, India, USA).\"",
           "rules": [
             {
               "conditions": {
@@ -1901,7 +2767,64 @@
                     "operator": "AND",
                     "conditions": [
                       {
+                        "value": "ia",
+                        "operator": "contains",
+                        "variable": "{{_chat_history_3}}",
+                        "valueType": "string"
+                      }
+                    ]
+                  }
+                ],
+                "operator": "AND"
+              },
+              "description": ""
+            },
+            {
+              "conditions": {
+                "groups": [
+                  {
+                    "operator": "AND",
+                    "conditions": [
+                      {
                         "value": "internacional",
+                        "operator": "contains",
+                        "variable": "{{_chat_history_3}}",
+                        "valueType": "string"
+                      }
+                    ]
+                  }
+                ],
+                "operator": "AND"
+              },
+              "description": ""
+            },
+            {
+              "conditions": {
+                "groups": [
+                  {
+                    "operator": "AND",
+                    "conditions": [
+                      {
+                        "value": "reunion",
+                        "operator": "contains",
+                        "variable": "{{_chat_history_3}}",
+                        "valueType": "string"
+                      }
+                    ]
+                  }
+                ],
+                "operator": "AND"
+              },
+              "description": ""
+            },
+            {
+              "conditions": {
+                "groups": [
+                  {
+                    "operator": "AND",
+                    "conditions": [
+                      {
+                        "value": "detect",
                         "operator": "contains",
                         "variable": "{{_chat_history_3}}",
                         "valueType": "string"
@@ -1919,6 +2842,8 @@
           "isEndNode": false,
           "isGlobalNode": false,
           "maxIterations": 3,
+          "asyncExecution": false,
+          "blockUserInput": false,
           "cannedStarters": [],
           "knowledgeBaseIds": [],
           "inputReplacements": [],
@@ -1931,88 +2856,106 @@
     ],
     "edges": [
       {
-        "id": "xy-edge__node-startdata-start-conversational-connector-node-presentacion_contexto",
+        "id": "xy-edge__node-startdata-start-conversational-connector-node-detectar_intencion",
         "source": "node-start",
-        "target": "node-presentacion_contexto",
+        "target": "node-detectar_intencion",
         "sourceHandle": "data-start-conversational-connector"
       },
       {
-        "id": "xy-edge__node-presentacion_contextodata-presentacion_contexto-conversational-connector-node-confirmacion_cargo",
-        "source": "node-presentacion_contexto",
-        "target": "node-confirmacion_cargo",
-        "sourceHandle": "data-presentacion_contexto-conversational-connector"
-      },
-      {
-        "id": "xy-edge__node-confirmacion_cargodata-confirmacion_cargo-conversational-connector-node-detectar_intencion",
-        "source": "node-confirmacion_cargo",
-        "target": "node-detectar_intencion",
-        "sourceHandle": "data-confirmacion_cargo-conversational-connector"
-      },
-      {
-        "id": "xy-edge__node-detectar_intencionescenario_si_si-node-escenario_si_si",
+        "id": "xy-edge__node-detectar_intencionprospecto_pregunta_numero-node-gestion_numero",
         "source": "node-detectar_intencion",
-        "target": "node-escenario_si_si",
-        "sourceHandle": "escenario_si_si"
+        "target": "node-gestion_numero",
+        "sourceHandle": "prospecto_pregunta_numero"
       },
       {
-        "id": "xy-edge__node-detectar_intencionescenario_si_no-node-escenario_si_no",
+        "id": "xy-edge__node-detectar_intencionprospecto_confirma_cargo-node-pregunta_1",
         "source": "node-detectar_intencion",
-        "target": "node-escenario_si_no",
-        "sourceHandle": "escenario_si_no"
+        "target": "node-pregunta_1",
+        "sourceHandle": "prospecto_confirma_cargo"
       },
       {
-        "id": "xy-edge__node-detectar_intencionescenario_no_si-node-escenario_no_si",
-        "source": "node-detectar_intencion",
-        "target": "node-escenario_no_si",
-        "sourceHandle": "escenario_no_si"
+        "id": "xy-edge__node-gestion_numerobranch_continuar-node-pregunta_1",
+        "source": "node-gestion_numero",
+        "target": "node-pregunta_1",
+        "sourceHandle": "branch_continuar"
       },
       {
-        "id": "xy-edge__node-detectar_intencionescenario_no_no-node-escenario_no_no",
-        "source": "node-detectar_intencion",
-        "target": "node-escenario_no_no",
-        "sourceHandle": "escenario_no_no"
+        "id": "xy-edge__node-pregunta_1prospecto_responde_si-node-pregunta_2",
+        "source": "node-pregunta_1",
+        "target": "node-pregunta_2",
+        "sourceHandle": "prospecto_responde_si"
       },
       {
-        "id": "xy-edge__node-escenario_si_sipropuesta_valor-node-propuesta_valor",
-        "source": "node-escenario_si_si",
+        "id": "xy-edge__node-pregunta_1prospecto_responde_no-node-pregunta_2",
+        "source": "node-pregunta_1",
+        "target": "node-pregunta_2",
+        "sourceHandle": "prospecto_responde_no"
+      },
+      {
+        "id": "xy-edge__node-pregunta_2escenario_1-node-escenario_1",
+        "source": "node-pregunta_2",
+        "target": "node-escenario_1",
+        "sourceHandle": "escenario_1"
+      },
+      {
+        "id": "xy-edge__node-pregunta_2escenario_2-node-escenario_2",
+        "source": "node-pregunta_2",
+        "target": "node-escenario_2",
+        "sourceHandle": "escenario_2"
+      },
+      {
+        "id": "xy-edge__node-pregunta_2escenario_3-node-escenario_3",
+        "source": "node-pregunta_2",
+        "target": "node-escenario_3",
+        "sourceHandle": "escenario_3"
+      },
+      {
+        "id": "xy-edge__node-pregunta_2escenario_4-node-escenario_4",
+        "source": "node-pregunta_2",
+        "target": "node-escenario_4",
+        "sourceHandle": "escenario_4"
+      },
+      {
+        "id": "xy-edge__node-escenario_1cliente_muestra_curiosidad-node-propuesta_valor",
+        "source": "node-escenario_1",
         "target": "node-propuesta_valor",
-        "sourceHandle": "propuesta_valor"
+        "sourceHandle": "cliente_muestra_curiosidad"
       },
       {
-        "id": "xy-edge__node-escenario_si_nodata-escenario_si_no-conversational-connector-node-propuesta_valor",
-        "source": "node-escenario_si_no",
+        "id": "xy-edge__node-escenario_2data-escenario_2-conversational-connector-node-propuesta_valor",
+        "source": "node-escenario_2",
         "target": "node-propuesta_valor",
-        "sourceHandle": "data-escenario_si_no-conversational-connector"
+        "sourceHandle": "data-escenario_2-conversational-connector"
       },
       {
-        "id": "xy-edge__node-escenario_no_sidata-escenario_no_si-conversational-connector-node-conectar_solucion",
-        "source": "node-escenario_no_si",
-        "target": "node-conectar_solucion",
-        "sourceHandle": "data-escenario_no_si-conversational-connector"
-      },
-      {
-        "id": "xy-edge__node-escenario_no_nodata-escenario_no_no-conversational-connector-node-conectar_solucion",
-        "source": "node-escenario_no_no",
-        "target": "node-conectar_solucion",
-        "sourceHandle": "data-escenario_no_no-conversational-connector"
-      },
-      {
-        "id": "xy-edge__node-conectar_soluciondata-conectar_solucion-conversational-connector-node-propuesta_valor",
-        "source": "node-conectar_solucion",
+        "id": "xy-edge__node-escenario_3data-escenario_3-conversational-connector-node-propuesta_valor",
+        "source": "node-escenario_3",
         "target": "node-propuesta_valor",
-        "sourceHandle": "data-conectar_solucion-conversational-connector"
+        "sourceHandle": "data-escenario_3-conversational-connector"
       },
       {
-        "id": "xy-edge__node-propuesta_valordata-propuesta_valor-conversational-connector-node-cierre_agendado",
+        "id": "xy-edge__node-escenario_4data-escenario_4-conversational-connector-node-propuesta_valor",
+        "source": "node-escenario_4",
+        "target": "node-propuesta_valor",
+        "sourceHandle": "data-escenario_4-conversational-connector"
+      },
+      {
+        "id": "xy-edge__node-propuesta_valordata-propuesta_valor-conversational-connector-node-transicion_cierre",
         "source": "node-propuesta_valor",
-        "target": "node-cierre_agendado",
+        "target": "node-transicion_cierre",
         "sourceHandle": "data-propuesta_valor-conversational-connector"
       },
       {
-        "id": "xy-edge__node-cierre_agendadodata-cierre_agendado-conversational-connector-node-captura_email",
-        "source": "node-cierre_agendado",
+        "id": "xy-edge__node-transicion_cierredata-transicion_cierre-conversational-connector-node-tecnica_embudo",
+        "source": "node-transicion_cierre",
+        "target": "node-tecnica_embudo",
+        "sourceHandle": "data-transicion_cierre-conversational-connector"
+      },
+      {
+        "id": "xy-edge__node-tecnica_embudodata-tecnica_embudo-conversational-connector-node-captura_email",
+        "source": "node-tecnica_embudo",
         "target": "node-captura_email",
-        "sourceHandle": "data-cierre_agendado-conversational-connector"
+        "sourceHandle": "data-tecnica_embudo-conversational-connector"
       },
       {
         "id": "xy-edge__node-captura_emaildata-captura_email-conversational-connector-node-end",

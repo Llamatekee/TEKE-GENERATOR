@@ -5,7 +5,35 @@ def build_workflow_nodes(md_content, base_json_path, output_json_path, client, v
         print("[Paso 4] Construccion de nodos y calculo de conexiones...")
     
     system_prompt = """
-    Eres un analizador de flujos. Extrae TODOS los nodos del Markdown a este JSON estricto:
+    Eres un arquitecto de agentes conversacionales de voz para la plataforma Tolvia.
+    Extrae TODOS los nodos del Markdown al siguiente JSON estricto.
+
+    VARIABLES DE TEMPLATE DISPONIBLES EN TOLVIA (usaLas en systemMessage cuando aplique):
+    - {user_first_name}          nombre del contacto
+    - {user_is_female?la:el}     articulo segun genero del contacto
+    - {Job Title}                cargo del contacto (fuente: LinkedIn/CRM)
+    - {company}                  empresa del contacto
+    - {position}                 posicion/cargo del contacto
+    - {development?TEXTO:}       texto que solo se muestra en modo desarrollo
+    - {VARIABLE?texto_si:texto_no}  condicional generica sobre cualquier variable capturada
+    - {available_slot_0!valor_defecto}  primer hueco de agenda disponible
+
+    ESTRUCTURA OBLIGATORIA DEL systemMessage:
+    Cada systemMessage debe tener estas secciones en orden:
+    1. OBJETIVO: lista de bullets con lo que el agente debe lograr en este nodo.
+    2. SUPUESTO (opcional): lo que ya se ha hecho antes de llegar a este nodo.
+    3. Las frases literales del script entre comillas, con CUANDO usarlas y reglas de uso.
+    4. Reglas de clasificacion de respuesta si aplica (SI / NO / OBJECION / PREGUNTA / AMBIGUO).
+    5. Instruccion de rama al final: indica exactamente que rama tomar segun cada resultado.
+       Esta instruccion debe incluir el ID de la rama y ser CLARA: "no digas nada y toma la rama X".
+       Si omites esta instruccion, el agente no sabra cuando salir del nodo.
+
+    REGLAS GENERALES:
+    - Usa variables de template donde el script original hace referencia al nombre, cargo o empresa del usuario.
+    - El systemMessage es una instruccion operacional para un LLM, no un resumen: debe ser accionable.
+    - No inventes frases que no esten en el MD. Usa las literales del script.
+
+    SCHEMA JSON:
     {
       "nodes": [
         {
@@ -13,12 +41,13 @@ def build_workflow_nodes(md_content, base_json_path, output_json_path, client, v
           "name": "<Nombre del nodo>",
           "is_start": true/false,
           "is_end": true/false,
-          "systemMessage": "<DEBES incluir el Script (frases literales) exacto que viene en el MD y sus directivas>",
-          "direct_next": "<ID destino si no hay opciones. Null si usa branches>",
+          "systemMessage": "<systemMessage estructurado segun las instrucciones anteriores>",
+          "direct_next": "<ID destino si no hay branches. Null si usa branches>",
           "branches": [
             {
               "id": "<ID slugificado>",
               "name": "<Condicion>",
+              "fill_phrase": "<frase breve que dice el agente al tomar esta rama, coherente con el contexto>",
               "next_node": "<ID destino>"
             }
           ],
@@ -84,6 +113,8 @@ def build_workflow_nodes(md_content, base_json_path, output_json_path, client, v
                 "isEndNode": False,
                 "isGlobalNode": False,
                 "maxIterations": 3 if n_class == "start" else 300,
+                "asyncExecution": False,
+                "blockUserInput": False,
                 "cannedStarters": [],
                 "knowledgeBaseIds": [],
                 "inputReplacements": [],
@@ -111,7 +142,7 @@ def build_workflow_nodes(md_content, base_json_path, output_json_path, client, v
                         target_id = f"node-{b['next_node']}"
                         branch_id = b["id"]
                         module_card["data"]["branches"].append({
-                            "id": branch_id, "name": b["name"], "next": target_id, "description": "", "fillPhrases": ["Claro."]
+                            "id": branch_id, "name": b["name"], "next": target_id, "description": "", "fillPhrases": [b.get("fill_phrase", "Claro.")]
                         })
                         workflow_edges.append({
                             "id": f"xy-edge__{node_id}{branch_id}-{target_id}", "source": node_id, "target": target_id, "sourceHandle": branch_id
@@ -142,3 +173,37 @@ def build_workflow_nodes(md_content, base_json_path, output_json_path, client, v
 
     with open(output_json_path, 'w', encoding='utf-8') as out_file:
         json.dump(base_json, out_file, indent=2, ensure_ascii=False)
+
+    issues = _validate_graph(workflow_nodes, workflow_edges)
+    if issues:
+        print(f"[Paso 4] ADVERTENCIA: se encontraron {len(issues)} referencia(s) rota(s) en el grafo:")
+        for issue in issues:
+            print(f"  - {issue}")
+    elif verbose:
+        print("[Paso 4] Validacion del grafo: OK (sin referencias rotas)")
+
+
+def _validate_graph(nodes, edges):
+    existing_ids = {n["id"] for n in nodes}
+    issues = []
+
+    for node in nodes:
+        nid = node["id"]
+        data = node.get("data", {})
+
+        connector = data.get("connector")
+        if connector and connector not in existing_ids:
+            issues.append(f"Nodo '{nid}': connector '{connector}' no existe")
+
+        for branch in data.get("branches", []):
+            target = branch.get("next")
+            if target and target not in existing_ids:
+                issues.append(f"Nodo '{nid}' rama '{branch.get('id', '?')}': next '{target}' no existe")
+
+    for edge in edges:
+        if edge.get("source") not in existing_ids:
+            issues.append(f"Edge '{edge.get('id', '?')}': source '{edge.get('source')}' no existe")
+        if edge.get("target") not in existing_ids:
+            issues.append(f"Edge '{edge.get('id', '?')}': target '{edge.get('target')}' no existe")
+
+    return issues

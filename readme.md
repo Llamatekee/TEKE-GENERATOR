@@ -12,6 +12,7 @@ El orquestador (`src/main.py`) ejecuta un proceso secuencial de 6 fases:
 4. **Construcción del flujo (04_workflow):** traduce los pasos del Markdown estructurado a nodos lógicos y ramas condicionales (`branches`) en el esquema JSON, conectando las transiciones del agente.
 5. **Inyección de condicionales (05_conditionals):** integra las objeciones y preguntas frecuentes detectadas como reglas condicionales (inline) dentro del flujo conversacional.
 6. **Generación de QA (06_test_generator):** evalúa el flujo final del agente y genera una suite de escenarios de pruebas automatizadas (tests sintéticos) garantizando la cobertura de los distintos casos de uso.
+7. **RAG Briefing (07_rag_briefing):** a partir del guion estructurado (o del raw), extrae los objetivos del agente y genera una lista priorizada de candidatos de documentos para poblar el RAG, indicando para cada uno su formato sugerido, las preguntas que respondería y si fue mencionado explícitamente o inferido.
 
 ## Requisitos y configuración
 
@@ -42,6 +43,7 @@ python src/main.py files/docs/Guion_Comercial.docx
 | ---------------- | ---------- | ------------------------------------------------------------------------------------------------------------------------------ |
 | `input_file`     | Posicional | (Obligatorio) Ruta al archivo de origen `.docx` o `.md`.                                                                       |
 | `--tests`        | Entero     | Número de escenarios de prueba QA sintéticos a generar. Si se omite, no se generará el archivo de tests.                       |
+| `--rag`          | Booleano   | Genera un RAG Briefing (`{nombre}_rag_briefing.md`) con los objetivos del agente y los documentos candidatos para el RAG, priorizados y con formato sugerido. |
 | `--md_dir`       | Ruta       | Sobrescribe el directorio destino para los archivos intermedios `.md`.                                                         |
 | `--json_dir`     | Ruta       | Sobrescribe el directorio destino para los archivos finales `.json`.                                                           |
 | `--output_name`  | Cadena     | Sobrescribe el nombre base asignado a los archivos de salida generados.                                                        |
@@ -71,4 +73,14 @@ python src/main.py files/docs/Guion.docx --verbose
 **Ejecución con varios docs**
 ```bash
 python src/main.py files/docs/guion1.docx files/docs/faqs.docx files/docs/objections.docx
+```
+
+**Generar el agente + RAG Briefing:**
+```bash
+python src/main.py files/docs/Guion.docx --rag
+```
+
+**Usar el script de RAG Briefing de forma standalone (sobre un MD ya estructurado):**
+```bash
+python src/07_rag_briefing.py files/md/Guion_structured.md --verbose
 ```

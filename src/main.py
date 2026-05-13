@@ -13,6 +13,7 @@ minimal = importlib.import_module("03_minimal")
 workflow = importlib.import_module("04_workflow")
 conditionals = importlib.import_module("05_conditionals")
 tests_gen = importlib.import_module("06_test")
+rag_briefing = importlib.import_module("07_rag_briefing")
 
 def main():
     load_dotenv()
@@ -27,6 +28,7 @@ def main():
     # Cambiamos input_file a input_files con nargs='+' para aceptar multiples rutas
     parser.add_argument("input_files", nargs='+', help="Ruta al archivo principal, seguido de archivos extra opcionales (.docx o .md)")
     parser.add_argument("--tests", type=int, default=None, help="Numero de tests QA a generar (opcional)")
+    parser.add_argument("--rag", action="store_true", help="Genera un RAG Briefing con objetivos y candidatos de documentos (.md)")
     parser.add_argument("--md_dir", help="Directorio personalizado para los archivos Markdown")
     parser.add_argument("--json_dir", help="Directorio personalizado para los archivos JSON")
     parser.add_argument("--output_name", help="Nombre base personalizado para los archivos de salida")
@@ -111,6 +113,13 @@ def main():
             if verbose: print(f"[Paso 6] Construyendo {args.tests} escenarios de QA...")
             tests_gen.generate_tests(structured_md_path, final_json_path, qa_json_path, args.tests, client, verbose=verbose)
 
+        if args.rag:
+            rag_path = os.path.join(json_dir, f"{base_name}_rag_briefing.md")
+            if verbose: print("[Paso 7] Generando RAG Briefing...")
+            with open(raw_md_path, 'r', encoding='utf-8') as f:
+                raw_for_rag = f.read()
+            rag_briefing.generate_rag_briefing(raw_for_rag, rag_path, client, source_name=base_name, verbose=verbose)
+
         for t in [temp_1, temp_2]:
             if os.path.exists(t):
                 os.remove(t)
@@ -121,6 +130,8 @@ def main():
             print(f"-> Agente Listo: {final_json_path}")
             if args.tests is not None:
                 print(f"-> Tests QA: {qa_json_path}")
+            if args.rag:
+                print(f"-> RAG Briefing: {rag_path}")
 
     except Exception as e:
         print(f"\nError fatal en la ejecucion: {str(e)}")

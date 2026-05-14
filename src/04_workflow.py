@@ -33,6 +33,11 @@ def build_workflow_nodes(md_content, base_json_path, output_json_path, client, v
     - El systemMessage es una instruccion operacional para un LLM, no un resumen: debe ser accionable.
     - No inventes frases que no esten en el MD. Usa las literales del script.
 
+    REGLA CRITICA DEL NODO START:
+    El nodo con is_start=true es SOLO el punto de entrada tecnico del flujo. NO tiene systemMessage.
+    NO tiene branches. NO tiene extractions. SIEMPRE tiene direct_next con el ID del primer nodo
+    conversacional. Si omites direct_next en el start, el agente quedara flotando desconectado.
+
     SCHEMA JSON:
     {
       "nodes": [
@@ -41,13 +46,13 @@ def build_workflow_nodes(md_content, base_json_path, output_json_path, client, v
           "name": "<Nombre del nodo>",
           "is_start": true/false,
           "is_end": true/false,
-          "systemMessage": "<systemMessage estructurado segun las instrucciones anteriores>",
-          "direct_next": "<ID destino si no hay branches. Null si usa branches>",
+          "systemMessage": "<systemMessage estructurado. VACIO ('') si is_start=true>",
+          "direct_next": "<ID destino si no hay branches. OBLIGATORIO si is_start=true. Null si usa branches>",
           "branches": [
             {
               "id": "<ID slugificado>",
               "name": "<Condicion>",
-              "fill_phrase": "<frase breve que dice el agente al tomar esta rama, coherente con el contexto>",
+              "fill_phrase": "<frase MUY breve que el agente dice EN VOZ ALTA al usuario al tomar esta rama. Debe sonar natural si se escucha. Maximo 4 palabras. VALIDO: 'Perfecto,', 'Entendido,', 'Claro,', 'Ya veo,', 'De acuerdo,'. INVALIDO: 'Prospecto interesado', 'Usuario no disponible', cualquier descripcion del estado interno.>",
               "next_node": "<ID destino>"
             }
           ],
@@ -93,9 +98,12 @@ def build_workflow_nodes(md_content, base_json_path, output_json_path, client, v
         else:
             n_type, n_class = "conversational", "ask_and_branch"
 
-        system_msg = raw_node.get("systemMessage", "")
-        if raw_node.get("is_end"):
-            system_msg += "\n\nDIRECTIVA CRITICA: Despidete del usuario y CUELGA LA LLAMADA inmediatamente."
+        if n_class == "start":
+            system_msg = ""
+        else:
+            system_msg = raw_node.get("systemMessage", "")
+            if raw_node.get("is_end"):
+                system_msg += "\n\nDIRECTIVA CRITICA: Despidete del usuario y CUELGA LA LLAMADA inmediatamente."
 
         module_card = {
             "id": node_id,
@@ -124,7 +132,7 @@ def build_workflow_nodes(md_content, base_json_path, output_json_path, client, v
                 "extractions": []
             }
         }
-        
+
         if n_class in ["start", "extractor"] and raw_node.get("direct_next"):
             target_id = f"node-{raw_node['direct_next']}"
             source_handle = f"{data_id}-conversational-connector"
@@ -170,6 +178,22 @@ def build_workflow_nodes(md_content, base_json_path, output_json_path, client, v
 
     base_json["workflow"]["nodes"] = workflow_nodes
     base_json["workflow"]["edges"] = workflow_edges
+
+    start_node = next((n for n in workflow_nodes if n["data"]["nodeClass"] == "start"), None)
+    if start_node and "connector" not in start_node["data"]:
+        first_other = next((n for n in workflow_nodes if n["id"] != start_node["id"]), None)
+        if first_other:
+            target_id = first_other["id"]
+            data_id = start_node["data"]["id"]
+            source_handle = f"{data_id}-conversational-connector"
+            start_node["data"]["connector"] = target_id
+            workflow_edges.append({
+                "id": f"xy-edge__{start_node['id']}{source_handle}-{target_id}",
+                "source": start_node["id"],
+                "target": target_id,
+                "sourceHandle": source_handle
+            })
+            print(f"[Paso 4] AVISO: el nodo start no tenia direct_next. Conectado automaticamente a '{target_id}'.")
 
     with open(output_json_path, 'w', encoding='utf-8') as out_file:
         json.dump(base_json, out_file, indent=2, ensure_ascii=False)

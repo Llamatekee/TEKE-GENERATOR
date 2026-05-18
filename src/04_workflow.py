@@ -212,7 +212,7 @@ def build_workflow_nodes(md_content, base_json_path, output_json_path, client, v
         for issue in issues:
             print(f"  - {issue}")
     elif verbose:
-        print("[Paso 4] Validacion del grafo: OK (sin referencias rotas)")
+        print("[Paso 4] Validacion del grafo: OK")
 
 
 def _validate_graph(nodes, edges):

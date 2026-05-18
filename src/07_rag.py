@@ -97,7 +97,7 @@ def _render_md(data: dict, source_file: str) -> str:
     cands = data.get("rag_candidates", [])
 
     lines = []
-    lines.append(f"# RAG Briefing — {source_file}\n")
+    lines.append(f"# RAG — {source_file}\n")
     lines.append("---\n")
 
     # --- Objetivos ---
@@ -159,7 +159,7 @@ def _render_md(data: dict, source_file: str) -> str:
 # Función principal (importable desde main.py)
 # ---------------------------------------------------------------------------
 
-def generate_rag_briefing(md_content: str, output_path: str, client, source_name: str = "", verbose: bool = False) -> bool:
+def generate_rag(md_content: str, output_path: str, client, source_name: str = "", verbose: bool = False) -> bool:
     """
     Genera un MD con los objetivos del agente y los candidatos RAG.
 
@@ -193,7 +193,7 @@ def generate_rag_briefing(md_content: str, output_path: str, client, source_name
         f.write(md_output)
 
     if verbose:
-        print(f"  -> RAG Briefing guardado en: {output_path}")
+        print(f"  -> RAG guardado en: {output_path}")
 
     return True
 
@@ -203,7 +203,7 @@ def generate_rag_briefing(md_content: str, output_path: str, client, source_name
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser(
-        description="Genera un RAG Briefing (objetivos + candidatos de documentos) a partir de un guion."
+        description="Genera un RAG (objetivos + candidatos de documentos) a partir de un guion."
     )
     parser.add_argument(
         "input_file",
@@ -211,7 +211,7 @@ if __name__ == "__main__":
     )
     parser.add_argument(
         "--output",
-        help="Ruta de salida del .md. Por defecto: mismo directorio que input con sufijo _rag_briefing.md",
+        help="Ruta de salida del .md. Por defecto: mismo directorio que input con sufijo _rag.md",
     )
     parser.add_argument("--verbose", action="store_true")
     args = parser.parse_args()
@@ -251,12 +251,12 @@ if __name__ == "__main__":
         out_path = os.path.abspath(args.output)
     else:
         out_dir = os.path.dirname(input_path)
-        out_path = os.path.join(out_dir, f"{base_name}_rag_briefing.md")
+        out_path = os.path.join(out_dir, f"{base_name}_rag.md")
 
     client = OpenAI(api_key=api_key)
-    ok = generate_rag_briefing(content, out_path, client, source_name=os.path.basename(input_path), verbose=args.verbose)
+    ok = generate_rag(content, out_path, client, source_name=os.path.basename(input_path), verbose=args.verbose)
     if ok:
-        print(f"\n✅ RAG Briefing generado: {out_path}")
+        print(f"\n RAG generado: {out_path}")
     else:
-        print("\n❌ El proceso finalizó con errores.")
+        print("\nERROR: El proceso finalizó con errores.")
         raise SystemExit(1)

@@ -287,6 +287,91 @@ def phase2d_faqs(client, model, raw_md, analysis):
     user = _P2D_USR.format(raw_md=raw_md, analysis=json.dumps(analysis, ensure_ascii=False))
     return _call_llm(client, model, _P2D_SYS, user, "phase2d")
 
+
+# ---------------------------------------------------------------------------
+# Funciones de generacion de extras (llamadas independientes post-extraccion)
+# ---------------------------------------------------------------------------
+
+_EXTRA_OBJ_SYS = "Eres un experto en objeciones de venta outbound. Output: JSON puro sin fences."
+_EXTRA_OBJ_USR = """\
+Genera {n} objeciones ADICIONALES de llamada fria para el siguiente agente.
+NO repitas ninguna de las ya existentes.
+
+AGENTE: {agent_info}
+IDs DE NODOS DISPONIBLES (para next_node): {flow_ids}
+OBJECIONES YA EXISTENTES (ids a evitar): {existing_ids}
+
+Cada objecion debe tener el sufijo '_extra' en su id.
+Mismo schema que las regulares:
+{{
+  "id": "<snake_case_extra>",
+  "name": "<titulo>",
+  "trigger": "<como la expresa el prospecto>",
+  "keywords": ["<raiz1>", "<raiz2>"],
+  "scope": "<global|fase_apertura|fase_preguntas|fase_cierre>",
+  "is_global": <true|false>,
+  "response": "<respuesta del agente>",
+  "directives": ["<instruccion interna>"],
+  "next_node": "<id_nodo_flow>"
+}}
+
+Produce: {{"objections": [<lista de {n} objeciones>]}}
+"""
+
+_EXTRA_FAQ_SYS = "Eres un experto en FAQs de agentes de venta conversacional. Output: JSON puro sin fences."
+_EXTRA_FAQ_USR = """\
+Genera {n} FAQs ADICIONALES que un prospecto podria hacer durante la llamada.
+NO repitas ninguna de las ya existentes.
+
+AGENTE: {agent_info}
+FAQs YA EXISTENTES (preguntas a evitar): {existing_questions}
+
+Cada FAQ debe tener el sufijo '_extra' en su id.
+Mismo schema que las regulares:
+{{
+  "id": "<snake_case_extra>",
+  "question": "<pregunta del prospecto>",
+  "keywords": ["<raiz1>", "<raiz2>"],
+  "scope": "global",
+  "response": "<respuesta inline del agente>",
+  "redirect_to_meeting": <true|false>
+}}
+
+Produce: {{"faqs": [<lista de {n} faqs>]}}
+"""
+
+
+def _agent_info_summary(analysis):
+    return (
+        f"Nombre: {analysis.get('agent_name', '?')} | "
+        f"Empresa: {analysis.get('company_name', '?')} | "
+        f"Objetivo: {analysis.get('primary_objective', '?')}"
+    )
+
+
+def generate_extra_objections(client, model, analysis, flow, existing_objections, n):
+    flow_ids = ", ".join(node.get("id", "?") for node in flow.get("flow", []))
+    existing_ids = ", ".join(o.get("id", "?") for o in existing_objections)
+    user = _EXTRA_OBJ_USR.format(
+        n=n,
+        agent_info=_agent_info_summary(analysis),
+        flow_ids=flow_ids or "N/A",
+        existing_ids=existing_ids or "ninguna",
+    )
+    result = _call_llm(client, model, _EXTRA_OBJ_SYS, user, "extra_objections")
+    return result.get("objections", [])
+
+
+def generate_extra_faqs(client, model, analysis, existing_faqs, n):
+    existing_questions = " | ".join(f.get("question", "?") for f in existing_faqs)
+    user = _EXTRA_FAQ_USR.format(
+        n=n,
+        agent_info=_agent_info_summary(analysis),
+        existing_questions=existing_questions or "ninguna",
+    )
+    result = _call_llm(client, model, _EXTRA_FAQ_SYS, user, "extra_faqs")
+    return result.get("faqs", [])
+
 def phase2e_extractions(client, model, raw_md, analysis, flow):
     flow_summary = json.dumps([{"id": n.get("id"), "name": n.get("name"), "type": n.get("type")} for n in flow.get("flow", [])], ensure_ascii=False)
     user = _P2E_USR.format(raw_md=raw_md, analysis=json.dumps(analysis, ensure_ascii=False), flow_summary=flow_summary)
@@ -448,7 +533,7 @@ def phase3_assemble(source_file, analysis, identity, flow, objections, faqs, ext
 
     return "\n".join(parts) + "\n"
 
-def run_structurer(raw_md_path, output_path, client, model=DEFAULT_MODEL, verbose=False):
+def run_structurer(raw_md_path, output_path, client, model=DEFAULT_MODEL, verbose=False, extra_faqs=0, extra_objections=0):
     if not os.path.exists(raw_md_path):
         print(f"Error: No se encuentra {raw_md_path}")
         return False
@@ -470,7 +555,7 @@ def run_structurer(raw_md_path, output_path, client, model=DEFAULT_MODEL, verbos
     flow = phase2b_flow(client, model, raw_md, analysis)
 
     if verbose:
-        print("  Fase 2B: Auditoría de Calidad (buscando nodos perdidos)...")
+        print("  Fase 2B: Auditoria de calidad...")
         
     try:
         reviewer_messages = [
@@ -490,7 +575,7 @@ def run_structurer(raw_md_path, output_path, client, model=DEFAULT_MODEL, verbos
         
         flow = json.loads(response_review.choices[0].message.content.strip())
     except Exception as e:
-        print(f"    Error en Fase 2B (Auditoría omitida, usando flujo original): {e}")
+        print(f"    Error en Fase 2B (Auditoria omitida, usando flujo original): {e}")
 
     if verbose:
         print("  Fases 2A/2C/2D/2E: Extraccion en paralelo...")
@@ -513,6 +598,37 @@ def run_structurer(raw_md_path, output_path, client, model=DEFAULT_MODEL, verbos
             except Exception as exc:
                 print(f"    Error en {name}: {exc}")
                 results[name] = {}
+
+    # Extras: llamadas independientes que no tocan los prompts anteriores
+    if extra_objections > 0:
+        if verbose:
+            print(f"  Extras: generando {extra_objections} objeciones adicionales...")
+        try:
+            extra_objs = generate_extra_objections(
+                client, model, analysis, flow,
+                results.get("objections", {}).get("objections", []),
+                extra_objections,
+            )
+            results["objections"].setdefault("objections", []).extend(extra_objs)
+            if verbose:
+                print(f"    {len(extra_objs)} objeciones extra añadidas.")
+        except Exception as exc:
+            print(f"    Error generando objeciones extra: {exc}")
+
+    if extra_faqs > 0:
+        if verbose:
+            print(f"  Extras: generando {extra_faqs} FAQs adicionales...")
+        try:
+            extra_fqs = generate_extra_faqs(
+                client, model, analysis,
+                results.get("faqs", {}).get("faqs", []),
+                extra_faqs,
+            )
+            results["faqs"].setdefault("faqs", []).extend(extra_fqs)
+            if verbose:
+                print(f"    {len(extra_fqs)} FAQs extra añadidas.")
+        except Exception as exc:
+            print(f"    Error generando FAQs extra: {exc}")
 
     if verbose:
         print("  Fase 3: Ensamblando MD estructurado...")
@@ -538,6 +654,8 @@ if __name__ == "__main__":
     parser = argparse.ArgumentParser(description="Estructurador de MD bruto a semantico")
     parser.add_argument("raw_md_path", help="Ruta al MD en bruto")
     parser.add_argument("output_path", help="Ruta de salida del MD estructurado")
+    parser.add_argument("--faqs", type=int, default=0, dest="extra_faqs", help="FAQs extra a inferir mas alla de las del guion")
+    parser.add_argument("--objections", type=int, default=0, dest="extra_objections", help="Objeciones extra universales a inferir mas alla de las del guion")
     parser.add_argument("--verbose", action="store_true", help="Activa el log detallado de procesos")
     args = parser.parse_args()
 
@@ -548,4 +666,5 @@ if __name__ == "__main__":
         sys.exit(1)
 
     client = OpenAI(api_key=api_key)
-    run_structurer(args.raw_md_path, args.output_path, client, verbose=args.verbose)
+    run_structurer(args.raw_md_path, args.output_path, client, verbose=args.verbose,
+                   extra_faqs=args.extra_faqs, extra_objections=args.extra_objections)

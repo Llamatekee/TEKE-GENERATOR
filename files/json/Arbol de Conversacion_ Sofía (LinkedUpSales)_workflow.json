@@ -19,10 +19,10 @@
       "Entiendo.",
       "Perfecto."
     ],
-    "globalIdentity": "Consultora estratégica y empática que busca entender las necesidades del prospecto antes de ofrecer soluciones.",
-    "globalStyle": "Conversacional, empático, validando y redirigiendo objeciones, con un enfoque consultivo.",
-    "globalGuardrails": "No encadenar frases sin permitir al prospecto responder. No presionar para una venta inmediata.",
-    "globalInstructions": "Utilizar la lógica C5 de forma sutil para cualificar prospectos. Mantener el estatus de igual a igual con el prospecto. Guiar hacia una Revisión de Crecimiento B2B cuando se detecta una oportunidad.",
+    "globalIdentity": "Consultora estratégica y empática que busca entender las necesidades del prospecto y ofrecer soluciones personalizadas.",
+    "globalStyle": "Conversacional, empático, profesional, con pausas estratégicas para permitir la interacción del prospecto.",
+    "globalGuardrails": "No encadenar frases sin permitir la interacción del prospecto. No insistir si el prospecto claramente no está interesado o no es el perfil adecuado.",
+    "globalInstructions": "Validar y redirigir objeciones en lugar de rebatirlas. Mantener el estatus de igual a igual con el prospecto. Guiar la conversación hacia una Revisión de Crecimiento B2B cuando se detecta una oportunidad.",
     "personalityLanguage": "es-ES",
     "callProblemThreshold": 300,
     "callProblemProtocol": "transfer",
@@ -49,18 +49,28 @@
       },
       {
         "name": "current_challenge",
-        "description": "Reto actual identificado",
+        "description": "Desafío actual en el proceso de ventas",
         "type": "enum"
       },
       {
-        "name": "opportunity_identified",
+        "name": "identified_opportunity",
         "description": "Si se identificó una oportunidad interesante",
         "type": "boolean"
       },
       {
-        "name": "appointment_time",
-        "description": "Hora y día de la cita agendada",
+        "name": "appointment_date",
+        "description": "Fecha de la cita agendada",
         "type": "string"
+      },
+      {
+        "name": "appointment_time",
+        "description": "Hora de la cita agendada",
+        "type": "string"
+      },
+      {
+        "name": "contact_confirmation",
+        "description": "Confirmación de que el número de contacto es correcto",
+        "type": "boolean"
       },
       {
         "name": "objection_type",
@@ -68,8 +78,13 @@
         "type": "string"
       },
       {
+        "name": "reschedule_date",
+        "description": "Fecha propuesta para reprogramar la llamada",
+        "type": "string"
+      },
+      {
         "name": "reschedule_time",
-        "description": "Hora y día para reprogramar la llamada",
+        "description": "Hora propuesta para reprogramar la llamada",
         "type": "string"
       },
       {
@@ -84,7 +99,7 @@
       },
       {
         "name": "interest_level",
-        "description": "Nivel de interés del prospecto en la Revisión de Crecimiento B2B",
+        "description": "Nivel de interés del prospecto en la revisión de crecimiento",
         "type": "enum"
       },
       {
@@ -94,13 +109,49 @@
       },
       {
         "name": "objection_raised",
-        "description": "Objeción planteada por el prospecto durante la llamada",
+        "description": "Objeción planteada durante la llamada",
         "type": "string"
       },
       {
         "name": "result_reason",
         "description": "Razón de cierre de la llamada",
         "type": "enum"
+      },
+      {
+        "name": "decision_maker",
+        "description": "indica si el prospecto es el tomador de decisiones",
+        "type": "boolean"
+      },
+      {
+        "name": "budget_range",
+        "description": "rango de presupuesto disponible del prospecto",
+        "type": "enum",
+        "choices": [
+          "bajo",
+          "medio",
+          "alto"
+        ]
+      },
+      {
+        "name": "preferred_communication_channel",
+        "description": "canal de comunicacion preferido por el prospecto",
+        "type": "enum",
+        "choices": [
+          "email",
+          "telefono",
+          "videollamada",
+          "mensaje de texto"
+        ]
+      },
+      {
+        "name": "competitor_mentioned",
+        "description": "indica si se menciono algun competidor durante la llamada",
+        "type": "boolean"
+      },
+      {
+        "name": "follow_up_action",
+        "description": "accion de seguimiento acordada con el prospecto",
+        "type": "string"
       }
     ],
     "voice": "HIYif4jehvc9P9A8DYbX",
@@ -174,7 +225,7 @@
           "name": "Detección de Intención",
           "type": "conversational",
           "nodeClass": "ask_and_branch",
-          "systemMessage": "\"Nosotros ayudamos a empresas B2B a generar conversaciones comerciales con los prospectos correctos y a mejorar la forma en que esas oportunidades avanzan hacia el cierre. No busco venderte nada ahora, solo quería entender si les interesa mejorar esa parte o si no es una prioridad.\"\n\nOBJETIVO: Identificar el interés del prospecto y dirigir la conversación al camino adecuado.\n\nSUPUESTO: El prospecto ha sido presentado y se ha establecido el contexto de la llamada.\n\nExtracciones:\n- `interest_shown` (enum): Nivel de interés mostrado por el prospecto (opciones: curiosidad, informacion_por_correo, ocupado, no_interesado).\n\nBranches:\n- Si el prospecto accede o muestra curiosidad, toma la rama `fase_2_cualificacion_estrategica`.\n- Si el prospecto pide información por correo, toma la rama `manejo_objeciones_informacion`.\n- Si el prospecto está ocupado, toma la rama `reprogramacion`.\n- Si el prospecto no está interesado o no es B2B, toma la rama `cierre_elegante`.",
+          "systemMessage": "Nosotros ayudamos a empresas B2B a generar conversaciones comerciales con los prospectos correctos y a mejorar la forma en que esas oportunidades avanzan hacia el cierre. No busco venderte nada ahora, solo quería entender si les interesa mejorar esa parte o si no es una prioridad.\n\nOBJETIVO: Identificar el interés del prospecto y dirigir la conversación adecuadamente.\n\nSUPUESTO: El prospecto ha sido contactado y se ha presentado el contexto de la llamada.\n\nExtracciones:\n- `interest_shown` (enum): Nivel de interés mostrado por el prospecto.\n\nBranches:\n- Si el prospecto muestra curiosidad, toma la rama `fase_2_cualificacion_estrategica`.\n- Si el prospecto pide información por correo, toma la rama `manejo_objeciones_informacion`.\n- Si el prospecto está ocupado, toma la rama `reprogramacion`.\n- Si el prospecto no está interesado o no es B2B, toma la rama `cierre_elegante`.",
           "rules": [],
           "params": {},
           "autoNext": false,
@@ -190,8 +241,8 @@
           "overrideLlmTimeout": 30,
           "branches": [
             {
-              "id": "prospecto_interesado",
-              "name": "El prospecto accede o muestra curiosidad",
+              "id": "curiosidad",
+              "name": "Prospecto interesado en más información",
               "next": "node-fase_2_cualificacion_estrategica",
               "description": "",
               "fillPhrases": [
@@ -200,7 +251,7 @@
             },
             {
               "id": "informacion_por_correo",
-              "name": "El prospecto pide información por correo",
+              "name": "Prospecto prefiere recibir información por correo",
               "next": "node-manejo_objeciones_informacion",
               "description": "",
               "fillPhrases": [
@@ -208,8 +259,8 @@
               ]
             },
             {
-              "id": "prospecto_ocupado",
-              "name": "El prospecto está ocupado",
+              "id": "ocupado",
+              "name": "Prospecto no puede hablar en este momento",
               "next": "node-reprogramacion",
               "description": "",
               "fillPhrases": [
@@ -218,7 +269,7 @@
             },
             {
               "id": "no_interesado",
-              "name": "El prospecto no está interesado o no es B2B",
+              "name": "Prospecto no es adecuado o no está interesado",
               "next": "node-cierre_elegante",
               "description": "",
               "fillPhrases": [
@@ -255,7 +306,7 @@
           "name": "Cualificación Estratégica",
           "type": "conversational",
           "nodeClass": "ask_and_branch",
-          "systemMessage": "OBJETIVO: Validar si el prospecto es apto para la Revisión de Crecimiento.\n\nSUPUESTO: El prospecto ha mostrado interés o curiosidad.\n\n\"Entiendo. Para ver si realmente esto aplica para ustedes: ¿Su venta es principalmente B2B, hacia otras empresas, o más hacia consumidor final?\"\n\nExtracciones:\n- `business_type` (enum): Tipo de negocio del prospecto (opciones: B2B, B2C).\n- `lead_source` (enum): Fuente principal de oportunidades comerciales (opciones: referidos, prospeccion_activa).\n\nBranches:\n- Si es B2B, toma la rama `fase_2_prospeccion`.\n- Si no es B2B, toma la rama `cierre_elegante`.",
+          "systemMessage": "OBJETIVO: Validar si el prospecto es apto para la Revisión de Crecimiento.\n\nSUPUESTO: El prospecto ha mostrado interés en más información.\n\n\"Entiendo. Para ver si realmente esto aplica para ustedes: ¿Su venta es principalmente B2B, hacia otras empresas, o más hacia consumidor final?\"\n\nExtracciones:\n- `business_type` (enum): Tipo de negocio del prospecto.\n- `lead_source` (enum): Fuente principal de oportunidades comerciales.\n- `current_challenge` (enum): Desafío actual en el proceso de ventas.\n\nBranches:\n- Si es B2B, toma la rama `fase_2_b2b_prospeccion`.",
           "rules": [],
           "params": {},
           "autoNext": false,
@@ -271,21 +322,12 @@
           "overrideLlmTimeout": 30,
           "branches": [
             {
-              "id": "es_b2b",
-              "name": "Es B2B",
-              "next": "node-fase_2_prospeccion",
+              "id": "b2b",
+              "name": "Prospecto confirma que su venta es B2B",
+              "next": "node-fase_2_b2b_prospeccion",
               "description": "",
               "fillPhrases": [
-                "Perfecto,"
-              ]
-            },
-            {
-              "id": "no_es_b2b",
-              "name": "No es B2B",
-              "next": "node-cierre_elegante",
-              "description": "",
-              "fillPhrases": [
-                "Entiendo,"
+                "Claro,"
               ]
             }
           ],
@@ -311,23 +353,34 @@
               "examples": [],
               "required": false,
               "description": "Fuente principal de oportunidades comerciales"
+            },
+            {
+              "name": "current_challenge",
+              "type": "enum",
+              "choices": [
+                "mas_reuniones",
+                "mejor_calidad"
+              ],
+              "examples": [],
+              "required": false,
+              "description": "Desafío actual en el proceso de ventas"
             }
           ]
         }
       },
       {
-        "id": "node-fase_2_prospeccion",
+        "id": "node-fase_2_b2b_prospeccion",
         "type": "moduleCard",
         "position": {
           "x": 1350,
           "y": 0
         },
         "data": {
-          "id": "data-fase_2_prospeccion",
-          "name": "Prospección Actual",
+          "id": "data-fase_2_b2b_prospeccion",
+          "name": "Prospección B2B",
           "type": "conversational",
           "nodeClass": "ask_and_branch",
-          "systemMessage": "OBJETIVO: Entender el proceso actual de prospección del prospecto.\n\nSUPUESTO: El prospecto ha confirmado que su negocio es B2B.\n\n\"Perfecto. Y hoy, ¿sus oportunidades comerciales llegan más por referidos y contactos actuales, o tienen un proceso activo de prospección?\"\n\nBranches:\n- Si mucho referido, toma la rama `fase_2_reto_actual`.\n- Si proceso activo de prospección, toma la rama `fase_3_transicion`.",
+          "systemMessage": "OBJETIVO: Determinar el origen de las oportunidades comerciales del prospecto.\n\nSUPUESTO: El prospecto ha confirmado que su venta es B2B.\n\n\"Perfecto. Y hoy, ¿sus oportunidades comerciales llegan más por referidos y contactos actuales, o tienen un proceso activo de prospección?\"\n\nBranches:\n- Si mucho referido, toma la rama `fase_2_oportunidad_interesante`.",
           "rules": [],
           "params": {},
           "autoNext": false,
@@ -344,20 +397,11 @@
           "branches": [
             {
               "id": "mucho_referido",
-              "name": "Mucho referido",
-              "next": "node-fase_2_reto_actual",
+              "name": "Prospecto menciona que dependen de referidos",
+              "next": "node-fase_2_oportunidad_interesante",
               "description": "",
               "fillPhrases": [
                 "Entendido,"
-              ]
-            },
-            {
-              "id": "proceso_activo",
-              "name": "Proceso activo de prospección",
-              "next": "node-fase_3_transicion",
-              "description": "",
-              "fillPhrases": [
-                "Claro,"
               ]
             }
           ],
@@ -365,18 +409,18 @@
         }
       },
       {
-        "id": "node-fase_2_reto_actual",
+        "id": "node-fase_2_oportunidad_interesante",
         "type": "moduleCard",
         "position": {
           "x": 1800,
           "y": 0
         },
         "data": {
-          "id": "data-fase_2_reto_actual",
-          "name": "Identificación del Reto Actual",
+          "id": "data-fase_2_oportunidad_interesante",
+          "name": "Detección de Oportunidad",
           "type": "conversational",
           "nodeClass": "ask_and_branch",
-          "systemMessage": "OBJETIVO: Identificar el principal reto del prospecto en su proceso de ventas.\n\nSUPUESTO: El prospecto depende de referidos para sus oportunidades comerciales.\n\n\"Claro. Tiene sentido. Ahí puede haber una oportunidad interesante, porque los referidos suelen ser buenos, pero no siempre dan predictibilidad. En ese aspecto, ¿el reto hoy está más en conseguir más reuniones, o en que las que ya tienen sean de mejor calidad para que avancen al cierre?\"\n\nExtracciones:\n- `current_challenge` (enum): Reto actual identificado (opciones: mas_reuniones, mejor_calidad).\n\nBranches:\n- Si más reuniones, toma la rama `fase_3_transicion`.\n- Si mejor calidad, toma la rama `fase_3_transicion`.",
+          "systemMessage": "OBJETIVO: Identificar el reto principal del prospecto en su proceso de ventas.\n\nSUPUESTO: El prospecto depende de referidos para sus oportunidades comerciales.\n\n\"Claro. Tiene sentido. Ahí puede haber una oportunidad interesante, porque los referidos suelen ser buenos, pero no siempre dan predictibilidad. En ese aspecto, ¿el reto hoy está más en conseguir más reuniones, o en que las que ya tienen sean de mejor calidad para que avancen al cierre?\"\n\nRama siguiente: -> `fase_3_transicion_asesor`.",
           "rules": [],
           "params": {},
           "autoNext": false,
@@ -392,52 +436,31 @@
           "overrideLlmTimeout": 30,
           "branches": [
             {
-              "id": "mas_reuniones",
-              "name": "Más reuniones",
-              "next": "node-fase_3_transicion",
-              "description": "",
+              "id": "branch_continuar",
+              "name": "Continuar",
+              "next": "node-fase_3_transicion_asesor",
+              "description": "Transicion automatica",
               "fillPhrases": [
-                "Perfecto,"
-              ]
-            },
-            {
-              "id": "mejor_calidad",
-              "name": "Mejor calidad",
-              "next": "node-fase_3_transicion",
-              "description": "",
-              "fillPhrases": [
-                "Entendido,"
+                "Claro."
               ]
             }
           ],
-          "extractions": [
-            {
-              "name": "current_challenge",
-              "type": "enum",
-              "choices": [
-                "mas_reuniones",
-                "mejor_calidad"
-              ],
-              "examples": [],
-              "required": false,
-              "description": "Reto actual identificado"
-            }
-          ]
+          "extractions": []
         }
       },
       {
-        "id": "node-fase_3_transicion",
+        "id": "node-fase_3_transicion_asesor",
         "type": "moduleCard",
         "position": {
           "x": 0,
           "y": 400
         },
         "data": {
-          "id": "data-fase_3_transicion",
+          "id": "data-fase_3_transicion_asesor",
           "name": "Transición al Asesor",
           "type": "extractor",
           "nodeClass": "extractor",
-          "systemMessage": "OBJETIVO: Proponer una Revisión de Crecimiento B2B con un estratega.\n\nSUPUESTO: Se ha identificado una oportunidad o reto en el proceso del prospecto.\n\n\"Por lo que me comentas, [Nombre], hay una oportunidad interesante ahí. No se trata solo de llenar la agenda, sino de que cada conversación sea con el cliente correcto.\"\n\"Mira, lo más práctico ahora no es que yo te lo explique todo por teléfono. Lo ideal sería agendar una Revisión de Crecimiento B2B de unos 20 minutos con uno de nuestros estrategas. Revisarán su proceso actual y verían si nuestra metodología e IA pueden ayudarlos a mejorar esa conversión. ¿Cómo estás de tiempo esta semana para una charla corta?\"\n\nExtracciones:\n- `opportunity_identified` (boolean): Si se identificó una oportunidad interesante.\n\nRama siguiente: -> `fase_4_cierre_confirmacion`",
+          "systemMessage": "OBJETIVO: Proponer una Revisión de Crecimiento B2B con un estratega.\n\nSUPUESTO: Se ha identificado una oportunidad interesante en el proceso de ventas del prospecto.\n\n\"Por lo que me comentas, {prospect_name}, hay una oportunidad interesante ahí. No se trata solo de llenar la agenda, sino de que cada conversación sea con el cliente correcto.\"\n\"Mira, lo más práctico ahora no es que yo te lo explique todo por teléfono. Lo ideal sería agendar una Revisión de Crecimiento B2B de unos 20 minutos con uno de nuestros estrategas. Revisarán su proceso actual y verían si nuestra metodología e IA pueden ayudarlos a mejorar esa conversión. ¿Cómo estás de tiempo esta semana para una charla corta?\"\n\nExtracciones:\n- `identified_opportunity` (boolean): Si se identificó una oportunidad interesante.\n\nRama siguiente: -> `fase_4_cierre_confirmacion`.",
           "rules": [],
           "params": {},
           "autoNext": false,
@@ -454,7 +477,7 @@
           "branches": [],
           "extractions": [
             {
-              "name": "opportunity_identified",
+              "name": "identified_opportunity",
               "type": "boolean",
               "choices": [],
               "examples": [],
@@ -477,7 +500,7 @@
           "name": "Cierre y Confirmación",
           "type": "extractor",
           "nodeClass": "extractor",
-          "systemMessage": "OBJETIVO: Confirmar la cita para la Revisión de Crecimiento B2B.\n\nSUPUESTO: El prospecto ha aceptado la propuesta de una revisión.\n\n\"Tengo disponibilidad el [Día] a las [Hora] o el [Día] por la mañana. ¿Qué te queda mejor?\"\n\"Excelente. Te voy a enviar la invitación al calendario ahora mismo y un mensaje de confirmación por WhatsApp para que tengas el contacto directo. ¿Es este mismo número, verdad?\"\n\nExtracciones:\n- `appointment_time` (string): Hora y día de la cita agendada.\n\nRama siguiente: -> `end`",
+          "systemMessage": "OBJETIVO: Confirmar la cita para la Revisión de Crecimiento B2B.\n\nSUPUESTO: El prospecto ha aceptado la propuesta de agendar una revisión.\n\n\"Tengo disponibilidad el [Día] a las [Hora] o el [Día] por la mañana. ¿Qué te queda mejor?\"\n\"Excelente. Te voy a enviar la invitación al calendario ahora mismo y un mensaje de confirmación por WhatsApp para que tengas el contacto directo. ¿Es este mismo número, verdad?\"\n\nExtracciones:\n- `appointment_date` (string): Fecha de la cita agendada.\n- `appointment_time` (string): Hora de la cita agendada.\n- `contact_confirmation` (boolean): Confirmación de que el número de contacto es correcto.\n\nRama siguiente: -> `end`.",
           "rules": [],
           "params": {},
           "autoNext": false,
@@ -494,12 +517,28 @@
           "branches": [],
           "extractions": [
             {
+              "name": "appointment_date",
+              "type": "string",
+              "choices": [],
+              "examples": [],
+              "required": false,
+              "description": "Fecha de la cita agendada"
+            },
+            {
               "name": "appointment_time",
               "type": "string",
               "choices": [],
               "examples": [],
               "required": false,
-              "description": "Hora y día de la cita agendada"
+              "description": "Hora de la cita agendada"
+            },
+            {
+              "name": "contact_confirmation",
+              "type": "boolean",
+              "choices": [],
+              "examples": [],
+              "required": false,
+              "description": "Confirmación de que el número de contacto es correcto"
             }
           ],
           "connector": "node-end"
@@ -517,7 +556,7 @@
           "name": "Manejo de Objeciones - Información",
           "type": "extractor",
           "nodeClass": "extractor",
-          "systemMessage": "OBJETIVO: Responder a la solicitud de información por correo.\n\nSUPUESTO: El prospecto ha solicitado información por correo.\n\n\"Claro, lo entiendo. Pero para no enviarte un PDF genérico con información que quizás ni necesites, ¿te puedo hacer una pregunta rápida sobre su modelo de venta? Así te mando solo lo que te sirva.\"\n\nExtracciones:\n- `objection_type` (string): Tipo de objeción planteada por el prospecto.\n\nRama siguiente: -> `end`",
+          "systemMessage": "OBJETIVO: Responder a la solicitud de información por correo.\n\nSUPUESTO: El prospecto ha solicitado recibir información por correo.\n\n\"Claro, lo entiendo. Pero para no enviarte un PDF genérico con información que quizás ni necesites, ¿te puedo hacer una pregunta rápida sobre su modelo de venta? Así te mando solo lo que te sirva.\"\n\nExtracciones:\n- `objection_type` (string): Tipo de objeción planteada por el prospecto.\n\nRama siguiente: -> `end`.",
           "rules": [],
           "params": {},
           "autoNext": false,
@@ -557,7 +596,7 @@
           "name": "Reprogramación de Llamada",
           "type": "extractor",
           "nodeClass": "extractor",
-          "systemMessage": "OBJETIVO: Ofrecer reprogramar la llamada para un momento más conveniente.\n\nSUPUESTO: El prospecto está ocupado en este momento.\n\n\"Te entiendo, [Nombre]. No quiero quitarte tiempo ahora. ¿Qué te parece si agendamos 15 minutos el martes o miércoles? Revisamos si podemos hacer que tu equipo sea más eficiente y, si no hace sentido, al menos ya nos conocemos.\"\n\nExtracciones:\n- `reschedule_time` (string): Hora y día para reprogramar la llamada.\n\nRama siguiente: -> `end`",
+          "systemMessage": "OBJETIVO: Ofrecer una nueva fecha para la llamada.\n\nSUPUESTO: El prospecto está ocupado y no puede hablar en este momento.\n\n\"Entiendo, {prospect_name}. No te preocupes, puedo llamarte en otro momento. ¿Qué día y hora te vendría mejor para que podamos hablar con más calma?\"\n\nExtracciones:\n- `reschedule_date` (string): Fecha propuesta para reprogramar la llamada.\n- `reschedule_time` (string): Hora propuesta para reprogramar la llamada.\n\nRama siguiente: -> `end`.",
           "rules": [],
           "params": {},
           "autoNext": false,
@@ -574,12 +613,20 @@
           "branches": [],
           "extractions": [
             {
+              "name": "reschedule_date",
+              "type": "string",
+              "choices": [],
+              "examples": [],
+              "required": false,
+              "description": "Fecha propuesta para reprogramar la llamada"
+            },
+            {
               "name": "reschedule_time",
               "type": "string",
               "choices": [],
               "examples": [],
               "required": false,
-              "description": "Hora y día para reprogramar la llamada"
+              "description": "Hora propuesta para reprogramar la llamada"
             }
           ],
           "connector": "node-end"
@@ -597,7 +644,7 @@
           "name": "Cierre Elegante",
           "type": "extractor",
           "nodeClass": "extractor",
-          "systemMessage": "OBJETIVO: Cerrar la conversación de manera educada si el prospecto no está interesado.\n\nSUPUESTO: El prospecto no está interesado o no es adecuado.\n\n\"Entiendo perfectamente, [Nombre]. No te quito más tiempo. Si en el futuro el crecimiento comercial se vuelve una prioridad, aquí estaremos. Que tengas un buen día.\"\n\nExtracciones:\n- `closure_reason` (string): Razón para el cierre elegante de la conversación.\n\nRama siguiente: -> `end`",
+          "systemMessage": "OBJETIVO: Cerrar la conversación de manera cordial si el prospecto no está interesado.\n\nSUPUESTO: El prospecto no está interesado o no es el perfil adecuado.\n\n\"Entiendo perfectamente, {prospect_name}. No te quito más tiempo. Si en el futuro el crecimiento comercial se vuelve una prioridad, aquí estaremos. Que tengas un buen día.\"\n\nExtracciones:\n- `closure_reason` (string): Razón para el cierre elegante de la conversación.\n\nRama siguiente: -> `end`.",
           "rules": [],
           "params": {},
           "autoNext": false,
@@ -656,15 +703,15 @@
         }
       },
       {
-        "id": "node-obj_mandar_info_apertura",
+        "id": "node-mandar_info",
         "type": "moduleCard",
         "position": {
           "x": 0,
           "y": 1200
         },
         "data": {
-          "id": "data-obj_mandar_info_apertura",
-          "name": "Enviar Información",
+          "id": "data-mandar_info",
+          "name": "Mándame información",
           "type": "conversational_conditional",
           "nodeClass": "action",
           "systemMessage": "GESTION DE OBJECION: Claro, lo entiendo. Pero para no enviarte un PDF genérico con información que quizás ni necesites, ¿te puedo hacer una pregunta rápida sobre su modelo de venta? Así te mando solo lo que te sirva. y continua por donde ibas.",
@@ -695,26 +742,7 @@
                     "operator": "AND",
                     "conditions": [
                       {
-                        "value": "info",
-                        "operator": "contains",
-                        "variable": "{{_chat_history_3}}",
-                        "valueType": "string"
-                      }
-                    ]
-                  }
-                ],
-                "operator": "AND"
-              },
-              "description": ""
-            },
-            {
-              "conditions": {
-                "groups": [
-                  {
-                    "operator": "AND",
-                    "conditions": [
-                      {
-                        "value": "inform",
+                        "value": "infor",
                         "operator": "contains",
                         "variable": "{{_chat_history_3}}",
                         "valueType": "string"
@@ -752,7 +780,7 @@
                     "operator": "AND",
                     "conditions": [
                       {
-                        "value": "pdf",
+                        "value": "email",
                         "operator": "contains",
                         "variable": "{{_chat_history_3}}",
                         "valueType": "string"
@@ -771,7 +799,26 @@
                     "operator": "AND",
                     "conditions": [
                       {
-                        "value": "neces",
+                        "value": "enviar",
+                        "operator": "contains",
+                        "variable": "{{_chat_history_3}}",
+                        "valueType": "string"
+                      }
+                    ]
+                  }
+                ],
+                "operator": "AND"
+              },
+              "description": ""
+            },
+            {
+              "conditions": {
+                "groups": [
+                  {
+                    "operator": "AND",
+                    "conditions": [
+                      {
+                        "value": "pdf",
                         "operator": "contains",
                         "variable": "{{_chat_history_3}}",
                         "valueType": "string"
@@ -801,18 +848,18 @@
         }
       },
       {
-        "id": "node-obj_ocupado_apertura",
+        "id": "node-ocupado_ahora",
         "type": "moduleCard",
         "position": {
           "x": 450,
           "y": 1200
         },
         "data": {
-          "id": "data-obj_ocupado_apertura",
-          "name": "Ocupado Ahora",
+          "id": "data-ocupado_ahora",
+          "name": "Ahora estoy ocupado",
           "type": "conversational_conditional",
           "nodeClass": "action",
-          "systemMessage": "GESTION DE OBJECION: Te entiendo, [Nombre], yo también estoy a tope. Precisamente por eso te llamaba; para no quitarte tiempo ahora, ¿qué te parece si agendamos 15 minutos el martes o miércoles? y continua por donde ibas.",
+          "systemMessage": "GESTION DE OBJECION: Te entiendo, [Nombre], yo también estoy a tope. Precisamente por eso te llamaba; para no quitarte tiempo ahora, ¿qué te parece si agendamos 15 minutos el martes o miércoles? Revisamos si podemos hacer que tu equipo sea más eficiente y, si no hace sentido, al menos ya nos conocemos. y continua por donde ibas.",
           "rules": [
             {
               "conditions": {
@@ -821,7 +868,7 @@
                     "operator": "AND",
                     "conditions": [
                       {
-                        "value": "ocupa",
+                        "value": "ocup",
                         "operator": "contains",
                         "variable": "{{_chat_history_3}}",
                         "valueType": "string"
@@ -841,25 +888,6 @@
                     "conditions": [
                       {
                         "value": "ahora",
-                        "operator": "contains",
-                        "variable": "{{_chat_history_3}}",
-                        "valueType": "string"
-                      }
-                    ]
-                  }
-                ],
-                "operator": "AND"
-              },
-              "description": ""
-            },
-            {
-              "conditions": {
-                "groups": [
-                  {
-                    "operator": "AND",
-                    "conditions": [
-                      {
-                        "value": "tiemp",
                         "operator": "contains",
                         "variable": "{{_chat_history_3}}",
                         "valueType": "string"
@@ -916,7 +944,26 @@
                     "operator": "AND",
                     "conditions": [
                       {
-                        "value": "later",
+                        "value": "prisa",
+                        "operator": "contains",
+                        "variable": "{{_chat_history_3}}",
+                        "valueType": "string"
+                      }
+                    ]
+                  }
+                ],
+                "operator": "AND"
+              },
+              "description": ""
+            },
+            {
+              "conditions": {
+                "groups": [
+                  {
+                    "operator": "AND",
+                    "conditions": [
+                      {
+                        "value": "luego",
                         "operator": "contains",
                         "variable": "{{_chat_history_3}}",
                         "valueType": "string"
@@ -946,15 +993,15 @@
         }
       },
       {
-        "id": "node-obj_no_interesa_apertura",
+        "id": "node-no_interesa",
         "type": "moduleCard",
         "position": {
           "x": 900,
           "y": 1200
         },
         "data": {
-          "id": "data-obj_no_interesa_apertura",
-          "name": "No Interesa",
+          "id": "data-no_interesa",
+          "name": "No me interesa / No somos B2B",
           "type": "conversational_conditional",
           "nodeClass": "action",
           "systemMessage": "GESTION DE OBJECION: Entiendo perfectamente, [Nombre]. No te quito más tiempo. Si en el futuro el crecimiento comercial se vuelve una prioridad, aquí estaremos. Que tengas un buen día. y continua por donde ibas.",
@@ -1004,7 +1051,26 @@
                     "operator": "AND",
                     "conditions": [
                       {
-                        "value": "interes",
+                        "value": "no",
+                        "operator": "contains",
+                        "variable": "{{_chat_history_3}}",
+                        "valueType": "string"
+                      }
+                    ]
+                  }
+                ],
+                "operator": "AND"
+              },
+              "description": ""
+            },
+            {
+              "conditions": {
+                "groups": [
+                  {
+                    "operator": "AND",
+                    "conditions": [
+                      {
+                        "value": "gust",
                         "operator": "contains",
                         "variable": "{{_chat_history_3}}",
                         "valueType": "string"
@@ -1053,25 +1119,6 @@
                 "operator": "AND"
               },
               "description": ""
-            },
-            {
-              "conditions": {
-                "groups": [
-                  {
-                    "operator": "AND",
-                    "conditions": [
-                      {
-                        "value": "import",
-                        "operator": "contains",
-                        "variable": "{{_chat_history_3}}",
-                        "valueType": "string"
-                      }
-                    ]
-                  }
-                ],
-                "operator": "AND"
-              },
-              "description": ""
             }
           ],
           "params": {},
@@ -1091,15 +1138,15 @@
         }
       },
       {
-        "id": "node-obj_ya_tienen_vendedores",
+        "id": "node-ya_tienen_vendedores",
         "type": "moduleCard",
         "position": {
           "x": 1350,
           "y": 1200
         },
         "data": {
-          "id": "data-obj_ya_tienen_vendedores",
-          "name": "Ya Tienen Vendedores",
+          "id": "data-ya_tienen_vendedores",
+          "name": "Ya tenemos vendedores",
           "type": "conversational_conditional",
           "nodeClass": "action",
           "systemMessage": "GESTION DE OBJECION: Eso es buenísimo. De hecho, trabajamos mucho con equipos ya formados. El tema es: ¿ellos están dedicando su tiempo a cerrar ventas o están perdiendo tiempo intentando abrir puertas que no se abren? y continua por donde ibas.",
@@ -1130,7 +1177,7 @@
                     "operator": "AND",
                     "conditions": [
                       {
-                        "value": "equip",
+                        "value": "tenem",
                         "operator": "contains",
                         "variable": "{{_chat_history_3}}",
                         "valueType": "string"
@@ -1149,7 +1196,7 @@
                     "operator": "AND",
                     "conditions": [
                       {
-                        "value": "cerr",
+                        "value": "equipo",
                         "operator": "contains",
                         "variable": "{{_chat_history_3}}",
                         "valueType": "string"
@@ -1168,7 +1215,7 @@
                     "operator": "AND",
                     "conditions": [
                       {
-                        "value": "puert",
+                        "value": "comerc",
                         "operator": "contains",
                         "variable": "{{_chat_history_3}}",
                         "valueType": "string"
@@ -1187,7 +1234,7 @@
                     "operator": "AND",
                     "conditions": [
                       {
-                        "value": "abren",
+                        "value": "staff",
                         "operator": "contains",
                         "variable": "{{_chat_history_3}}",
                         "valueType": "string"
@@ -1206,7 +1253,7 @@
                     "operator": "AND",
                     "conditions": [
                       {
-                        "value": "tiemp",
+                        "value": "emple",
                         "operator": "contains",
                         "variable": "{{_chat_history_3}}",
                         "valueType": "string"
@@ -1236,15 +1283,15 @@
         }
       },
       {
-        "id": "node-obj_no_presupuesto",
+        "id": "node-no_presupuesto",
         "type": "moduleCard",
         "position": {
           "x": 1800,
           "y": 1200
         },
         "data": {
-          "id": "data-obj_no_presupuesto",
-          "name": "No Hay Presupuesto",
+          "id": "data-no_presupuesto",
+          "name": "No tengo presupuesto",
           "type": "conversational_conditional",
           "nodeClass": "action",
           "systemMessage": "GESTION DE OBJECION: Te entiendo perfectamente. De hecho, la reunión no es para que compres algo hoy, sino para ver si podemos optimizar lo que ya tienen. Si los números no dan, nosotros mismos te lo diremos. y continua por donde ibas.",
@@ -1313,25 +1360,6 @@
                     "operator": "AND",
                     "conditions": [
                       {
-                        "value": "gast",
-                        "operator": "contains",
-                        "variable": "{{_chat_history_3}}",
-                        "valueType": "string"
-                      }
-                    ]
-                  }
-                ],
-                "operator": "AND"
-              },
-              "description": ""
-            },
-            {
-              "conditions": {
-                "groups": [
-                  {
-                    "operator": "AND",
-                    "conditions": [
-                      {
                         "value": "financ",
                         "operator": "contains",
                         "variable": "{{_chat_history_3}}",
@@ -1351,7 +1379,26 @@
                     "operator": "AND",
                     "conditions": [
                       {
-                        "value": "budget",
+                        "value": "recurs",
+                        "operator": "contains",
+                        "variable": "{{_chat_history_3}}",
+                        "valueType": "string"
+                      }
+                    ]
+                  }
+                ],
+                "operator": "AND"
+              },
+              "description": ""
+            },
+            {
+              "conditions": {
+                "groups": [
+                  {
+                    "operator": "AND",
+                    "conditions": [
+                      {
+                        "value": "limit",
                         "operator": "contains",
                         "variable": "{{_chat_history_3}}",
                         "valueType": "string"
@@ -1381,14 +1428,14 @@
         }
       },
       {
-        "id": "node-obj_que_es_linkedupsales",
+        "id": "node-que_es_linkedupsales",
         "type": "moduleCard",
         "position": {
           "x": 0,
           "y": 1600
         },
         "data": {
-          "id": "data-obj_que_es_linkedupsales",
+          "id": "data-que_es_linkedupsales",
           "name": "¿Qué es LinkedUpSales?",
           "type": "conversational_conditional",
           "nodeClass": "action",
@@ -1401,7 +1448,7 @@
                     "operator": "AND",
                     "conditions": [
                       {
-                        "value": "linke",
+                        "value": "que",
                         "operator": "contains",
                         "variable": "{{_chat_history_3}}",
                         "valueType": "string"
@@ -1420,7 +1467,7 @@
                     "operator": "AND",
                     "conditions": [
                       {
-                        "value": "sales",
+                        "value": "linke",
                         "operator": "contains",
                         "variable": "{{_chat_history_3}}",
                         "valueType": "string"
@@ -1458,7 +1505,26 @@
                     "operator": "AND",
                     "conditions": [
                       {
-                        "value": "quien",
+                        "value": "compañ",
+                        "operator": "contains",
+                        "variable": "{{_chat_history_3}}",
+                        "valueType": "string"
+                      }
+                    ]
+                  }
+                ],
+                "operator": "AND"
+              },
+              "description": ""
+            },
+            {
+              "conditions": {
+                "groups": [
+                  {
+                    "operator": "AND",
+                    "conditions": [
+                      {
+                        "value": "negoc",
                         "operator": "contains",
                         "variable": "{{_chat_history_3}}",
                         "valueType": "string"
@@ -1488,25 +1554,6 @@
                 "operator": "AND"
               },
               "description": ""
-            },
-            {
-              "conditions": {
-                "groups": [
-                  {
-                    "operator": "AND",
-                    "conditions": [
-                      {
-                        "value": "b2b",
-                        "operator": "contains",
-                        "variable": "{{_chat_history_3}}",
-                        "valueType": "string"
-                      }
-                    ]
-                  }
-                ],
-                "operator": "AND"
-              },
-              "description": ""
             }
           ],
           "params": {},
@@ -1526,15 +1573,15 @@
         }
       },
       {
-        "id": "node-obj_trabajando_con_otra_agencia",
+        "id": "node-trabajando_con_otra_agencia",
         "type": "moduleCard",
         "position": {
           "x": 450,
           "y": 1600
         },
         "data": {
-          "id": "data-obj_trabajando_con_otra_agencia",
-          "name": "Trabajando con Otra Agencia",
+          "id": "data-trabajando_con_otra_agencia",
+          "name": "Ya estamos trabajando con otra agencia/proveedor",
           "type": "conversational_conditional",
           "nodeClass": "action",
           "systemMessage": "GESTION DE OBJECION: Me parece excelente, de hecho, las empresas que mejor funcionan suelen tener ya algo en marcha. Solo por curiosidad... ¿están 100% satisfechos con la calidad de esas reuniones o sienten que hay espacio para que sean más calificadas? y continua por donde ibas.",
@@ -1546,7 +1593,7 @@
                     "operator": "AND",
                     "conditions": [
                       {
-                        "value": "agenc",
+                        "value": "agen",
                         "operator": "contains",
                         "variable": "{{_chat_history_3}}",
                         "valueType": "string"
@@ -1584,7 +1631,7 @@
                     "operator": "AND",
                     "conditions": [
                       {
-                        "value": "satisf",
+                        "value": "colab",
                         "operator": "contains",
                         "variable": "{{_chat_history_3}}",
                         "valueType": "string"
@@ -1603,7 +1650,7 @@
                     "operator": "AND",
                     "conditions": [
                       {
-                        "value": "calidad",
+                        "value": "asoci",
                         "operator": "contains",
                         "variable": "{{_chat_history_3}}",
                         "valueType": "string"
@@ -1622,7 +1669,7 @@
                     "operator": "AND",
                     "conditions": [
                       {
-                        "value": "mejor",
+                        "value": "socios",
                         "operator": "contains",
                         "variable": "{{_chat_history_3}}",
                         "valueType": "string"
@@ -1641,7 +1688,7 @@
                     "operator": "AND",
                     "conditions": [
                       {
-                        "value": "funcion",
+                        "value": "extern",
                         "operator": "contains",
                         "variable": "{{_chat_history_3}}",
                         "valueType": "string"
@@ -1671,18 +1718,18 @@
         }
       },
       {
-        "id": "node-obj_no_tiempo",
+        "id": "node-no_tiempo_ahora",
         "type": "moduleCard",
         "position": {
           "x": 900,
           "y": 1600
         },
         "data": {
-          "id": "data-obj_no_tiempo",
-          "name": "No Tengo Tiempo",
+          "id": "data-no_tiempo_ahora",
+          "name": "No tengo tiempo ahora mismo",
           "type": "conversational_conditional",
           "nodeClass": "action",
-          "systemMessage": "GESTION DE OBJECION: Te entiendo, [Nombre], yo también estoy a tope. Precisamente por eso te llamaba; para no quitarte tiempo ahora, ¿qué te parece si agendamos 15 minutos el martes o miércoles? y continua por donde ibas.",
+          "systemMessage": "GESTION DE OBJECION: Te entiendo, [Nombre], yo también estoy a tope. Precisamente por eso te llamaba; para no quitarte tiempo ahora, ¿qué te parece si agendamos 15 minutos el martes o miércoles? Revisamos si podemos hacer que tu equipo sea más eficiente y, si no hace sentido, al menos ya nos conocemos. y continua por donde ibas.",
           "rules": [
             {
               "conditions": {
@@ -1691,7 +1738,26 @@
                     "operator": "AND",
                     "conditions": [
                       {
-                        "value": "tiemp",
+                        "value": "tiem",
+                        "operator": "contains",
+                        "variable": "{{_chat_history_3}}",
+                        "valueType": "string"
+                      }
+                    ]
+                  }
+                ],
+                "operator": "AND"
+              },
+              "description": ""
+            },
+            {
+              "conditions": {
+                "groups": [
+                  {
+                    "operator": "AND",
+                    "conditions": [
+                      {
+                        "value": "ahora",
                         "operator": "contains",
                         "variable": "{{_chat_history_3}}",
                         "valueType": "string"
@@ -1729,45 +1795,7 @@
                     "operator": "AND",
                     "conditions": [
                       {
-                        "value": "busy",
-                        "operator": "contains",
-                        "variable": "{{_chat_history_3}}",
-                        "valueType": "string"
-                      }
-                    ]
-                  }
-                ],
-                "operator": "AND"
-              },
-              "description": ""
-            },
-            {
-              "conditions": {
-                "groups": [
-                  {
-                    "operator": "AND",
-                    "conditions": [
-                      {
                         "value": "moment",
-                        "operator": "contains",
-                        "variable": "{{_chat_history_3}}",
-                        "valueType": "string"
-                      }
-                    ]
-                  }
-                ],
-                "operator": "AND"
-              },
-              "description": ""
-            },
-            {
-              "conditions": {
-                "groups": [
-                  {
-                    "operator": "AND",
-                    "conditions": [
-                      {
-                        "value": "later",
                         "operator": "contains",
                         "variable": "{{_chat_history_3}}",
                         "valueType": "string"
@@ -1797,6 +1825,25 @@
                 "operator": "AND"
               },
               "description": ""
+            },
+            {
+              "conditions": {
+                "groups": [
+                  {
+                    "operator": "AND",
+                    "conditions": [
+                      {
+                        "value": "luego",
+                        "operator": "contains",
+                        "variable": "{{_chat_history_3}}",
+                        "valueType": "string"
+                      }
+                    ]
+                  }
+                ],
+                "operator": "AND"
+              },
+              "description": ""
             }
           ],
           "params": {},
@@ -1816,18 +1863,18 @@
         }
       },
       {
-        "id": "node-obj_que_hacen_exactamente",
+        "id": "node-que_hacen_exactamente",
         "type": "moduleCard",
         "position": {
           "x": 1350,
           "y": 1600
         },
         "data": {
-          "id": "data-obj_que_hacen_exactamente",
-          "name": "¿Qué Hacen Exactamente?",
+          "id": "data-que_hacen_exactamente",
+          "name": "¿Pero qué es lo que hacen exactamente?",
           "type": "conversational_conditional",
           "nodeClass": "action",
-          "systemMessage": "GESTION DE OBJECION: Para nada. Las bases de datos suelen estar frías y desactualizadas. Nosotros lo que hacemos es diseñar un sistema para que tu empresa genere conversaciones reales. y continua por donde ibas.",
+          "systemMessage": "GESTION DE OBJECION: Para nada. Las bases de datos suelen estar frías y desactualizadas. Nosotros lo que hacemos es diseñar un sistema para que tu empresa genere conversaciones reales. Usamos tecnología y una metodología propia para que, cuando tu vendedor se siente a hablar, la otra persona ya sepa quiénes son y tenga un interés real. y continua por donde ibas.",
           "rules": [
             {
               "conditions": {
@@ -1837,25 +1884,6 @@
                     "conditions": [
                       {
                         "value": "hace",
-                        "operator": "contains",
-                        "variable": "{{_chat_history_3}}",
-                        "valueType": "string"
-                      }
-                    ]
-                  }
-                ],
-                "operator": "AND"
-              },
-              "description": ""
-            },
-            {
-              "conditions": {
-                "groups": [
-                  {
-                    "operator": "AND",
-                    "conditions": [
-                      {
-                        "value": "bases",
                         "operator": "contains",
                         "variable": "{{_chat_history_3}}",
                         "valueType": "string"
@@ -1893,7 +1921,7 @@
                     "operator": "AND",
                     "conditions": [
                       {
-                        "value": "sistem",
+                        "value": "servic",
                         "operator": "contains",
                         "variable": "{{_chat_history_3}}",
                         "valueType": "string"
@@ -1912,7 +1940,7 @@
                     "operator": "AND",
                     "conditions": [
                       {
-                        "value": "convers",
+                        "value": "ofrec",
                         "operator": "contains",
                         "variable": "{{_chat_history_3}}",
                         "valueType": "string"
@@ -1931,7 +1959,26 @@
                     "operator": "AND",
                     "conditions": [
                       {
-                        "value": "real",
+                        "value": "detall",
+                        "operator": "contains",
+                        "variable": "{{_chat_history_3}}",
+                        "valueType": "string"
+                      }
+                    ]
+                  }
+                ],
+                "operator": "AND"
+              },
+              "description": ""
+            },
+            {
+              "conditions": {
+                "groups": [
+                  {
+                    "operator": "AND",
+                    "conditions": [
+                      {
+                        "value": "explic",
                         "operator": "contains",
                         "variable": "{{_chat_history_3}}",
                         "valueType": "string"
@@ -1961,14 +2008,739 @@
         }
       },
       {
-        "id": "node-faq_que_es_linkedupsales",
+        "id": "node-no_decision_maker_extra",
         "type": "moduleCard",
         "position": {
           "x": 1800,
           "y": 1600
         },
         "data": {
-          "id": "data-faq_que_es_linkedupsales",
+          "id": "data-no_decision_maker_extra",
+          "name": "No soy el tomador de decisiones",
+          "type": "conversational_conditional",
+          "nodeClass": "action",
+          "systemMessage": "GESTION DE OBJECION: Entiendo, ¿podría indicarme quién sería la persona adecuada para hablar sobre esto? y continua por donde ibas.",
+          "rules": [
+            {
+              "conditions": {
+                "groups": [
+                  {
+                    "operator": "AND",
+                    "conditions": [
+                      {
+                        "value": "decis",
+                        "operator": "contains",
+                        "variable": "{{_chat_history_3}}",
+                        "valueType": "string"
+                      }
+                    ]
+                  }
+                ],
+                "operator": "AND"
+              },
+              "description": ""
+            },
+            {
+              "conditions": {
+                "groups": [
+                  {
+                    "operator": "AND",
+                    "conditions": [
+                      {
+                        "value": "autoridad",
+                        "operator": "contains",
+                        "variable": "{{_chat_history_3}}",
+                        "valueType": "string"
+                      }
+                    ]
+                  }
+                ],
+                "operator": "AND"
+              },
+              "description": ""
+            },
+            {
+              "conditions": {
+                "groups": [
+                  {
+                    "operator": "AND",
+                    "conditions": [
+                      {
+                        "value": "jefe",
+                        "operator": "contains",
+                        "variable": "{{_chat_history_3}}",
+                        "valueType": "string"
+                      }
+                    ]
+                  }
+                ],
+                "operator": "AND"
+              },
+              "description": ""
+            },
+            {
+              "conditions": {
+                "groups": [
+                  {
+                    "operator": "AND",
+                    "conditions": [
+                      {
+                        "value": "superior",
+                        "operator": "contains",
+                        "variable": "{{_chat_history_3}}",
+                        "valueType": "string"
+                      }
+                    ]
+                  }
+                ],
+                "operator": "AND"
+              },
+              "description": ""
+            },
+            {
+              "conditions": {
+                "groups": [
+                  {
+                    "operator": "AND",
+                    "conditions": [
+                      {
+                        "value": "respons",
+                        "operator": "contains",
+                        "variable": "{{_chat_history_3}}",
+                        "valueType": "string"
+                      }
+                    ]
+                  }
+                ],
+                "operator": "AND"
+              },
+              "description": ""
+            },
+            {
+              "conditions": {
+                "groups": [
+                  {
+                    "operator": "AND",
+                    "conditions": [
+                      {
+                        "value": "lider",
+                        "operator": "contains",
+                        "variable": "{{_chat_history_3}}",
+                        "valueType": "string"
+                      }
+                    ]
+                  }
+                ],
+                "operator": "AND"
+              },
+              "description": ""
+            }
+          ],
+          "params": {},
+          "autoNext": false,
+          "isEndNode": false,
+          "isGlobalNode": false,
+          "maxIterations": 3,
+          "asyncExecution": false,
+          "blockUserInput": false,
+          "cannedStarters": [],
+          "knowledgeBaseIds": [],
+          "inputReplacements": [],
+          "responseReplacements": [],
+          "overrideLlmTimeout": 30,
+          "branches": [],
+          "extractions": []
+        }
+      },
+      {
+        "id": "node-no_necesidad_actual_extra",
+        "type": "moduleCard",
+        "position": {
+          "x": 0,
+          "y": 2000
+        },
+        "data": {
+          "id": "data-no_necesidad_actual_extra",
+          "name": "No tenemos necesidad actual",
+          "type": "conversational_conditional",
+          "nodeClass": "action",
+          "systemMessage": "GESTION DE OBJECION: Comprendo, pero muchas empresas encuentran útil planificar con anticipación. ¿Podríamos explorar cómo podríamos ser de ayuda en el futuro? y continua por donde ibas.",
+          "rules": [
+            {
+              "conditions": {
+                "groups": [
+                  {
+                    "operator": "AND",
+                    "conditions": [
+                      {
+                        "value": "neces",
+                        "operator": "contains",
+                        "variable": "{{_chat_history_3}}",
+                        "valueType": "string"
+                      }
+                    ]
+                  }
+                ],
+                "operator": "AND"
+              },
+              "description": ""
+            },
+            {
+              "conditions": {
+                "groups": [
+                  {
+                    "operator": "AND",
+                    "conditions": [
+                      {
+                        "value": "actual",
+                        "operator": "contains",
+                        "variable": "{{_chat_history_3}}",
+                        "valueType": "string"
+                      }
+                    ]
+                  }
+                ],
+                "operator": "AND"
+              },
+              "description": ""
+            },
+            {
+              "conditions": {
+                "groups": [
+                  {
+                    "operator": "AND",
+                    "conditions": [
+                      {
+                        "value": "import",
+                        "operator": "contains",
+                        "variable": "{{_chat_history_3}}",
+                        "valueType": "string"
+                      }
+                    ]
+                  }
+                ],
+                "operator": "AND"
+              },
+              "description": ""
+            },
+            {
+              "conditions": {
+                "groups": [
+                  {
+                    "operator": "AND",
+                    "conditions": [
+                      {
+                        "value": "prior",
+                        "operator": "contains",
+                        "variable": "{{_chat_history_3}}",
+                        "valueType": "string"
+                      }
+                    ]
+                  }
+                ],
+                "operator": "AND"
+              },
+              "description": ""
+            },
+            {
+              "conditions": {
+                "groups": [
+                  {
+                    "operator": "AND",
+                    "conditions": [
+                      {
+                        "value": "urgenc",
+                        "operator": "contains",
+                        "variable": "{{_chat_history_3}}",
+                        "valueType": "string"
+                      }
+                    ]
+                  }
+                ],
+                "operator": "AND"
+              },
+              "description": ""
+            },
+            {
+              "conditions": {
+                "groups": [
+                  {
+                    "operator": "AND",
+                    "conditions": [
+                      {
+                        "value": "ahora",
+                        "operator": "contains",
+                        "variable": "{{_chat_history_3}}",
+                        "valueType": "string"
+                      }
+                    ]
+                  }
+                ],
+                "operator": "AND"
+              },
+              "description": ""
+            }
+          ],
+          "params": {},
+          "autoNext": false,
+          "isEndNode": false,
+          "isGlobalNode": false,
+          "maxIterations": 3,
+          "asyncExecution": false,
+          "blockUserInput": false,
+          "cannedStarters": [],
+          "knowledgeBaseIds": [],
+          "inputReplacements": [],
+          "responseReplacements": [],
+          "overrideLlmTimeout": 30,
+          "branches": [],
+          "extractions": []
+        }
+      },
+      {
+        "id": "node-demasiado_pequeno_extra",
+        "type": "moduleCard",
+        "position": {
+          "x": 450,
+          "y": 2000
+        },
+        "data": {
+          "id": "data-demasiado_pequeno_extra",
+          "name": "Somos demasiado pequeños",
+          "type": "conversational_conditional",
+          "nodeClass": "action",
+          "systemMessage": "GESTION DE OBJECION: Entiendo, trabajamos con empresas de todos los tamaños y adaptamos nuestras soluciones a sus necesidades específicas. ¿Le gustaría saber cómo podríamos ayudarle? y continua por donde ibas.",
+          "rules": [
+            {
+              "conditions": {
+                "groups": [
+                  {
+                    "operator": "AND",
+                    "conditions": [
+                      {
+                        "value": "pequeñ",
+                        "operator": "contains",
+                        "variable": "{{_chat_history_3}}",
+                        "valueType": "string"
+                      }
+                    ]
+                  }
+                ],
+                "operator": "AND"
+              },
+              "description": ""
+            },
+            {
+              "conditions": {
+                "groups": [
+                  {
+                    "operator": "AND",
+                    "conditions": [
+                      {
+                        "value": "tamaño",
+                        "operator": "contains",
+                        "variable": "{{_chat_history_3}}",
+                        "valueType": "string"
+                      }
+                    ]
+                  }
+                ],
+                "operator": "AND"
+              },
+              "description": ""
+            },
+            {
+              "conditions": {
+                "groups": [
+                  {
+                    "operator": "AND",
+                    "conditions": [
+                      {
+                        "value": "chico",
+                        "operator": "contains",
+                        "variable": "{{_chat_history_3}}",
+                        "valueType": "string"
+                      }
+                    ]
+                  }
+                ],
+                "operator": "AND"
+              },
+              "description": ""
+            },
+            {
+              "conditions": {
+                "groups": [
+                  {
+                    "operator": "AND",
+                    "conditions": [
+                      {
+                        "value": "escala",
+                        "operator": "contains",
+                        "variable": "{{_chat_history_3}}",
+                        "valueType": "string"
+                      }
+                    ]
+                  }
+                ],
+                "operator": "AND"
+              },
+              "description": ""
+            },
+            {
+              "conditions": {
+                "groups": [
+                  {
+                    "operator": "AND",
+                    "conditions": [
+                      {
+                        "value": "limit",
+                        "operator": "contains",
+                        "variable": "{{_chat_history_3}}",
+                        "valueType": "string"
+                      }
+                    ]
+                  }
+                ],
+                "operator": "AND"
+              },
+              "description": ""
+            },
+            {
+              "conditions": {
+                "groups": [
+                  {
+                    "operator": "AND",
+                    "conditions": [
+                      {
+                        "value": "capacid",
+                        "operator": "contains",
+                        "variable": "{{_chat_history_3}}",
+                        "valueType": "string"
+                      }
+                    ]
+                  }
+                ],
+                "operator": "AND"
+              },
+              "description": ""
+            }
+          ],
+          "params": {},
+          "autoNext": false,
+          "isEndNode": false,
+          "isGlobalNode": false,
+          "maxIterations": 3,
+          "asyncExecution": false,
+          "blockUserInput": false,
+          "cannedStarters": [],
+          "knowledgeBaseIds": [],
+          "inputReplacements": [],
+          "responseReplacements": [],
+          "overrideLlmTimeout": 30,
+          "branches": [],
+          "extractions": []
+        }
+      },
+      {
+        "id": "node-no_confianza_extra",
+        "type": "moduleCard",
+        "position": {
+          "x": 900,
+          "y": 2000
+        },
+        "data": {
+          "id": "data-no_confianza_extra",
+          "name": "No confío en servicios externos",
+          "type": "conversational_conditional",
+          "nodeClass": "action",
+          "systemMessage": "GESTION DE OBJECION: Es comprensible, muchas empresas sienten lo mismo al principio. ¿Le gustaría conocer algunos casos de éxito de clientes que han trabajado con nosotros? y continua por donde ibas.",
+          "rules": [
+            {
+              "conditions": {
+                "groups": [
+                  {
+                    "operator": "AND",
+                    "conditions": [
+                      {
+                        "value": "confianz",
+                        "operator": "contains",
+                        "variable": "{{_chat_history_3}}",
+                        "valueType": "string"
+                      }
+                    ]
+                  }
+                ],
+                "operator": "AND"
+              },
+              "description": ""
+            },
+            {
+              "conditions": {
+                "groups": [
+                  {
+                    "operator": "AND",
+                    "conditions": [
+                      {
+                        "value": "extern",
+                        "operator": "contains",
+                        "variable": "{{_chat_history_3}}",
+                        "valueType": "string"
+                      }
+                    ]
+                  }
+                ],
+                "operator": "AND"
+              },
+              "description": ""
+            },
+            {
+              "conditions": {
+                "groups": [
+                  {
+                    "operator": "AND",
+                    "conditions": [
+                      {
+                        "value": "segur",
+                        "operator": "contains",
+                        "variable": "{{_chat_history_3}}",
+                        "valueType": "string"
+                      }
+                    ]
+                  }
+                ],
+                "operator": "AND"
+              },
+              "description": ""
+            },
+            {
+              "conditions": {
+                "groups": [
+                  {
+                    "operator": "AND",
+                    "conditions": [
+                      {
+                        "value": "fiabil",
+                        "operator": "contains",
+                        "variable": "{{_chat_history_3}}",
+                        "valueType": "string"
+                      }
+                    ]
+                  }
+                ],
+                "operator": "AND"
+              },
+              "description": ""
+            },
+            {
+              "conditions": {
+                "groups": [
+                  {
+                    "operator": "AND",
+                    "conditions": [
+                      {
+                        "value": "dud",
+                        "operator": "contains",
+                        "variable": "{{_chat_history_3}}",
+                        "valueType": "string"
+                      }
+                    ]
+                  }
+                ],
+                "operator": "AND"
+              },
+              "description": ""
+            },
+            {
+              "conditions": {
+                "groups": [
+                  {
+                    "operator": "AND",
+                    "conditions": [
+                      {
+                        "value": "desconf",
+                        "operator": "contains",
+                        "variable": "{{_chat_history_3}}",
+                        "valueType": "string"
+                      }
+                    ]
+                  }
+                ],
+                "operator": "AND"
+              },
+              "description": ""
+            }
+          ],
+          "params": {},
+          "autoNext": false,
+          "isEndNode": false,
+          "isGlobalNode": false,
+          "maxIterations": 3,
+          "asyncExecution": false,
+          "blockUserInput": false,
+          "cannedStarters": [],
+          "knowledgeBaseIds": [],
+          "inputReplacements": [],
+          "responseReplacements": [],
+          "overrideLlmTimeout": 30,
+          "branches": [],
+          "extractions": []
+        }
+      },
+      {
+        "id": "node-preferencia_interna_extra",
+        "type": "moduleCard",
+        "position": {
+          "x": 1350,
+          "y": 2000
+        },
+        "data": {
+          "id": "data-preferencia_interna_extra",
+          "name": "Preferimos manejarlo internamente",
+          "type": "conversational_conditional",
+          "nodeClass": "action",
+          "systemMessage": "GESTION DE OBJECION: Entiendo, muchas empresas prefieren eso. Sin embargo, podríamos complementar sus esfuerzos internos. ¿Le gustaría explorar cómo podríamos trabajar juntos? y continua por donde ibas.",
+          "rules": [
+            {
+              "conditions": {
+                "groups": [
+                  {
+                    "operator": "AND",
+                    "conditions": [
+                      {
+                        "value": "intern",
+                        "operator": "contains",
+                        "variable": "{{_chat_history_3}}",
+                        "valueType": "string"
+                      }
+                    ]
+                  }
+                ],
+                "operator": "AND"
+              },
+              "description": ""
+            },
+            {
+              "conditions": {
+                "groups": [
+                  {
+                    "operator": "AND",
+                    "conditions": [
+                      {
+                        "value": "prefer",
+                        "operator": "contains",
+                        "variable": "{{_chat_history_3}}",
+                        "valueType": "string"
+                      }
+                    ]
+                  }
+                ],
+                "operator": "AND"
+              },
+              "description": ""
+            },
+            {
+              "conditions": {
+                "groups": [
+                  {
+                    "operator": "AND",
+                    "conditions": [
+                      {
+                        "value": "propio",
+                        "operator": "contains",
+                        "variable": "{{_chat_history_3}}",
+                        "valueType": "string"
+                      }
+                    ]
+                  }
+                ],
+                "operator": "AND"
+              },
+              "description": ""
+            },
+            {
+              "conditions": {
+                "groups": [
+                  {
+                    "operator": "AND",
+                    "conditions": [
+                      {
+                        "value": "autonom",
+                        "operator": "contains",
+                        "variable": "{{_chat_history_3}}",
+                        "valueType": "string"
+                      }
+                    ]
+                  }
+                ],
+                "operator": "AND"
+              },
+              "description": ""
+            },
+            {
+              "conditions": {
+                "groups": [
+                  {
+                    "operator": "AND",
+                    "conditions": [
+                      {
+                        "value": "independ",
+                        "operator": "contains",
+                        "variable": "{{_chat_history_3}}",
+                        "valueType": "string"
+                      }
+                    ]
+                  }
+                ],
+                "operator": "AND"
+              },
+              "description": ""
+            },
+            {
+              "conditions": {
+                "groups": [
+                  {
+                    "operator": "AND",
+                    "conditions": [
+                      {
+                        "value": "interno",
+                        "operator": "contains",
+                        "variable": "{{_chat_history_3}}",
+                        "valueType": "string"
+                      }
+                    ]
+                  }
+                ],
+                "operator": "AND"
+              },
+              "description": ""
+            }
+          ],
+          "params": {},
+          "autoNext": false,
+          "isEndNode": false,
+          "isGlobalNode": false,
+          "maxIterations": 3,
+          "asyncExecution": false,
+          "blockUserInput": false,
+          "cannedStarters": [],
+          "knowledgeBaseIds": [],
+          "inputReplacements": [],
+          "responseReplacements": [],
+          "overrideLlmTimeout": 30,
+          "branches": [],
+          "extractions": []
+        }
+      },
+      {
+        "id": "node-que_es_linkedupsales",
+        "type": "moduleCard",
+        "position": {
+          "x": 1800,
+          "y": 2000
+        },
+        "data": {
+          "id": "data-que_es_linkedupsales",
           "name": "¿Qué es LinkedUpSales?",
           "type": "conversational_conditional",
           "nodeClass": "action",
@@ -2038,7 +2810,26 @@
                     "operator": "AND",
                     "conditions": [
                       {
-                        "value": "quien",
+                        "value": "compañ",
+                        "operator": "contains",
+                        "variable": "{{_chat_history_3}}",
+                        "valueType": "string"
+                      }
+                    ]
+                  }
+                ],
+                "operator": "AND"
+              },
+              "description": ""
+            },
+            {
+              "conditions": {
+                "groups": [
+                  {
+                    "operator": "AND",
+                    "conditions": [
+                      {
+                        "value": "negoc",
                         "operator": "contains",
                         "variable": "{{_chat_history_3}}",
                         "valueType": "string"
@@ -2068,25 +2859,6 @@
                 "operator": "AND"
               },
               "description": ""
-            },
-            {
-              "conditions": {
-                "groups": [
-                  {
-                    "operator": "AND",
-                    "conditions": [
-                      {
-                        "value": "b2b",
-                        "operator": "contains",
-                        "variable": "{{_chat_history_3}}",
-                        "valueType": "string"
-                      }
-                    ]
-                  }
-                ],
-                "operator": "AND"
-              },
-              "description": ""
             }
           ],
           "params": {},
@@ -2106,14 +2878,14 @@
         }
       },
       {
-        "id": "node-faq_que_hacen_exactamente",
+        "id": "node-venden_bases_de_datos",
         "type": "moduleCard",
         "position": {
           "x": 0,
-          "y": 2000
+          "y": 2400
         },
         "data": {
-          "id": "data-faq_que_hacen_exactamente",
+          "id": "data-venden_bases_de_datos",
           "name": "¿Pero qué es lo que hacen exactamente? ¿Venden bases de datos?",
           "type": "conversational_conditional",
           "nodeClass": "action",
@@ -2145,26 +2917,7 @@
                     "operator": "AND",
                     "conditions": [
                       {
-                        "value": "hacen",
-                        "operator": "contains",
-                        "variable": "{{_chat_history_3}}",
-                        "valueType": "string"
-                      }
-                    ]
-                  }
-                ],
-                "operator": "AND"
-              },
-              "description": ""
-            },
-            {
-              "conditions": {
-                "groups": [
-                  {
-                    "operator": "AND",
-                    "conditions": [
-                      {
-                        "value": "exactamente",
+                        "value": "venden",
                         "operator": "contains",
                         "variable": "{{_chat_history_3}}",
                         "valueType": "string"
@@ -2202,7 +2955,7 @@
                     "operator": "AND",
                     "conditions": [
                       {
-                        "value": "sistem",
+                        "value": "datos",
                         "operator": "contains",
                         "variable": "{{_chat_history_3}}",
                         "valueType": "string"
@@ -2221,7 +2974,1041 @@
                     "operator": "AND",
                     "conditions": [
                       {
-                        "value": "convers",
+                        "value": "servic",
+                        "operator": "contains",
+                        "variable": "{{_chat_history_3}}",
+                        "valueType": "string"
+                      }
+                    ]
+                  }
+                ],
+                "operator": "AND"
+              },
+              "description": ""
+            },
+            {
+              "conditions": {
+                "groups": [
+                  {
+                    "operator": "AND",
+                    "conditions": [
+                      {
+                        "value": "ofrec",
+                        "operator": "contains",
+                        "variable": "{{_chat_history_3}}",
+                        "valueType": "string"
+                      }
+                    ]
+                  }
+                ],
+                "operator": "AND"
+              },
+              "description": ""
+            }
+          ],
+          "params": {},
+          "autoNext": false,
+          "isEndNode": false,
+          "isGlobalNode": false,
+          "maxIterations": 3,
+          "asyncExecution": false,
+          "blockUserInput": false,
+          "cannedStarters": [],
+          "knowledgeBaseIds": [],
+          "inputReplacements": [],
+          "responseReplacements": [],
+          "overrideLlmTimeout": 30,
+          "branches": [],
+          "extractions": []
+        }
+      },
+      {
+        "id": "node-duracion_revision_crecimiento",
+        "type": "moduleCard",
+        "position": {
+          "x": 450,
+          "y": 2400
+        },
+        "data": {
+          "id": "data-duracion_revision_crecimiento",
+          "name": "¿Cuánto dura la Revisión de Crecimiento B2B?",
+          "type": "conversational_conditional",
+          "nodeClass": "action",
+          "systemMessage": "FAQ INLINE: Lo ideal sería agendar una Revisión de Crecimiento B2B de unos 20 minutos con uno de nuestros estrategas.",
+          "rules": [
+            {
+              "conditions": {
+                "groups": [
+                  {
+                    "operator": "AND",
+                    "conditions": [
+                      {
+                        "value": "duracion",
+                        "operator": "contains",
+                        "variable": "{{_chat_history_3}}",
+                        "valueType": "string"
+                      }
+                    ]
+                  }
+                ],
+                "operator": "AND"
+              },
+              "description": ""
+            },
+            {
+              "conditions": {
+                "groups": [
+                  {
+                    "operator": "AND",
+                    "conditions": [
+                      {
+                        "value": "revision",
+                        "operator": "contains",
+                        "variable": "{{_chat_history_3}}",
+                        "valueType": "string"
+                      }
+                    ]
+                  }
+                ],
+                "operator": "AND"
+              },
+              "description": ""
+            },
+            {
+              "conditions": {
+                "groups": [
+                  {
+                    "operator": "AND",
+                    "conditions": [
+                      {
+                        "value": "crecimiento",
+                        "operator": "contains",
+                        "variable": "{{_chat_history_3}}",
+                        "valueType": "string"
+                      }
+                    ]
+                  }
+                ],
+                "operator": "AND"
+              },
+              "description": ""
+            },
+            {
+              "conditions": {
+                "groups": [
+                  {
+                    "operator": "AND",
+                    "conditions": [
+                      {
+                        "value": "tiempo",
+                        "operator": "contains",
+                        "variable": "{{_chat_history_3}}",
+                        "valueType": "string"
+                      }
+                    ]
+                  }
+                ],
+                "operator": "AND"
+              },
+              "description": ""
+            },
+            {
+              "conditions": {
+                "groups": [
+                  {
+                    "operator": "AND",
+                    "conditions": [
+                      {
+                        "value": "minut",
+                        "operator": "contains",
+                        "variable": "{{_chat_history_3}}",
+                        "valueType": "string"
+                      }
+                    ]
+                  }
+                ],
+                "operator": "AND"
+              },
+              "description": ""
+            },
+            {
+              "conditions": {
+                "groups": [
+                  {
+                    "operator": "AND",
+                    "conditions": [
+                      {
+                        "value": "dur",
+                        "operator": "contains",
+                        "variable": "{{_chat_history_3}}",
+                        "valueType": "string"
+                      }
+                    ]
+                  }
+                ],
+                "operator": "AND"
+              },
+              "description": ""
+            }
+          ],
+          "params": {},
+          "autoNext": false,
+          "isEndNode": false,
+          "isGlobalNode": false,
+          "maxIterations": 3,
+          "asyncExecution": false,
+          "blockUserInput": false,
+          "cannedStarters": [],
+          "knowledgeBaseIds": [],
+          "inputReplacements": [],
+          "responseReplacements": [],
+          "overrideLlmTimeout": 30,
+          "branches": [],
+          "extractions": []
+        }
+      },
+      {
+        "id": "node-costo_revision_crecimiento",
+        "type": "moduleCard",
+        "position": {
+          "x": 900,
+          "y": 2400
+        },
+        "data": {
+          "id": "data-costo_revision_crecimiento",
+          "name": "¿Tiene algún costo la Revisión de Crecimiento B2B?",
+          "type": "conversational_conditional",
+          "nodeClass": "action",
+          "systemMessage": "FAQ INLINE: La reunión no es para que compres algo hoy, sino para ver si podemos optimizar lo que ya tienen. Si los números no dan, nosotros mismos te lo diremos.",
+          "rules": [
+            {
+              "conditions": {
+                "groups": [
+                  {
+                    "operator": "AND",
+                    "conditions": [
+                      {
+                        "value": "costo",
+                        "operator": "contains",
+                        "variable": "{{_chat_history_3}}",
+                        "valueType": "string"
+                      }
+                    ]
+                  }
+                ],
+                "operator": "AND"
+              },
+              "description": ""
+            },
+            {
+              "conditions": {
+                "groups": [
+                  {
+                    "operator": "AND",
+                    "conditions": [
+                      {
+                        "value": "revision",
+                        "operator": "contains",
+                        "variable": "{{_chat_history_3}}",
+                        "valueType": "string"
+                      }
+                    ]
+                  }
+                ],
+                "operator": "AND"
+              },
+              "description": ""
+            },
+            {
+              "conditions": {
+                "groups": [
+                  {
+                    "operator": "AND",
+                    "conditions": [
+                      {
+                        "value": "crecimiento",
+                        "operator": "contains",
+                        "variable": "{{_chat_history_3}}",
+                        "valueType": "string"
+                      }
+                    ]
+                  }
+                ],
+                "operator": "AND"
+              },
+              "description": ""
+            },
+            {
+              "conditions": {
+                "groups": [
+                  {
+                    "operator": "AND",
+                    "conditions": [
+                      {
+                        "value": "precio",
+                        "operator": "contains",
+                        "variable": "{{_chat_history_3}}",
+                        "valueType": "string"
+                      }
+                    ]
+                  }
+                ],
+                "operator": "AND"
+              },
+              "description": ""
+            },
+            {
+              "conditions": {
+                "groups": [
+                  {
+                    "operator": "AND",
+                    "conditions": [
+                      {
+                        "value": "tarif",
+                        "operator": "contains",
+                        "variable": "{{_chat_history_3}}",
+                        "valueType": "string"
+                      }
+                    ]
+                  }
+                ],
+                "operator": "AND"
+              },
+              "description": ""
+            },
+            {
+              "conditions": {
+                "groups": [
+                  {
+                    "operator": "AND",
+                    "conditions": [
+                      {
+                        "value": "gratuit",
+                        "operator": "contains",
+                        "variable": "{{_chat_history_3}}",
+                        "valueType": "string"
+                      }
+                    ]
+                  }
+                ],
+                "operator": "AND"
+              },
+              "description": ""
+            }
+          ],
+          "params": {},
+          "autoNext": false,
+          "isEndNode": false,
+          "isGlobalNode": false,
+          "maxIterations": 3,
+          "asyncExecution": false,
+          "blockUserInput": false,
+          "cannedStarters": [],
+          "knowledgeBaseIds": [],
+          "inputReplacements": [],
+          "responseReplacements": [],
+          "overrideLlmTimeout": 30,
+          "branches": [],
+          "extractions": []
+        }
+      },
+      {
+        "id": "node-como_puede_ayudarme_linkedupsales_extra",
+        "type": "moduleCard",
+        "position": {
+          "x": 1350,
+          "y": 2400
+        },
+        "data": {
+          "id": "data-como_puede_ayudarme_linkedupsales_extra",
+          "name": "¿Cómo puede ayudarme LinkedUpSales a mejorar mis conversiones?",
+          "type": "conversational_conditional",
+          "nodeClass": "action",
+          "systemMessage": "FAQ INLINE: LinkedUpSales ofrece una Revisión de Crecimiento B2B que identifica áreas clave para optimizar tus procesos de ventas y mejorar la conversión de oportunidades comerciales.",
+          "rules": [
+            {
+              "conditions": {
+                "groups": [
+                  {
+                    "operator": "AND",
+                    "conditions": [
+                      {
+                        "value": "ayudar",
+                        "operator": "contains",
+                        "variable": "{{_chat_history_3}}",
+                        "valueType": "string"
+                      }
+                    ]
+                  }
+                ],
+                "operator": "AND"
+              },
+              "description": ""
+            },
+            {
+              "conditions": {
+                "groups": [
+                  {
+                    "operator": "AND",
+                    "conditions": [
+                      {
+                        "value": "mejorar",
+                        "operator": "contains",
+                        "variable": "{{_chat_history_3}}",
+                        "valueType": "string"
+                      }
+                    ]
+                  }
+                ],
+                "operator": "AND"
+              },
+              "description": ""
+            },
+            {
+              "conditions": {
+                "groups": [
+                  {
+                    "operator": "AND",
+                    "conditions": [
+                      {
+                        "value": "conversiones",
+                        "operator": "contains",
+                        "variable": "{{_chat_history_3}}",
+                        "valueType": "string"
+                      }
+                    ]
+                  }
+                ],
+                "operator": "AND"
+              },
+              "description": ""
+            },
+            {
+              "conditions": {
+                "groups": [
+                  {
+                    "operator": "AND",
+                    "conditions": [
+                      {
+                        "value": "optimizar",
+                        "operator": "contains",
+                        "variable": "{{_chat_history_3}}",
+                        "valueType": "string"
+                      }
+                    ]
+                  }
+                ],
+                "operator": "AND"
+              },
+              "description": ""
+            },
+            {
+              "conditions": {
+                "groups": [
+                  {
+                    "operator": "AND",
+                    "conditions": [
+                      {
+                        "value": "aumentar",
+                        "operator": "contains",
+                        "variable": "{{_chat_history_3}}",
+                        "valueType": "string"
+                      }
+                    ]
+                  }
+                ],
+                "operator": "AND"
+              },
+              "description": ""
+            },
+            {
+              "conditions": {
+                "groups": [
+                  {
+                    "operator": "AND",
+                    "conditions": [
+                      {
+                        "value": "crecer",
+                        "operator": "contains",
+                        "variable": "{{_chat_history_3}}",
+                        "valueType": "string"
+                      }
+                    ]
+                  }
+                ],
+                "operator": "AND"
+              },
+              "description": ""
+            }
+          ],
+          "params": {},
+          "autoNext": false,
+          "isEndNode": false,
+          "isGlobalNode": false,
+          "maxIterations": 3,
+          "asyncExecution": false,
+          "blockUserInput": false,
+          "cannedStarters": [],
+          "knowledgeBaseIds": [],
+          "inputReplacements": [],
+          "responseReplacements": [],
+          "overrideLlmTimeout": 30,
+          "branches": [],
+          "extractions": []
+        }
+      },
+      {
+        "id": "node-que_incluye_revision_crecimiento_extra",
+        "type": "moduleCard",
+        "position": {
+          "x": 1800,
+          "y": 2400
+        },
+        "data": {
+          "id": "data-que_incluye_revision_crecimiento_extra",
+          "name": "¿Qué incluye exactamente la Revisión de Crecimiento B2B?",
+          "type": "conversational_conditional",
+          "nodeClass": "action",
+          "systemMessage": "FAQ INLINE: La Revisión de Crecimiento B2B incluye un análisis detallado de tus procesos de ventas actuales, identificación de oportunidades de mejora y recomendaciones personalizadas para aumentar tus conversiones.",
+          "rules": [
+            {
+              "conditions": {
+                "groups": [
+                  {
+                    "operator": "AND",
+                    "conditions": [
+                      {
+                        "value": "incluye",
+                        "operator": "contains",
+                        "variable": "{{_chat_history_3}}",
+                        "valueType": "string"
+                      }
+                    ]
+                  }
+                ],
+                "operator": "AND"
+              },
+              "description": ""
+            },
+            {
+              "conditions": {
+                "groups": [
+                  {
+                    "operator": "AND",
+                    "conditions": [
+                      {
+                        "value": "revision",
+                        "operator": "contains",
+                        "variable": "{{_chat_history_3}}",
+                        "valueType": "string"
+                      }
+                    ]
+                  }
+                ],
+                "operator": "AND"
+              },
+              "description": ""
+            },
+            {
+              "conditions": {
+                "groups": [
+                  {
+                    "operator": "AND",
+                    "conditions": [
+                      {
+                        "value": "crecimiento",
+                        "operator": "contains",
+                        "variable": "{{_chat_history_3}}",
+                        "valueType": "string"
+                      }
+                    ]
+                  }
+                ],
+                "operator": "AND"
+              },
+              "description": ""
+            },
+            {
+              "conditions": {
+                "groups": [
+                  {
+                    "operator": "AND",
+                    "conditions": [
+                      {
+                        "value": "detall",
+                        "operator": "contains",
+                        "variable": "{{_chat_history_3}}",
+                        "valueType": "string"
+                      }
+                    ]
+                  }
+                ],
+                "operator": "AND"
+              },
+              "description": ""
+            },
+            {
+              "conditions": {
+                "groups": [
+                  {
+                    "operator": "AND",
+                    "conditions": [
+                      {
+                        "value": "conten",
+                        "operator": "contains",
+                        "variable": "{{_chat_history_3}}",
+                        "valueType": "string"
+                      }
+                    ]
+                  }
+                ],
+                "operator": "AND"
+              },
+              "description": ""
+            },
+            {
+              "conditions": {
+                "groups": [
+                  {
+                    "operator": "AND",
+                    "conditions": [
+                      {
+                        "value": "analisis",
+                        "operator": "contains",
+                        "variable": "{{_chat_history_3}}",
+                        "valueType": "string"
+                      }
+                    ]
+                  }
+                ],
+                "operator": "AND"
+              },
+              "description": ""
+            }
+          ],
+          "params": {},
+          "autoNext": false,
+          "isEndNode": false,
+          "isGlobalNode": false,
+          "maxIterations": 3,
+          "asyncExecution": false,
+          "blockUserInput": false,
+          "cannedStarters": [],
+          "knowledgeBaseIds": [],
+          "inputReplacements": [],
+          "responseReplacements": [],
+          "overrideLlmTimeout": 30,
+          "branches": [],
+          "extractions": []
+        }
+      },
+      {
+        "id": "node-quien_realiza_revision_extra",
+        "type": "moduleCard",
+        "position": {
+          "x": 0,
+          "y": 2800
+        },
+        "data": {
+          "id": "data-quien_realiza_revision_extra",
+          "name": "¿Quién realiza la Revisión de Crecimiento B2B?",
+          "type": "conversational_conditional",
+          "nodeClass": "action",
+          "systemMessage": "FAQ INLINE: La revisión es realizada por nuestros expertos en ventas B2B con amplia experiencia en el sector, asegurando un análisis preciso y recomendaciones efectivas.",
+          "rules": [
+            {
+              "conditions": {
+                "groups": [
+                  {
+                    "operator": "AND",
+                    "conditions": [
+                      {
+                        "value": "quien",
+                        "operator": "contains",
+                        "variable": "{{_chat_history_3}}",
+                        "valueType": "string"
+                      }
+                    ]
+                  }
+                ],
+                "operator": "AND"
+              },
+              "description": ""
+            },
+            {
+              "conditions": {
+                "groups": [
+                  {
+                    "operator": "AND",
+                    "conditions": [
+                      {
+                        "value": "realiza",
+                        "operator": "contains",
+                        "variable": "{{_chat_history_3}}",
+                        "valueType": "string"
+                      }
+                    ]
+                  }
+                ],
+                "operator": "AND"
+              },
+              "description": ""
+            },
+            {
+              "conditions": {
+                "groups": [
+                  {
+                    "operator": "AND",
+                    "conditions": [
+                      {
+                        "value": "revision",
+                        "operator": "contains",
+                        "variable": "{{_chat_history_3}}",
+                        "valueType": "string"
+                      }
+                    ]
+                  }
+                ],
+                "operator": "AND"
+              },
+              "description": ""
+            },
+            {
+              "conditions": {
+                "groups": [
+                  {
+                    "operator": "AND",
+                    "conditions": [
+                      {
+                        "value": "experto",
+                        "operator": "contains",
+                        "variable": "{{_chat_history_3}}",
+                        "valueType": "string"
+                      }
+                    ]
+                  }
+                ],
+                "operator": "AND"
+              },
+              "description": ""
+            },
+            {
+              "conditions": {
+                "groups": [
+                  {
+                    "operator": "AND",
+                    "conditions": [
+                      {
+                        "value": "especialista",
+                        "operator": "contains",
+                        "variable": "{{_chat_history_3}}",
+                        "valueType": "string"
+                      }
+                    ]
+                  }
+                ],
+                "operator": "AND"
+              },
+              "description": ""
+            },
+            {
+              "conditions": {
+                "groups": [
+                  {
+                    "operator": "AND",
+                    "conditions": [
+                      {
+                        "value": "profesional",
+                        "operator": "contains",
+                        "variable": "{{_chat_history_3}}",
+                        "valueType": "string"
+                      }
+                    ]
+                  }
+                ],
+                "operator": "AND"
+              },
+              "description": ""
+            }
+          ],
+          "params": {},
+          "autoNext": false,
+          "isEndNode": false,
+          "isGlobalNode": false,
+          "maxIterations": 3,
+          "asyncExecution": false,
+          "blockUserInput": false,
+          "cannedStarters": [],
+          "knowledgeBaseIds": [],
+          "inputReplacements": [],
+          "responseReplacements": [],
+          "overrideLlmTimeout": 30,
+          "branches": [],
+          "extractions": []
+        }
+      },
+      {
+        "id": "node-cuanto_tiempo_toma_ver_resultados_extra",
+        "type": "moduleCard",
+        "position": {
+          "x": 450,
+          "y": 2800
+        },
+        "data": {
+          "id": "data-cuanto_tiempo_toma_ver_resultados_extra",
+          "name": "¿Cuánto tiempo toma ver resultados después de la revisión?",
+          "type": "conversational_conditional",
+          "nodeClass": "action",
+          "systemMessage": "FAQ INLINE: El tiempo para ver resultados puede variar según la implementación de las recomendaciones, pero muchos de nuestros clientes comienzan a notar mejoras en sus conversiones en pocas semanas.",
+          "rules": [
+            {
+              "conditions": {
+                "groups": [
+                  {
+                    "operator": "AND",
+                    "conditions": [
+                      {
+                        "value": "tiempo",
+                        "operator": "contains",
+                        "variable": "{{_chat_history_3}}",
+                        "valueType": "string"
+                      }
+                    ]
+                  }
+                ],
+                "operator": "AND"
+              },
+              "description": ""
+            },
+            {
+              "conditions": {
+                "groups": [
+                  {
+                    "operator": "AND",
+                    "conditions": [
+                      {
+                        "value": "resultados",
+                        "operator": "contains",
+                        "variable": "{{_chat_history_3}}",
+                        "valueType": "string"
+                      }
+                    ]
+                  }
+                ],
+                "operator": "AND"
+              },
+              "description": ""
+            },
+            {
+              "conditions": {
+                "groups": [
+                  {
+                    "operator": "AND",
+                    "conditions": [
+                      {
+                        "value": "revision",
+                        "operator": "contains",
+                        "variable": "{{_chat_history_3}}",
+                        "valueType": "string"
+                      }
+                    ]
+                  }
+                ],
+                "operator": "AND"
+              },
+              "description": ""
+            },
+            {
+              "conditions": {
+                "groups": [
+                  {
+                    "operator": "AND",
+                    "conditions": [
+                      {
+                        "value": "ver",
+                        "operator": "contains",
+                        "variable": "{{_chat_history_3}}",
+                        "valueType": "string"
+                      }
+                    ]
+                  }
+                ],
+                "operator": "AND"
+              },
+              "description": ""
+            },
+            {
+              "conditions": {
+                "groups": [
+                  {
+                    "operator": "AND",
+                    "conditions": [
+                      {
+                        "value": "mejoras",
+                        "operator": "contains",
+                        "variable": "{{_chat_history_3}}",
+                        "valueType": "string"
+                      }
+                    ]
+                  }
+                ],
+                "operator": "AND"
+              },
+              "description": ""
+            },
+            {
+              "conditions": {
+                "groups": [
+                  {
+                    "operator": "AND",
+                    "conditions": [
+                      {
+                        "value": "implement",
+                        "operator": "contains",
+                        "variable": "{{_chat_history_3}}",
+                        "valueType": "string"
+                      }
+                    ]
+                  }
+                ],
+                "operator": "AND"
+              },
+              "description": ""
+            }
+          ],
+          "params": {},
+          "autoNext": false,
+          "isEndNode": false,
+          "isGlobalNode": false,
+          "maxIterations": 3,
+          "asyncExecution": false,
+          "blockUserInput": false,
+          "cannedStarters": [],
+          "knowledgeBaseIds": [],
+          "inputReplacements": [],
+          "responseReplacements": [],
+          "overrideLlmTimeout": 30,
+          "branches": [],
+          "extractions": []
+        }
+      },
+      {
+        "id": "node-como_agendar_revision_extra",
+        "type": "moduleCard",
+        "position": {
+          "x": 900,
+          "y": 2800
+        },
+        "data": {
+          "id": "data-como_agendar_revision_extra",
+          "name": "¿Cómo puedo agendar una Revisión de Crecimiento B2B?",
+          "type": "conversational_conditional",
+          "nodeClass": "action",
+          "systemMessage": "FAQ INLINE: Puedes agendar una Revisión de Crecimiento B2B contactándonos directamente o a través de nuestro sitio web, donde podrás elegir la fecha y hora que mejor te convenga.",
+          "rules": [
+            {
+              "conditions": {
+                "groups": [
+                  {
+                    "operator": "AND",
+                    "conditions": [
+                      {
+                        "value": "agendar",
+                        "operator": "contains",
+                        "variable": "{{_chat_history_3}}",
+                        "valueType": "string"
+                      }
+                    ]
+                  }
+                ],
+                "operator": "AND"
+              },
+              "description": ""
+            },
+            {
+              "conditions": {
+                "groups": [
+                  {
+                    "operator": "AND",
+                    "conditions": [
+                      {
+                        "value": "revision",
+                        "operator": "contains",
+                        "variable": "{{_chat_history_3}}",
+                        "valueType": "string"
+                      }
+                    ]
+                  }
+                ],
+                "operator": "AND"
+              },
+              "description": ""
+            },
+            {
+              "conditions": {
+                "groups": [
+                  {
+                    "operator": "AND",
+                    "conditions": [
+                      {
+                        "value": "crecimiento",
+                        "operator": "contains",
+                        "variable": "{{_chat_history_3}}",
+                        "valueType": "string"
+                      }
+                    ]
+                  }
+                ],
+                "operator": "AND"
+              },
+              "description": ""
+            },
+            {
+              "conditions": {
+                "groups": [
+                  {
+                    "operator": "AND",
+                    "conditions": [
+                      {
+                        "value": "programar",
+                        "operator": "contains",
+                        "variable": "{{_chat_history_3}}",
+                        "valueType": "string"
+                      }
+                    ]
+                  }
+                ],
+                "operator": "AND"
+              },
+              "description": ""
+            },
+            {
+              "conditions": {
+                "groups": [
+                  {
+                    "operator": "AND",
+                    "conditions": [
+                      {
+                        "value": "cita",
+                        "operator": "contains",
+                        "variable": "{{_chat_history_3}}",
+                        "valueType": "string"
+                      }
+                    ]
+                  }
+                ],
+                "operator": "AND"
+              },
+              "description": ""
+            },
+            {
+              "conditions": {
+                "groups": [
+                  {
+                    "operator": "AND",
+                    "conditions": [
+                      {
+                        "value": "reservar",
                         "operator": "contains",
                         "variable": "{{_chat_history_3}}",
                         "valueType": "string"
@@ -2259,10 +4046,10 @@
         "sourceHandle": "data-start-conversational-connector"
       },
       {
-        "id": "xy-edge__node-detectar_intencionprospecto_interesado-node-fase_2_cualificacion_estrategica",
+        "id": "xy-edge__node-detectar_intencioncuriosidad-node-fase_2_cualificacion_estrategica",
         "source": "node-detectar_intencion",
         "target": "node-fase_2_cualificacion_estrategica",
-        "sourceHandle": "prospecto_interesado"
+        "sourceHandle": "curiosidad"
       },
       {
         "id": "xy-edge__node-detectar_intencioninformacion_por_correo-node-manejo_objeciones_informacion",
@@ -2271,10 +4058,10 @@
         "sourceHandle": "informacion_por_correo"
       },
       {
-        "id": "xy-edge__node-detectar_intencionprospecto_ocupado-node-reprogramacion",
+        "id": "xy-edge__node-detectar_intencionocupado-node-reprogramacion",
         "source": "node-detectar_intencion",
         "target": "node-reprogramacion",
-        "sourceHandle": "prospecto_ocupado"
+        "sourceHandle": "ocupado"
       },
       {
         "id": "xy-edge__node-detectar_intencionno_interesado-node-cierre_elegante",
@@ -2283,46 +4070,28 @@
         "sourceHandle": "no_interesado"
       },
       {
-        "id": "xy-edge__node-fase_2_cualificacion_estrategicaes_b2b-node-fase_2_prospeccion",
+        "id": "xy-edge__node-fase_2_cualificacion_estrategicab2b-node-fase_2_b2b_prospeccion",
         "source": "node-fase_2_cualificacion_estrategica",
-        "target": "node-fase_2_prospeccion",
-        "sourceHandle": "es_b2b"
+        "target": "node-fase_2_b2b_prospeccion",
+        "sourceHandle": "b2b"
       },
       {
-        "id": "xy-edge__node-fase_2_cualificacion_estrategicano_es_b2b-node-cierre_elegante",
-        "source": "node-fase_2_cualificacion_estrategica",
-        "target": "node-cierre_elegante",
-        "sourceHandle": "no_es_b2b"
-      },
-      {
-        "id": "xy-edge__node-fase_2_prospeccionmucho_referido-node-fase_2_reto_actual",
-        "source": "node-fase_2_prospeccion",
-        "target": "node-fase_2_reto_actual",
+        "id": "xy-edge__node-fase_2_b2b_prospeccionmucho_referido-node-fase_2_oportunidad_interesante",
+        "source": "node-fase_2_b2b_prospeccion",
+        "target": "node-fase_2_oportunidad_interesante",
         "sourceHandle": "mucho_referido"
       },
       {
-        "id": "xy-edge__node-fase_2_prospeccionproceso_activo-node-fase_3_transicion",
-        "source": "node-fase_2_prospeccion",
-        "target": "node-fase_3_transicion",
-        "sourceHandle": "proceso_activo"
+        "id": "xy-edge__node-fase_2_oportunidad_interesantebranch_continuar-node-fase_3_transicion_asesor",
+        "source": "node-fase_2_oportunidad_interesante",
+        "target": "node-fase_3_transicion_asesor",
+        "sourceHandle": "branch_continuar"
       },
       {
-        "id": "xy-edge__node-fase_2_reto_actualmas_reuniones-node-fase_3_transicion",
-        "source": "node-fase_2_reto_actual",
-        "target": "node-fase_3_transicion",
-        "sourceHandle": "mas_reuniones"
-      },
-      {
-        "id": "xy-edge__node-fase_2_reto_actualmejor_calidad-node-fase_3_transicion",
-        "source": "node-fase_2_reto_actual",
-        "target": "node-fase_3_transicion",
-        "sourceHandle": "mejor_calidad"
-      },
-      {
-        "id": "xy-edge__node-fase_3_transiciondata-fase_3_transicion-conversational-connector-node-fase_4_cierre_confirmacion",
-        "source": "node-fase_3_transicion",
+        "id": "xy-edge__node-fase_3_transicion_asesordata-fase_3_transicion_asesor-conversational-connector-node-fase_4_cierre_confirmacion",
+        "source": "node-fase_3_transicion_asesor",
         "target": "node-fase_4_cierre_confirmacion",
-        "sourceHandle": "data-fase_3_transicion-conversational-connector"
+        "sourceHandle": "data-fase_3_transicion_asesor-conversational-connector"
       },
       {
         "id": "xy-edge__node-fase_4_cierre_confirmaciondata-fase_4_cierre_confirmacion-conversational-connector-node-end",

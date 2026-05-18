@@ -1,12 +1,7 @@
 import json
 from openai import OpenAI
 
-def generate_minimal_json(md_content, output_json_path, client, verbose=False):
-    
-    if verbose:
-        print("[Paso 3] Generando JSON base, config global y postCallExtractions inferidas...")
-    
-    system_prompt = """
+_SYSTEM_PROMPT = """
     Eres un procesador de datos estricto. Lee el Markdown y rellena los huecos en la plantilla JSON.
     Devuelve la plantilla EXACTAMENTE con la misma estructura.
     ATENCION: Los campos como globalInstructions o globalGuardrails DEBEN ser un string de texto plano.
@@ -78,17 +73,79 @@ def generate_minimal_json(md_content, output_json_path, client, verbose=False):
         }
     }
     """
-    
+
+_EXTRA_EXTRACTIONS_SYS = "Eres un experto en CRM y extraccion de datos post-llamada. Output: JSON puro sin fences."
+_EXTRA_EXTRACTIONS_USR = """\
+Genera {n} extracciones post-llamada ADICIONALES para un agente conversacional.
+NO repitas ninguna de las ya existentes.
+
+CONTEXTO DEL AGENTE: {agent_context}
+EXTRACCIONES YA EXISTENTES (nombres a evitar): {existing_names}
+
+Cada extraccion debe ser util para el CRM y distinta a las anteriores.
+Formato estricto: {{"name": "snake_case", "description": "descripcion breve en espanol", "type": "string|boolean|enum"}}
+Para enum incluye "choices": [...].
+
+Produce: {{"extra_extractions": [<lista de {n} extracciones>]}}
+"""
+
+
+def _append_extra_extractions(client, result_json, n, verbose=False):
+    existing = result_json.get("agentConfig", {}).get("postCallExtractions", [])
+    existing_names = ", ".join(e.get("name", "?") for e in existing) or "ninguna"
+
+    agent_name = result_json.get("agentName", result_json.get("agentConfig", {}).get("name", "?"))
+    identity = result_json.get("agentConfig", {}).get("globalIdentity", "")
+    agent_context = f"Agente: {agent_name}. {identity[:300]}" if identity else f"Agente: {agent_name}"
+
+    user = _EXTRA_EXTRACTIONS_USR.format(
+        n=n,
+        agent_context=agent_context,
+        existing_names=existing_names,
+    )
+
+    if verbose:
+        print(f"  Extras: generando {n} extracciones post-llamada adicionales...")
+
     response = client.chat.completions.create(
         model="gpt-4o",
         response_format={"type": "json_object"},
         temperature=0.0,
         messages=[
-            {"role": "system", "content": system_prompt},
+            {"role": "system", "content": _EXTRA_EXTRACTIONS_SYS},
+            {"role": "user", "content": user},
+        ]
+    )
+    data = json.loads(response.choices[0].message.content)
+    extras = data.get("extra_extractions", [])
+
+    result_json["agentConfig"]["postCallExtractions"].extend(extras)
+
+    if verbose:
+        print(f"    {len(extras)} extracciones extra añadidas.")
+
+    return result_json
+
+
+def generate_minimal_json(md_content, output_json_path, client, verbose=False, extra_extractions=0):
+
+    if verbose:
+        print("[Paso 3] Generando JSON base, config global y postCallExtractions inferidas...")
+
+    response = client.chat.completions.create(
+        model="gpt-4o",
+        response_format={"type": "json_object"},
+        temperature=0.0,
+        messages=[
+            {"role": "system", "content": _SYSTEM_PROMPT},
             {"role": "user", "content": f"Lee este Markdown y rellena la plantilla JSON infiriendo las postCallExtractions:\n\n{md_content}"}
         ]
     )
-    
+
     result_json = json.loads(response.choices[0].message.content)
+
+    if extra_extractions > 0:
+        result_json = _append_extra_extractions(client, result_json, extra_extractions, verbose=verbose)
+
     with open(output_json_path, 'w', encoding='utf-8') as out_file:
         json.dump(result_json, out_file, indent=2, ensure_ascii=False)

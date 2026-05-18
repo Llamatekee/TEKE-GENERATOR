@@ -1,86 +1,168 @@
-# TOLVIA Pipeline: Generador Automático de Agentes Conversacionales
+# TEKE_GENERATOR — Referencia técnica
 
-Herramienta end-to-end diseñada para transformar guiones comerciales en bruto (formato `.docx` o `.md`) en agentes conversacionales completamente funcionales (formato `.json`) y generar baterías de pruebas de QA sintéticas de forma automatizada.
-
-## Arquitectura de la Pipeline
-
-El orquestador (`src/main.py`) ejecuta un proceso secuencial de 6 fases:
-
-1. **Extracción (01_docx_to_md):** convierte el documento `.docx` original en un archivo Markdown en bruto, preservando la jerarquía básica y el formato del texto.
-2. **Estructuración semántica (02_structurer):** analiza el Markdown bruto mediante LLM para extraer y clasificar la identidad del agente, el flujo de la conversación, las objeciones, FAQs y extracciones necesarias. Genera un Markdown estructurado.
-3. **Configuración base (03_minimal):** inicializa la plantilla JSON del agente, configurando las reglas globales, los guardrails y deduciendo las variables post-llamada (`postCallExtractions`) a partir del contexto general.
-4. **Construcción del flujo (04_workflow):** traduce los pasos del Markdown estructurado a nodos lógicos y ramas condicionales (`branches`) en el esquema JSON, conectando las transiciones del agente.
-5. **Inyección de condicionales (05_conditionals):** integra las objeciones y preguntas frecuentes detectadas como reglas condicionales (inline) dentro del flujo conversacional.
-6. **Generación de QA (06_test_generator):** evalúa el flujo final del agente y genera una suite de escenarios de pruebas automatizadas (tests sintéticos) garantizando la cobertura de los distintos casos de uso.
-7. **RAG (07_rag):** a partir del guion estructurado (o del raw), extrae los objetivos del agente y genera una lista priorizada de candidatos de documentos para poblar el RAG, indicando para cada uno su formato sugerido, las preguntas que respondería y si fue mencionado explícitamente o inferido.
-
-## Requisitos y configuración
-
-1. Instalación de dependencias:
-  ```bash
-   pip install openai python-docx python-dotenv
-
-  ```
-2. Configuración del entorno:
-  Crea un archivo `.env` en la raíz del proyecto e incluye tu clave de API:
-  ```env
-   OPENAI_API_KEY=tu_clave_api_aqui
-   
-  ``` 
-
-## Uso básico
-
-El script determina automáticamente las rutas de salida (carpeta `files/`) y el nombre base de los archivos utilizando el nombre del documento de entrada.
+## Instalación
 
 ```bash
-python src/main.py files/docs/Guion_Comercial.docx
+pip install openai python-docx python-dotenv
 ```
 
-## Referencia de parámetros (Flags)
-
-
-| Argumento / Flag | Tipo       | Descripción                                                                                                                    |
-| ---------------- | ---------- | ------------------------------------------------------------------------------------------------------------------------------ |
-| `input_file`     | Posicional | (Obligatorio) Ruta al archivo de origen `.docx` o `.md`.                                                                       |
-| `--tests`        | Entero     | Número de escenarios de prueba QA sintéticos a generar. Si se omite, no se generará el archivo de tests.                       |
-| `--rag`          | Booleano   | Genera un RAG (`{nombre}_rag.md`) con los objetivos del agente y los documentos candidatos para el RAG, priorizados y con formato sugerido. |
-| `--md_dir`       | Ruta       | Sobrescribe el directorio destino para los archivos intermedios `.md`.                                                         |
-| `--json_dir`     | Ruta       | Sobrescribe el directorio destino para los archivos finales `.json`.                                                           |
-| `--output_name`  | Cadena     | Sobrescribe el nombre base asignado a los archivos de salida generados.                                                        |
-| `--verbose`      | Booleano   | Activa el modo de registro detallado. Útil para depurar y ver la traza paso a paso de las llamadas al LLM y procesos internos. |
-
-
-## Ejemplos de ejecución avanzada
-
-**Generar el agente y 5 escenarios de prueba:**
-
-```bash
-python src/main.py files/docs/Guion.docx --tests 5
+Crea `.env` en la raíz:
+```env
+OPENAI_API_KEY=tu_clave_api
 ```
 
-**Guardar los resultados en directorios personalizados con un nombre específico:**
+---
+
+## Pipeline principal — `src/main.py`
+
+### Input
+- Uno o varios archivos `.docx` o `.md` (el primero define el nombre base de salida)
+- Si se pasan varios, se concatenan antes de procesar
+
+### Output
+| Archivo | Siempre | Descripción |
+|---------|---------|-------------|
+| `{nombre}_raw.md` | ✓ | Markdown bruto extraído del input |
+| `{nombre}_structured.md` | ✓ | Markdown semántico con identidad, flujo, objeciones, FAQs y extracciones |
+| `{nombre}_workflow.json` | ✓ | Workflow Tolvia listo para importar |
+| `{nombre}_tests.json` | Solo con `--tests` | Batería de escenarios QA |
+| `{nombre}_rag_briefing.md` | Solo con `--rag` | Objetivos del agente y candidatos de documentos RAG |
+
+### Uso
 
 ```bash
-python src/main.py docs/raw_script.md --json_dir ./produccion/agentes --output_name Agente_Ventas_V2
+python src/main.py <archivo(s)> [opciones]
 ```
 
-**Ejecución con log detallado (Debug):**
+### Parámetros
+
+| Parámetro | Tipo | Default | Descripción |
+|-----------|------|---------|-------------|
+| `input_files` | posicional+ | — | Uno o varios `.docx` / `.md`. El primero define el nombre base. |
+| `--tests N` | int | — | Genera `N` escenarios QA. Incluye los del guion + sintéticos hasta llegar a N. |
+| `--extra-faqs N` | int | 0 | FAQs extra a inferir más allá de las del guion (llamada LLM independiente). |
+| `--extra-objections N` | int | 0 | Objeciones universales extra más allá de las del guion (llamada LLM independiente). |
+| `--extra-extractions N` | int | 0 | Post-call extractions extra más allá de las inferidas del guion. |
+| `--rag` | flag | — | Genera el briefing RAG. |
+| `--output_name` | string | nombre del primer archivo | Nombre base personalizado para todos los archivos de salida. |
+| `--md_dir` | ruta | `files/md/` | Directorio para archivos `.md`. |
+| `--json_dir` | ruta | `files/json/` | Directorio para archivos `.json`. |
+| `--verbose` | flag | — | Log detallado paso a paso. |
+
+### Ejemplos
 
 ```bash
-python src/main.py files/docs/Guion.docx --verbose
+# Básico
+python src/main.py guion.docx
+
+# Con tests QA y RAG
+python src/main.py guion.docx --tests 5 --rag
+
+# Múltiples documentos fusionados
+python src/main.py guion.docx faqs.docx objeciones.docx
+
+# Con extras y nombre personalizado
+python src/main.py guion.docx --extra-faqs 3 --extra-objections 2 --extra-extractions 5 --output_name Agente_v2
+
+# Directorios y nombre custom
+python src/main.py guion.md --json_dir ./produccion/ --output_name Sofia_Prod --verbose
 ```
 
-**Ejecución con varios docs**
+---
+
+## Fases internas de la pipeline
+
+| Fase | Archivo | Descripción |
+|------|---------|-------------|
+| 1 | `01_docx_to_md.py` | Convierte `.docx` → Markdown (sin LLM) |
+| 2 | `02_structurer.py` | Extrae esqueleto del grafo → auditor → contenido en lotes paralelos → modularización conversacional (`phase2f`) → extracción paralela de identidad, objeciones, FAQs y extracciones de nodo |
+| 3 | `03_minimal.py` | Genera la config base del agente (`agentConfig`, `postCallExtractions`) |
+| 4 | `04_workflow.py` | Construye nodos y edges Tolvia en lotes paralelos (skeleton + contenido) |
+| 5 | `05_conditionals.py` | Genera nodos `conversational_conditional` para objeciones y FAQs en paralelo |
+| 6 | `06_test.py` | Genera la batería de tests QA |
+| 7 | `07_rag.py` | Genera el briefing RAG |
+
+---
+
+## Scripts standalone
+
+### `02_structurer.py` — Reestructurar un MD bruto
+
 ```bash
-python src/main.py files/docs/guion1.docx files/docs/faqs.docx files/docs/objections.docx
+python src/02_structurer.py <raw_md> <output_md> [--extra-faqs N] [--extra-objections N] [--verbose]
 ```
 
-**Generar el agente + RAG:**
+**Input:** MD bruto  
+**Output:** MD estructurado semántico
+
+---
+
+### `07_rag.py` — Generar briefing RAG
+
 ```bash
-python src/main.py files/docs/Guion.docx --rag
+python src/07_rag.py <md_o_docx> [--output ruta.md] [--verbose]
 ```
 
-**Usar el script de RAG de forma standalone (sobre un MD ya estructurado):**
+**Input:** MD estructurado (o raw)  
+**Output:** `_rag_briefing.md` con objetivos del agente y candidatos de documentos priorizados
+
+---
+
+### `09_simulator.py` — Simular y validar conversaciones
+
+Ejecuta conversaciones simuladas contra el workflow generado para detectar errores de comportamiento del agente.
+
 ```bash
-python src/07_rag.py files/md/Guion_structured.md --verbose
+python src/09_simulator.py <workflow_json> [opciones]
+```
+
+| Parámetro | Tipo | Default | Descripción |
+|-----------|------|---------|-------------|
+| `workflow_json` | posicional | — | Ruta al workflow JSON generado. |
+| `--tests` | ruta | — | Usa los escenarios del tests JSON como personas del usuario-LLM. |
+| `--scenarios N` | int | 3 | Número de escenarios libres si no se pasa `--tests`. |
+| `--fix` | flag | — | Intenta corregir los `systemMessage` de los nodos con errores y guarda una versión nueva del workflow (`_v1`, `_v2`, ...). |
+| `--output` | ruta | — | Guarda el reporte de errores en un JSON. |
+| `--verbose` | flag | — | Muestra los transcripts completos de cada simulación. |
+
+**Errores detectados:** `script_ignorado`, `pitch_omitido`, `pregunta_multiple`, `cortesia_respondida`, `improvisacion`, `ruta_incorrecta`, `bucle_o_timeout`
+
+**Ejemplos:**
+
+```bash
+# 3 escenarios libres, solo reporte
+python src/09_simulator.py files/json/Sofia_workflow.json
+
+# Con tests generados, reporte en JSON
+python src/09_simulator.py files/json/Sofia_workflow.json --tests files/json/Sofia_tests.json --output report.json
+
+# Simular + corregir automáticamente (guarda _v1.json)
+python src/09_simulator.py files/json/Sofia_workflow.json --fix
+
+# Iterar: simular sobre la versión corregida
+python src/09_simulator.py files/json/Sofia_workflow_v1.json --fix --verbose
+```
+
+---
+
+## Estructura de archivos
+
+```
+TEKE_GENERATOR/
+├── src/
+│   ├── main.py              # Orquestador principal
+│   ├── 01_docx_to_md.py
+│   ├── 02_structurer.py     # Standalone disponible
+│   ├── 03_minimal.py
+│   ├── 04_workflow.py
+│   ├── 05_conditionals.py
+│   ├── 06_test.py
+│   ├── 07_rag.py            # Standalone disponible
+│   └── 09_simulator.py      # Standalone — validación y auto-fix
+├── files/
+│   ├── md/                  # Outputs intermedios y finales .md
+│   ├── json/                # Workflows, tests y temporales
+│   └── examples/            # Ejemplos de workflows mínimos
+├── .env                     # OPENAI_API_KEY (no versionado)
+└── readme.md
 ```

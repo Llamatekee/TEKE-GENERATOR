@@ -1,8 +1,41 @@
 import json
 import re
+import random
 from concurrent.futures import ThreadPoolExecutor, as_completed
 
 BATCH_SIZE = 8
+
+# Patrones que indican una etiqueta interna, no una frase natural de voz
+_UNSAFE_FILL_PATTERNS = [
+    r'\d',              # contiene números
+    r'\bfase\b',        # "Fase X"
+    r'\bpaso\b',        # "Paso X"
+    r'\bnodo\b',        # "Nodo X"
+    r'\betapa\b',
+    r'\bir\s+a\b',      # "Ir a"
+    r'\bcierre\b',
+    r'\bmanejo\b',
+    r'\breprograma',
+    r'\bprospecto\b',
+    r'\busuario\b',
+    r'->',              # flechas
+    r'_',               # snake_case
+]
+
+_FILL_FALLBACKS = [
+    "Claro.", "Entendido.", "Perfecto.", "De acuerdo.", "Ya veo.",
+    "Comprendo.", "Estupendo.", "Muy bien.", "Por supuesto.", "Anotado.",
+]
+
+def _safe_fill_phrase(phrase):
+    if not phrase or not phrase.strip():
+        return random.choice(_FILL_FALLBACKS)
+    lower = phrase.lower()
+    if any(re.search(p, lower) for p in _UNSAFE_FILL_PATTERNS):
+        return random.choice(_FILL_FALLBACKS)
+    if len(phrase.split()) > 5:
+        return random.choice(_FILL_FALLBACKS)
+    return phrase
 
 # ---------------------------------------------------------------------------
 # Utilidades MD
@@ -193,7 +226,7 @@ def _build_tolvia_nodes(merged_nodes):
                         branch_id = b["id"]
                         module_card["data"]["branches"].append({
                             "id": branch_id, "name": b["name"], "next": target_id,
-                            "description": "", "fillPhrases": [b.get("fill_phrase", "Claro.")]
+                            "description": "", "fillPhrases": [_safe_fill_phrase(b.get("fill_phrase", ""))]
                         })
                         workflow_edges.append({
                             "id": f"xy-edge__{node_id}{branch_id}-{target_id}",
@@ -204,7 +237,7 @@ def _build_tolvia_nodes(merged_nodes):
                 branch_id = "branch_continuar"
                 module_card["data"]["branches"].append({
                     "id": branch_id, "name": "Continuar", "next": target_id,
-                    "description": "Transicion automatica", "fillPhrases": ["Claro."]
+                    "description": "Transicion automatica", "fillPhrases": [_safe_fill_phrase("")]
                 })
                 workflow_edges.append({
                     "id": f"xy-edge__{node_id}{branch_id}-{target_id}",

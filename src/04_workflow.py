@@ -38,6 +38,13 @@ def build_workflow_nodes(md_content, base_json_path, output_json_path, client, v
     NO tiene branches. NO tiene extractions. SIEMPRE tiene direct_next con el ID del primer nodo
     conversacional. Si omites direct_next en el start, el agente quedara flotando desconectado.
 
+    REGLA DE PRESENTACION (frases del nodo start):
+    El nodo start en el Markdown suele tener 2 o mas frases bajo "Script". 
+    - La 1ra frase ya la dice el agente al descolgar.
+    - ¡OBLIGATORIO! DEBES COPIAR LITERALMENTE la 2da frase (y siguientes) del nodo start, y PEGARLAS AL PRINCIPIO EXACTO del systemMessage del PRIMER nodo conversacional (ej. 'detectar_intencion').
+    - El systemMessage de ese primer nodo debe empezar con el texto literal de la presentacion, seguido del objetivo. Ejemplo:
+      "Nosotros ayudamos a empresas B2B a generar conversaciones... No busco venderte nada... [TEXTO LITERAL AQUI]\n\nOBJETIVO: Clasificar..."
+
     SCHEMA JSON:
     {
       "nodes": [
@@ -165,10 +172,11 @@ def build_workflow_nodes(md_content, base_json_path, output_json_path, client, v
                     "id": f"xy-edge__{node_id}{branch_id}-{target_id}", "source": node_id, "target": target_id, "sourceHandle": branch_id
                 })
 
-        for ext in raw_node.get("extractions", []):
-            module_card["data"]["extractions"].append({
-                "name": ext["name"], "type": ext["type"], "choices": ext.get("choices", []), "examples": [], "required": False, "description": ext.get("description", "")
-            })
+        if n_class != "start":
+            for ext in raw_node.get("extractions", []):
+                module_card["data"]["extractions"].append({
+                    "name": ext["name"], "type": ext["type"], "choices": ext.get("choices", []), "examples": [], "required": False, "description": ext.get("description", "")
+                })
             
         workflow_nodes.append(module_card)
         x_pos += 450

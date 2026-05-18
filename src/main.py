@@ -13,6 +13,7 @@ minimal = importlib.import_module("03_minimal")
 workflow = importlib.import_module("04_workflow")
 conditionals = importlib.import_module("05_conditionals")
 tests_gen = importlib.import_module("06_test")
+rag = importlib.import_module("07_rag")
 
 def main():
     load_dotenv()
@@ -24,9 +25,13 @@ def main():
     client = OpenAI(api_key=api_key)
 
     parser = argparse.ArgumentParser(description="Pipeline Completa TOLVIA")
-    # Cambiamos input_file a input_files con nargs='+' para aceptar multiples rutas
+
     parser.add_argument("input_files", nargs='+', help="Ruta al archivo principal, seguido de archivos extra opcionales (.docx o .md)")
     parser.add_argument("--tests", type=int, default=None, help="Numero de tests QA a generar (opcional)")
+    parser.add_argument("--faqs", type=int, default=0, dest="extra_faqs", help="FAQs extra a inferir ademas de las del guion (default: 0)")
+    parser.add_argument("--objections", type=int, default=0, dest="extra_objections", help="Objeciones universales extra ademas de las del guion (default: 0)")
+    parser.add_argument("--extractions", type=int, default=0, dest="extra_extractions", help="Post-call extractions extra ademas de las inferidas del guion (default: 0)")
+    parser.add_argument("--rag", action="store_true", help="Genera un RAG con objetivos y candidatos de documentos (.md)")
     parser.add_argument("--md_dir", help="Directorio personalizado para los archivos Markdown")
     parser.add_argument("--json_dir", help="Directorio personalizado para los archivos JSON")
     parser.add_argument("--output_name", help="Nombre base personalizado para los archivos de salida")
@@ -66,6 +71,11 @@ def main():
     if verbose:
         print(f"Iniciando Pipeline para: {base_name}")
         print(f"Archivos de entrada detectados: {len(args.input_files)}")
+        extras = []
+        if args.extra_faqs:        extras.append(f"+{args.extra_faqs} FAQs")
+        if args.extra_objections:  extras.append(f"+{args.extra_objections} objeciones")
+        if args.extra_extractions: extras.append(f"+{args.extra_extractions} extracciones post-llamada")
+        if extras: print(f"Extras solicitados: {', '.join(extras)}")
 
     try:
         # PASO 1: Procesar y concatenar todos los documentos
@@ -93,13 +103,15 @@ def main():
 
         # PASOS 2 al 6: Se pasa la flag de verbose
         if verbose: print("\n[Paso 2] Estructurando el documento...")
-        structurer.run_structurer(raw_md_path, structured_md_path, client, model="gpt-4o", verbose=verbose)
+        structurer.run_structurer(raw_md_path, structured_md_path, client, model="gpt-4o", verbose=verbose,
+                                  extra_faqs=args.extra_faqs, extra_objections=args.extra_objections)
 
         with open(structured_md_path, 'r', encoding='utf-8') as f:
             structured_md_content = f.read()
 
         if verbose: print("[Paso 3] Generando config global y extracciones...")
-        minimal.generate_minimal_json(structured_md_content, temp_1, client, verbose=verbose)
+        minimal.generate_minimal_json(structured_md_content, temp_1, client, verbose=verbose,
+                                      extra_extractions=args.extra_extractions)
 
         if verbose: print("[Paso 4] Construyendo flujo conversacional...")
         workflow.build_workflow_nodes(structured_md_content, temp_1, temp_2, client, verbose=verbose)
@@ -111,6 +123,13 @@ def main():
             if verbose: print(f"[Paso 6] Construyendo {args.tests} escenarios de QA...")
             tests_gen.generate_tests(structured_md_path, final_json_path, qa_json_path, args.tests, client, verbose=verbose)
 
+        if args.rag:
+            rag_path = os.path.join(md_dir, f"{base_name}_rag.md")
+            if verbose: print("[Paso 7] Generando RAG...")
+            with open(raw_md_path, 'r', encoding='utf-8') as f:
+                raw_for_rag = f.read()
+            rag.generate_rag(raw_for_rag, rag_path, client, source_name=base_name, verbose=verbose)
+
         for t in [temp_1, temp_2]:
             if os.path.exists(t):
                 os.remove(t)
@@ -121,6 +140,8 @@ def main():
             print(f"-> Agente Listo: {final_json_path}")
             if args.tests is not None:
                 print(f"-> Tests QA: {qa_json_path}")
+            if args.rag:
+                print(f"-> RAG: {rag_path}")
 
     except Exception as e:
         print(f"\nError fatal en la ejecucion: {str(e)}")

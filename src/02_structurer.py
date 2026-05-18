@@ -109,6 +109,66 @@ DOCUMENTO:
 Produce: {{"flow": [<lista de nodos>]}}
 """
 
+_P2B_SKELETON_SYS = "Eres un arquitecto de grafos conversacionales. Output: JSON puro sin fences."
+_P2B_SKELETON_USR = """\
+Modela el grafo de nodos del flujo principal. SOLO estructura: sin scripts, sin directives, sin objectives.
+
+ANALISIS PREVIO: {analysis}
+
+REGLAS CRITICAS:
+1. Un nodo = un turno del agente donde habla y espera respuesta.
+2. Nodo "start" LINEAL: nunca branches, siempre "next" al nodo distribuidor.
+3. NODO DISTRIBUIDOR obligatorio tras start: primera gran pregunta, con branches a todos los caminos.
+4. NINGUN NODO HUERFANO: grafo continuo desde start hasta todos los finales.
+5. EXHAUSTIVIDAD: si el distribuidor tiene 6 branches, crea los 6 nodos destino.
+6. Referencias exactas: el valor de "next" DEBE ser un id existente.
+7. FALLBACK: opciones sin detalle → nodo "Tomo nota, te derivo" + nodo end.
+8. Objeciones y FAQs NO van aqui.
+
+Schema por nodo:
+{{
+  "id": "<snake_case unico>",
+  "name": "<nombre legible>",
+  "type": "<tipo>",
+  "next": "<id_nodo o null>",
+  "branches": [{{"condition": "<cuando>", "next": "<id_nodo>", "note": "<nota>"}}]
+}}
+
+DOCUMENTO:
+---
+{raw_md}
+---
+
+Produce: {{"flow": [<lista de nodos>]}}
+"""
+
+_P2B_CONTENT_SYS = "Eres un escritor de guiones para agentes conversacionales de venta. Output: JSON puro sin fences."
+_P2B_CONTENT_USR = """\
+Rellena el contenido de los nodos indicados. USA EXCLUSIVAMENTE frases literales del documento.
+
+ESQUELETO COMPLETO DEL GRAFO (contexto de conexiones):
+{skeleton_summary}
+
+NODOS A COMPLETAR (ids): {batch_ids}
+
+DOCUMENTO ORIGINAL:
+---
+{raw_md}
+---
+
+Por cada nodo indicado produce:
+{{
+  "id": "<mismo id del esqueleto>",
+  "type": "<tipo>",
+  "objective": "<que logra el agente en este nodo>",
+  "script": ["<frase literal 1>", "<frase literal 2>"],
+  "directives": ["<instruccion interna para el agente>"],
+  "extractions": []
+}}
+
+Produce: {{"nodes": [<lista solo de los {n} nodos solicitados>]}}
+"""
+
 _REVIEWER_USR = """\
 Eres un Auditor de Grafos Conversacionales. Tu único trabajo es arreglar y completar el flujo generado por otra IA.
 
@@ -274,9 +334,92 @@ def phase2a_identity(client, model, raw_md, analysis):
     user = _P2A_USR.format(raw_md=raw_md, analysis=json.dumps(analysis, ensure_ascii=False))
     return _call_llm(client, model, _P2A_SYS, user, "phase2c")
 
+def _flow_skeleton_summary(skeleton_nodes):
+    lines = []
+    for n in skeleton_nodes:
+        conns = []
+        if n.get("next"):
+            conns.append(f"-> {n['next']}")
+        for b in n.get("branches", []):
+            conns.append(f"[{b.get('condition','?')}]->{b.get('next','?')}")
+        lines.append(f"{n['id']} ({n.get('type','node')}): {', '.join(conns) or 'terminal'}")
+    return "\n".join(lines)
+
+
+_FLOW_BATCH_SIZE = 8
+
 def phase2b_flow(client, model, raw_md, analysis):
-    user = _P2B_USR.format(raw_md=raw_md, analysis=json.dumps(analysis, ensure_ascii=False))
-    return _call_llm(client, model, _P2B_SYS, user, "phase2b")
+    # --- Fase skeleton: solo grafo, sin contenido ---
+    skeleton_user = _P2B_SKELETON_USR.format(
+        raw_md=raw_md,
+        analysis=json.dumps(analysis, ensure_ascii=False),
+    )
+    skeleton = _call_llm(client, model, _P2B_SKELETON_SYS, skeleton_user, "phase2b_skeleton")
+    skeleton_nodes = skeleton.get("flow", [])
+
+    # --- Reviewer sobre el esqueleto (JSON compacto, sin scripts) ---
+    try:
+        reviewer_messages = [
+            {"role": "system", "content": "Eres un auditor estricto de grafos. Devuelve solo JSON valido."},
+            {"role": "user", "content": _REVIEWER_USR.format(
+                raw_md=raw_md,
+                generated_flow=json.dumps(skeleton, ensure_ascii=False, indent=2),
+            )},
+        ]
+        resp = client.chat.completions.create(
+            model=model,
+            response_format={"type": "json_object"},
+            temperature=0.1,
+            messages=reviewer_messages,
+        )
+        skeleton = json.loads(resp.choices[0].message.content.strip())
+        skeleton_nodes = skeleton.get("flow", skeleton_nodes)
+    except Exception as e:
+        print(f"    Auditoria omitida, usando esqueleto original: {e}")
+
+    skeleton_summary = _flow_skeleton_summary(skeleton_nodes)
+
+    # --- Fase contenido: lotes paralelos ---
+    batches = [skeleton_nodes[i:i + _FLOW_BATCH_SIZE] for i in range(0, len(skeleton_nodes), _FLOW_BATCH_SIZE)]
+
+    def process_batch(batch):
+        batch_ids = [n["id"] for n in batch]
+        user = _P2B_CONTENT_USR.format(
+            skeleton_summary=skeleton_summary,
+            batch_ids=", ".join(batch_ids),
+            raw_md=raw_md,
+            n=len(batch_ids),
+        )
+        result = _call_llm(client, model, _P2B_CONTENT_SYS, user, f"phase2b_content_{batch_ids[0]}")
+        return {n["id"]: n for n in result.get("nodes", [])}
+
+    content_map = {}
+    with ThreadPoolExecutor(max_workers=min(len(batches), 6)) as executor:
+        futures = {executor.submit(process_batch, batch): batch for batch in batches}
+        for future in as_completed(futures):
+            try:
+                content_map.update(future.result())
+            except Exception as exc:
+                print(f"    Error en lote de contenido: {exc}")
+
+    # --- Fusion esqueleto + contenido ---
+    merged = []
+    for skel in skeleton_nodes:
+        nid = skel["id"]
+        content = content_map.get(nid, {})
+        merged.append({
+            "id":          nid,
+            "name":        skel.get("name", nid),
+            "type":        content.get("type", skel.get("type", "conversational")),
+            "objective":   content.get("objective", ""),
+            "script":      content.get("script", []),
+            "directives":  content.get("directives", []),
+            "branches":    skel.get("branches", []),
+            "next":        skel.get("next"),
+            "extractions": content.get("extractions", []),
+        })
+
+    return {"flow": merged}
 
 def phase2c_objections(client, model, raw_md, analysis, flow):
     flow_ids = [n.get("id", "?") for n in flow.get("flow", [])]
@@ -551,31 +694,10 @@ def run_structurer(raw_md_path, output_path, client, model=DEFAULT_MODEL, verbos
     analysis = phase1_analyze(client, model, raw_md)
 
     if verbose:
-        print("  Fase 2B: Extrayendo flujo principal...")
+        print("  Fase 2B: Extrayendo esqueleto, auditando y rellenando contenido en paralelo...")
     flow = phase2b_flow(client, model, raw_md, analysis)
-
     if verbose:
-        print("  Fase 2B: Auditoria de calidad...")
-        
-    try:
-        reviewer_messages = [
-            {"role": "system", "content": "Eres un auditor estricto. Devuelve solo JSON válido."},
-            {"role": "user", "content": _REVIEWER_USR.format(
-                raw_md=raw_md, 
-                generated_flow=json.dumps(flow, ensure_ascii=False, indent=2)
-            )}
-        ]
-        
-        response_review = client.chat.completions.create(
-            model="gpt-4o",
-            response_format={"type": "json_object"},
-            temperature=0.1,
-            messages=reviewer_messages
-        )
-        
-        flow = json.loads(response_review.choices[0].message.content.strip())
-    except Exception as e:
-        print(f"    Error en Fase 2B (Auditoria omitida, usando flujo original): {e}")
+        print(f"  Fase 2B completada: {len(flow.get('flow', []))} nodos.")
 
     if verbose:
         print("  Fases 2A/2C/2D/2E: Extraccion en paralelo...")

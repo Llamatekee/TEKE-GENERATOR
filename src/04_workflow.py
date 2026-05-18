@@ -80,7 +80,12 @@ ESTRUCTURA OBLIGATORIA del systemMessage (en orden):
 5. Instruccion de rama al final: "no digas nada y toma la rama X".
 
 REGLA START: is_start=true → systemMessage siempre "" (vacio).
-REGLA PRESENTACION: copia literalmente las frases 2+ del nodo start al INICIO del systemMessage del primer nodo conversacional.
+
+REGLA DE PRESENTACION (CRITICA):
+El nodo start suele tener 2 o mas frases. La 1ra ya la dice el agente al descolgar (answerPhrase).
+Las frases 2+ SON EL PITCH y DEBEN ir literalmente al PRINCIPIO EXACTO del systemMessage del PRIMER nodo conversacional.
+El systemMessage de ese primer nodo debe comenzar con esas frases y luego incluir el OBJETIVO y las reglas de clasificacion.
+IMPORTANTE: ese nodo debe incluir la directiva "NO respondas a saludos ni cortesias sociales del prospecto. Di el pitch de apertura de inmediato."
 
 ESQUELETO COMPLETO (para referencias cruzadas):
 {skeleton}

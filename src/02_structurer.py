@@ -334,6 +334,119 @@ def phase2a_identity(client, model, raw_md, analysis):
     user = _P2A_USR.format(raw_md=raw_md, analysis=json.dumps(analysis, ensure_ascii=False))
     return _call_llm(client, model, _P2A_SYS, user, "phase2c")
 
+# ---------------------------------------------------------------------------
+# Phase 2F — Modularizacion conversacional (entre 2B y paralelas)
+# ---------------------------------------------------------------------------
+
+_P2F_SYS = "Eres un optimizador de flujos conversacionales de voz. Output: JSON puro sin fences."
+_P2F_USR = """\
+Revisa los nodos indicados y modularizalos si es necesario para que la conversacion sea fluida.
+
+CRITERIOS DE DIVISION (divide SOLO si se cumple al menos uno):
+1. PREGUNTA MULTIPLE: el nodo hace >1 pregunta directa al prospecto -> una pregunta por nodo.
+2. EXTRACCION HUERFANA: el nodo extrae datos que no se preguntan en su script -> elimina esa extraccion del nodo (no la pierdes, va al nodo donde si se pregunta).
+3. TRANSICION ABRUPTA: el nodo sigue a una confirmacion de interes sin ningun momento de rapport -> intercala un nodo breve de reconocimiento antes de las preguntas.
+4. FRASE DE APERTURA HUERFANA: el nodo "start" tiene >=2 frases en su script Y el primer nodo conversacional al que apunta tiene script vacio o inexistente. En este caso, mueve las frases 2+ del start al INICIO del script/systemMessage de ese primer nodo como APERTURA OBLIGATORIA. El agente DEBE decirlas antes de esperar cualquier respuesta real del prospecto. No las pierdas.
+
+CRITERIOS PARA MANTENER TAL CUAL (no tocar):
+- Nodos start o de tipo distribuidor (sin script, solo branches).
+- Nodos de cierre / end.
+- Nodos ya modulares: 1 proposito, 1 pregunta, extracciones coherentes con el script.
+
+REGLAS CRITICAS AL DIVIDIR:
+- IDs nuevos: {{original_id}}_p1, {{original_id}}_p2, etc.
+- El ULTIMO nodo del split hereda EXACTAMENTE las conexiones salientes del original (next/branches).
+- Los nodos intermedios se conectan secuencialmente entre si con "next".
+- Las extracciones van en el nodo donde se hace la pregunta correspondiente.
+- No inventes frases. Usa literales del documento o del nodo original.
+
+ESQUELETO COMPLETO DEL GRAFO (para referencias cruzadas):
+{skeleton_summary}
+
+NODOS A REVISAR:
+{batch_nodes}
+
+DOCUMENTO ORIGINAL (referencia):
+---
+{raw_md}
+---
+
+Produce:
+{{
+  "results": [
+    {{
+      "original_id": "<id>",
+      "nodes": [<1 nodo si se mantiene, N nodos si se divide>]
+    }}
+  ]
+}}
+Cada nodo: {{id, name, type, objective, script[], directives[], branches[], next, extractions[]}}
+"""
+
+
+def _reconcile_connections(nodes, split_map):
+    """Actualiza referencias next/branches que apuntan a nodos que fueron divididos."""
+    for node in nodes:
+        if node.get("next") in split_map:
+            node["next"] = split_map[node["next"]]
+        for b in node.get("branches", []):
+            if b.get("next") in split_map:
+                b["next"] = split_map[b["next"]]
+    return nodes
+
+
+def phase2f_modularize(client, model, raw_md, flow):
+    nodes = flow.get("flow", [])
+    if not nodes:
+        return flow
+
+    skeleton_summary = _flow_skeleton_summary(nodes)
+    batches = [nodes[i:i + _FLOW_BATCH_SIZE] for i in range(0, len(nodes), _FLOW_BATCH_SIZE)]
+
+    def process_batch(batch):
+        batch_nodes_json = json.dumps(batch, ensure_ascii=False, indent=2)
+        user = _P2F_USR.format(
+            skeleton_summary=skeleton_summary,
+            batch_nodes=batch_nodes_json,
+            raw_md=raw_md,
+        )
+        result = _call_llm(client, model, _P2F_SYS, user, f"phase2f_{batch[0]['id']}")
+        return {r["original_id"]: r.get("nodes", []) for r in result.get("results", [])}
+
+    results_map = {}
+    with ThreadPoolExecutor(max_workers=min(len(batches), 6)) as executor:
+        futures = {executor.submit(process_batch, batch): i for i, batch in enumerate(batches)}
+        for future in as_completed(futures):
+            try:
+                results_map.update(future.result())
+            except Exception as exc:
+                print(f"    Error en lote phase2f: {exc}")
+
+    # Expandir: reemplazar cada nodo original por su version modularizada
+    expanded = []
+    split_map = {}  # original_id -> primer ID del split (para reconciliar referencias)
+
+    for original in nodes:
+        oid = original["id"]
+        replacement = results_map.get(oid)
+
+        if replacement and len(replacement) > 1:
+            # El ultimo nodo hereda las conexiones salientes del original
+            replacement[-1]["next"] = original.get("next")
+            replacement[-1]["branches"] = original.get("branches", [])
+            split_map[oid] = replacement[0]["id"]
+            expanded.extend(replacement)
+        elif replacement and len(replacement) == 1:
+            expanded.append(replacement[0])
+        else:
+            expanded.append(original)
+
+    if split_map:
+        expanded = _reconcile_connections(expanded, split_map)
+
+    return {"flow": expanded}
+
+
 def _flow_skeleton_summary(skeleton_nodes):
     lines = []
     for n in skeleton_nodes:
@@ -698,6 +811,15 @@ def run_structurer(raw_md_path, output_path, client, model=DEFAULT_MODEL, verbos
     flow = phase2b_flow(client, model, raw_md, analysis)
     if verbose:
         print(f"  Fase 2B completada: {len(flow.get('flow', []))} nodos.")
+
+    if verbose:
+        print("  Fase 2F: Modularizando flujo conversacional...")
+    try:
+        flow = phase2f_modularize(client, model, raw_md, flow)
+        if verbose:
+            print(f"  Fase 2F completada: {len(flow.get('flow', []))} nodos tras modularizacion.")
+    except Exception as exc:
+        print(f"  Fase 2F omitida (usando flujo original): {exc}")
 
     if verbose:
         print("  Fases 2A/2C/2D/2E: Extraccion en paralelo...")

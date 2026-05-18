@@ -54,7 +54,7 @@ _SYSTEM_PROMPT = """
                     "type": "string"
                 }
             ],
-            "voice": "HIYif4jehvc9P9A8DYbX",
+            "voice": "TGgOIrTK6WWfwF0OYUdC",
             "voiceSynthesizer": "elevenlabs",
             "voiceSynthesizerModel": "eleven_turbo_v2_5",
             "stability": 0.5,

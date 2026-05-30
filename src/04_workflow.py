@@ -64,7 +64,7 @@ def _skeleton_summary(skeleton_nodes):
         if n.get("direct_next"):
             conns.append(f"-> {n['direct_next']}")
         for b in n.get("branches", []):
-            conns.append(f"[{b['id']}]->{b.get('next_node','?')}")
+            conns.append(f"[{b['id']}:{b.get('name','?')}]->{b.get('next_node','?')}")
         lines.append(f"{n['id']} ({tag}): {', '.join(conns) or 'terminal'}")
     return "\n".join(lines)
 
@@ -88,6 +88,8 @@ Schema:
       "is_start": true/false,
       "is_end": true/false,
       "direct_next": "<id o null>",
+      "direct_next_name": "<slug snake_case de la condicion observable del usuario, ej: 'user_agrees_to_continue' — SOLO si direct_next existe Y branches esta vacio; omitir en caso contrario>",
+      "direct_next_description": "<condicion concreta y observable: que dice o hace el usuario para activar esta transicion, ej: 'El usuario responde afirmativamente a la pregunta del agente' — SOLO si direct_next existe Y branches esta vacio; omitir en caso contrario>",
       "branches": [
         {{"id": "<slug>", "name": "<condicion>", "fill_phrase": "<max 4 palabras naturales>", "next_node": "<id>"}}
       ]
@@ -105,20 +107,18 @@ _CONTENT_SYS = "Eres un escritor de systemMessages para agentes de voz Tolvia. O
 _CONTENT_USR = """\
 VARIABLES TOLVIA: {{user_first_name}}, {{user_is_female?la:el}}, {{Job Title}}, {{company}}, {{position}}, {{available_slot_0!valor_defecto}}
 
-ESTRUCTURA OBLIGATORIA del systemMessage (en orden):
+ESTRUCTURA del systemMessage (en orden):
 1. OBJETIVO: bullets con lo que el agente logra en este nodo.
 2. SUPUESTO (opcional): lo ya hecho antes de llegar aqui.
 3. Frases literales del script entre comillas + CUANDO usarlas.
-4. Reglas de clasificacion si aplica (SI / NO / OBJECION / PREGUNTA / AMBIGUO).
+4. REGLAS DE CLASIFICACION si el nodo tiene branches Y su bloque MD tiene script propio con respuestas del usuario.
 5. Instruccion de rama al final: "no digas nada y toma la rama X".
 
 REGLA START: is_start=true → systemMessage siempre "" (vacio).
 
-REGLA DE PRESENTACION (CRITICA):
-El nodo start suele tener 2 o mas frases. La 1ra ya la dice el agente al descolgar (answerPhrase).
-Las frases 2+ SON EL PITCH y DEBEN ir literalmente al PRINCIPIO EXACTO del systemMessage del PRIMER nodo conversacional.
-El systemMessage de ese primer nodo debe comenzar con esas frases y luego incluir el OBJETIVO y las reglas de clasificacion.
-IMPORTANTE: ese nodo debe incluir la directiva "NO respondas a saludos ni cortesias sociales del prospecto. Di el pitch de apertura de inmediato."
+REGLA DE PRESENTACION:
+Si el nodo es el primero conversacional (direct_next del start en el esqueleto) Y tiene script en el MD,
+comienza su systemMessage con las frases de pitch del nodo start (las que siguen al answerPhrase).
 
 ESQUELETO COMPLETO (para referencias cruzadas):
 {skeleton}
@@ -159,6 +159,180 @@ def _call(client, system, user):
     return json.loads(response.choices[0].message.content)
 
 # ---------------------------------------------------------------------------
+# Refinamiento de branches
+# ---------------------------------------------------------------------------
+
+_BRANCH_REFINE_SYS = "Eres un especialista en condiciones de transicion para agentes conversacionales de voz. Output: JSON puro sin fences."
+_BRANCH_REFINE_USR = """\
+Revisa las ramas (branches) de los nodos indicados y mejora su 'name' y 'description' para que sean condiciones CONCRETAS y OBSERVABLES desde el punto de vista del comportamiento del usuario.
+
+REGLAS:
+1. 'name': slug snake_case que describe la accion/respuesta del usuario. Ej: 'user_says_yes', 'user_agrees_to_demo', 'user_asks_for_callback'.
+2. 'description': condicion comportamental precisa. NO describas el flujo interno. Describe QUE dice o hace el usuario para activar esa rama.
+   - MALO: "Cuando el usuario accede" / "Transicion automatica" / "El usuario da consentimiento"
+   - BUENO: "El usuario responde afirmativamente (si, claro, por supuesto, de acuerdo) a la pregunta de si quiere escuchar las tres preguntas"
+3. Si la rama ya tiene name/description concretos y especificos, devuelvelos tal cual.
+4. Usa el systemMessage del nodo para inferir exactamente que pregunta hace el agente y escribir la condicion ajustada a esa pregunta.
+5. NO modifiques 'id' ni 'next_node' bajo ningun concepto.
+
+ESQUELETO COMPLETO (contexto de conexiones):
+{skeleton}
+
+NODOS A REVISAR:
+{batch_nodes}
+
+Produce:
+{{
+  "nodes": [
+    {{
+      "id": "<id del nodo>",
+      "branches": [
+        {{"id": "<mismo id de rama — no cambiar>", "name": "<name mejorado>", "description": "<description concreta>"}}
+      ]
+    }}
+  ]
+}}
+"""
+
+
+def _refine_branches(client, merged_nodes, skeleton_str, section4=""):
+    """Refina name y description de branches para que sean condiciones concretas y observables."""
+    nodes_with_branches = [n for n in merged_nodes if n.get("branches")]
+    if not nodes_with_branches:
+        return merged_nodes
+
+    batches = [nodes_with_branches[i:i + BATCH_SIZE] for i in range(0, len(nodes_with_branches), BATCH_SIZE)]
+
+    def process_batch(batch):
+        batch_data = []
+        for n in batch:
+            sm = n.get("systemMessage", "")
+            # si el systemMessage esta vacio, usar el bloque MD como contexto
+            if not sm and section4:
+                sm = _extract_node_blocks(section4, [n["id"]])
+            batch_data.append({"id": n["id"], "systemMessage": sm, "branches": n.get("branches", [])})
+        user = _BRANCH_REFINE_USR.format(
+            skeleton=skeleton_str,
+            batch_nodes=json.dumps(batch_data, ensure_ascii=False, indent=2),
+        )
+        result = _call(client, _BRANCH_REFINE_SYS, user)
+        return {n["id"]: n.get("branches", []) for n in result.get("nodes", [])}
+
+    refined_map = {}
+    with ThreadPoolExecutor(max_workers=min(len(batches), 6)) as executor:
+        futures = {executor.submit(process_batch, batch): i for i, batch in enumerate(batches)}
+        for future in as_completed(futures):
+            try:
+                refined_map.update(future.result())
+            except Exception as exc:
+                print(f"  Error en refinamiento de branches: {exc}")
+
+    # Aplicar: solo name y description; next_node permanece intacto del skeleton
+    for node in merged_nodes:
+        nid = node["id"]
+        if nid in refined_map:
+            refined_by_id = {b["id"]: b for b in refined_map[nid]}
+            for orig_branch in node.get("branches", []):
+                bid = orig_branch["id"]
+                if bid in refined_by_id:
+                    orig_branch["name"] = refined_by_id[bid].get("name", orig_branch["name"])
+                    orig_branch["description"] = refined_by_id[bid].get("description", orig_branch.get("description", ""))
+
+    return merged_nodes
+
+
+# ---------------------------------------------------------------------------
+# Relleno de nodos distribuidor sin systemMessage — paso dedicado
+# ---------------------------------------------------------------------------
+
+_FILL_BRANCH_SYS = "Eres un escritor especialista en systemMessages de nodos distribuidores para agentes de voz Tolvia. Output: JSON puro sin fences."
+_FILL_BRANCH_USR = """\
+Genera el systemMessage de nodos ask_and_branch que NO tienen script propio en el MD.
+Estos nodos son distribuidores: su unica funcion es escuchar la respuesta del usuario y tomar la rama correcta.
+
+PRIMER NODO CONVERSACIONAL (direct_next del start): {first_conv_id}
+
+ESQUELETO COMPLETO con nombres de ramas:
+{skeleton}
+
+NODOS A COMPLETAR (incluyen su bloque MD y sus ramas del esqueleto):
+{batch_nodes}
+
+Para cada nodo produce:
+1. Si is_first=true:
+   - Extrae del bloque MD del nodo start las frases de pitch (las que siguen al answerPhrase del agente).
+   - Ponlas al inicio del systemMessage como pitch de apertura.
+   - Añade la directiva: "NO respondas a saludos ni cortesias sociales del prospecto. Di el pitch de apertura de inmediato."
+2. OBJETIVO en 1 linea.
+3. REGLAS DE CLASIFICACION por cada rama del esqueleto:
+   - Usa las condiciones del bloque MD (lineas '- Si: X -> Y') y mapealas al branch_id del esqueleto.
+   - Si no hay condiciones en el MD, infierelas del 'name' de la rama (ej: user_is_busy → "El usuario dice que esta ocupado").
+   - Formato exacto: "SI <condicion observable> → no digas nada y toma la rama <branch_id>"
+4. Mejora tambien la 'description' de cada rama con la condicion concreta inferida.
+
+Produce:
+{{
+  "nodes": [
+    {{
+      "id": "<id>",
+      "systemMessage": "<texto completo>",
+      "branches": [
+        {{"id": "<mismo id de rama>", "description": "<condicion concreta observable>"}}
+      ]
+    }}
+  ]
+}}
+"""
+
+
+def _fill_empty_branch_nodes(client, merged_nodes, skeleton_str, section4, first_conv_id, verbose=False):
+    """Genera systemMessage+descriptions para nodos ask_and_branch con SM vacio."""
+    targets = [
+        n for n in merged_nodes
+        if n.get("branches")
+        and "\u2192" not in n.get("systemMessage", "")
+        and "toma la rama" not in n.get("systemMessage", "")
+    ]
+    if not targets:
+        return merged_nodes
+
+    if verbose:
+        ids = [n["id"] for n in targets]
+        print(f"  [fill_branch] Completando {len(targets)} nodo(s) distribuidor sin systemMessage: {ids}")
+
+    batch_data = []
+    for n in targets:
+        md_block = _extract_node_blocks(section4, [n["id"]])
+        batch_data.append({
+            "id": n["id"],
+            "is_first": n["id"] == first_conv_id,
+            "branches": [{"id": b["id"], "name": b.get("name", b["id"]), "next_node": b.get("next_node", "")} for b in n.get("branches", [])],
+            "md_block": md_block,
+        })
+
+    user = _FILL_BRANCH_USR.format(
+        first_conv_id=first_conv_id or "ninguno",
+        skeleton=skeleton_str,
+        batch_nodes=json.dumps(batch_data, ensure_ascii=False, indent=2),
+    )
+    try:
+        result = _call(client, _FILL_BRANCH_SYS, user)
+        result_map = {n["id"]: n for n in result.get("nodes", [])}
+        for node in merged_nodes:
+            nid = node["id"]
+            if nid in result_map:
+                node["systemMessage"] = result_map[nid].get("systemMessage", node["systemMessage"])
+                branch_updates = {b["id"]: b for b in result_map[nid].get("branches", [])}
+                for b in node.get("branches", []):
+                    if b["id"] in branch_updates:
+                        b["description"] = branch_updates[b["id"]].get("description", b.get("description", ""))
+    except Exception as exc:
+        print(f"  Error en _fill_empty_branch_nodes: {exc}")
+
+    return merged_nodes
+
+
+# ---------------------------------------------------------------------------
 # Construccion de nodos Tolvia
 # ---------------------------------------------------------------------------
 
@@ -195,9 +369,9 @@ def _build_tolvia_nodes(merged_nodes):
                 "rules": [],
                 "params": {},
                 "autoNext": False,
-                "isEndNode": False,
+                "isEndNode": bool(raw_node.get("is_end")),
                 "isGlobalNode": False,
-                "maxIterations": 3 if n_class == "start" else 300,
+                "maxIterations": 3 if n_class == "start" else (1 if n_class == "extractor" else 300),
                 "asyncExecution": False,
                 "blockUserInput": False,
                 "cannedStarters": [],
@@ -226,7 +400,7 @@ def _build_tolvia_nodes(merged_nodes):
                         branch_id = b["id"]
                         module_card["data"]["branches"].append({
                             "id": branch_id, "name": b["name"], "next": target_id,
-                            "description": "", "fillPhrases": [_safe_fill_phrase(b.get("fill_phrase", ""))]
+                            "description": b.get("description", ""), "fillPhrases": [_safe_fill_phrase(b.get("fill_phrase", ""))]
                         })
                         workflow_edges.append({
                             "id": f"xy-edge__{node_id}{branch_id}-{target_id}",
@@ -234,10 +408,13 @@ def _build_tolvia_nodes(merged_nodes):
                         })
             elif raw_node.get("direct_next"):
                 target_id = f"node-{raw_node['direct_next']}"
-                branch_id = "branch_continuar"
+                # usar name/description inferidos por el LLM en el skeleton
+                branch_id = raw_node.get("direct_next_name") or "branch_continuar"
+                branch_name = raw_node.get("direct_next_name") or "Continuar"
+                branch_desc = raw_node.get("direct_next_description") or "Transicion automatica"
                 module_card["data"]["branches"].append({
-                    "id": branch_id, "name": "Continuar", "next": target_id,
-                    "description": "Transicion automatica", "fillPhrases": [_safe_fill_phrase("")]
+                    "id": branch_id, "name": branch_name, "next": target_id,
+                    "description": branch_desc, "fillPhrases": [_safe_fill_phrase("")]
                 })
                 workflow_edges.append({
                     "id": f"xy-edge__{node_id}{branch_id}-{target_id}",
@@ -317,6 +494,40 @@ def build_workflow_nodes(md_content, base_json_path, output_json_path, client, v
             "systemMessage": content.get("systemMessage", ""),
             "extractions":   content.get("extractions", []),
         })
+
+    # Calcular first_conv_id una sola vez para todos los pasos posteriores
+    _start = next((n for n in merged_nodes if n.get("is_start")), None)
+    first_conv_id = _start.get("direct_next") if _start else None
+
+    # Paso A: refinar name/description de branches con systemMessage como contexto
+    if verbose:
+        print("  Refinando condiciones de transicion de branches...")
+    try:
+        merged_nodes = _refine_branches(client, merged_nodes, skeleton_str, section4=section4)
+    except Exception as exc:
+        print(f"  Refinamiento de branches omitido: {exc}")
+
+    # Paso B: completar nodos distribuidor sin systemMessage (pitch + reglas de clasificacion)
+    try:
+        merged_nodes = _fill_empty_branch_nodes(client, merged_nodes, skeleton_str, section4, first_conv_id, verbose=verbose)
+    except Exception as exc:
+        print(f"  Fill branch nodes omitido: {exc}")
+
+    # Paso C: limpiar directiva de apertura de nodos que no son el primero conversacional
+    _PITCH_DIRECTIVE = "NO respondas a saludos ni cortesias sociales del prospecto. Di el pitch de apertura de inmediato."
+    for node in merged_nodes:
+        if node["id"] != first_conv_id and _PITCH_DIRECTIVE in node.get("systemMessage", ""):
+            node["systemMessage"] = node["systemMessage"].replace(_PITCH_DIRECTIVE, "").strip()
+
+    # Paso D (safety net): si el primer nodo sigue sin systemMessage, forzar regeneracion
+    first_conv = next((n for n in merged_nodes if n["id"] == first_conv_id), None) if first_conv_id else None
+    if first_conv and not first_conv.get("systemMessage"):
+        if verbose:
+            print(f"  [safety] Primer nodo '{first_conv_id}' sin systemMessage tras todos los pasos — regenerando...")
+        try:
+            merged_nodes = _fill_empty_branch_nodes(client, merged_nodes, skeleton_str, section4, first_conv_id, verbose=verbose)
+        except Exception as exc:
+            print(f"  Error en safety regeneration: {exc}")
 
     # Construccion Tolvia
     workflow_nodes, workflow_edges = _build_tolvia_nodes(merged_nodes)
